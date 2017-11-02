@@ -7,3 +7,4 @@ gradle
 /build
 /captures
 .externalNativeBuild
+tangram-full-release/tangram-full-release.aar

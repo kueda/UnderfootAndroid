@@ -3,25 +3,33 @@ package rocks.underfoot.underfootandroid;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
+import android.graphics.PointF;
 import android.net.Uri;
-import android.os.Environment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class MapActivity extends Activity {
+import com.mapzen.tangram.LngLat;
+import com.mapzen.tangram.MapController;
+import com.mapzen.tangram.MapController.SceneLoadListener;
+import com.mapzen.tangram.MapController.FeaturePickListener;
+import com.mapzen.tangram.MapView;
+import com.mapzen.tangram.SceneError;
+import com.mapzen.tangram.TouchInput.TapResponder;
+import com.mapzen.tangram.TouchInput.DoubleTapResponder;
+
+public class MapActivity extends Activity implements SceneLoadListener, TapResponder, DoubleTapResponder, FeaturePickListener {
 
     private static final String TAG = "MapActivity";
 
@@ -33,7 +41,9 @@ public class MapActivity extends Activity {
     private ProgressBar mProgressBar;
     private Button mRetryDownloadButton;
     private TextView mDownloadProgressLabel ;
-
+    ViewGroup mDownloadUI;
+    MapView mMapView;
+    MapController mMapController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,16 +52,24 @@ public class MapActivity extends Activity {
         mProgressBar = (ProgressBar) findViewById(R.id.downloadProgress);
         mRetryDownloadButton = (Button) findViewById(R.id.retryDownloadButton);
         mDownloadProgressLabel = (TextView) findViewById(R.id.downloadProgressLabel);
-        checkForRequiredFiles();
         mRetryDownloadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 checkForRequiredFiles();
             }
         });
+        mDownloadUI = (ViewGroup) findViewById(R.id.downloadUI);
+        mMapView = (MapView) findViewById(R.id.map);
+        if (checkForRequiredFiles()) {
+            mMapView.setVisibility(View.VISIBLE);
+            mDownloadUI.setVisibility(View.GONE);
+        } else {
+            mMapView.setVisibility(View.GONE);
+            mDownloadUI.setVisibility(View.VISIBLE);
+        }
     }
 
-    private void checkForRequiredFiles() {
+    private boolean checkForRequiredFiles() {
         Log.d(TAG, "checkForRequiredFiles");
         ArrayList<String> filesToDownload = new ArrayList<String>();
         File file;
@@ -67,8 +85,10 @@ public class MapActivity extends Activity {
         if (filesToDownload.size() > 0) {
             askToDownloadFiles();
             hideRetryDownloadButton();
+            return false;
         } else {
             Log.d(TAG, "All files loaded");
+            return true;
         }
     }
 
@@ -145,7 +165,14 @@ public class MapActivity extends Activity {
                         });
                         if (finishes.size() == filesToDownload.size()) {
                             downloading = false;
-                            FILE_DOWNLOAD_IDS.clear();
+                            MapActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    FILE_DOWNLOAD_IDS.clear();
+                                    mMapView.setVisibility(View.VISIBLE);
+                                    mDownloadUI.setVisibility(View.GONE);
+                                }
+                            } );
                         }
                     } catch (CursorIndexOutOfBoundsException e) {
                         downloading = false;
@@ -172,5 +199,86 @@ public class MapActivity extends Activity {
         mRetryDownloadButton.setVisibility(View.GONE);
         mProgressBar.setVisibility(View.VISIBLE);
         mDownloadProgressLabel.setVisibility(View.VISIBLE);
+    }
+
+    // MAP STUFF
+
+    @Override
+    public void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mMapController = mMapView.getMap(this);
+        mMapController.loadSceneFile("asset:///omt-scene.yml");
+        // url: 'http://10.0.2.2:8080/data/v3/{z}/{x}/{y}.pbf'
+        // This works but you actually don't need to do this if you know where the mbtiles file *will* be put in onCreate
+//        Log.d("Underfoot", "trying to load mbtiles from " + mbtilesPath);
+//        map.setMBTiles("osm", mbtilesPath);
+        mMapController.setPosition(new LngLat(-122.2583, 37.8012));
+        mMapController.setZoom(10);
+        mMapController.setTapResponder(this);
+        mMapController.setDoubleTapResponder(this);
+        mMapController.setFeaturePickListener(this);
+    }
+
+    @Override
+    public void onSceneReady(int sceneId, SceneError sceneError) {
+        Log.d("Tangram", "onSceneReady!");
+        if (sceneError == null) {
+            Toast.makeText(this, "Scene ready: " + sceneId, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Scene load error: " + sceneId + " "
+                    + sceneError.getSceneUpdate().toString()
+                    + " " + sceneError.getError().toString(), Toast.LENGTH_SHORT).show();
+
+            Log.d("Tangram", "Scene update errors "
+                    + sceneError.getSceneUpdate().toString()
+                    + " " + sceneError.getError().toString());
+        }
+    }
+
+    @Override
+    public boolean onSingleTapUp(float v, float v1) {
+        return false;
+    }
+
+    @Override
+    public boolean onSingleTapConfirmed(float x, float y) {
+        LngLat tappedPoint = mMapController.screenPositionToLngLat(new PointF(x, y));
+        mMapController.pickFeature(x,y);
+        mMapController.setPositionEased(tappedPoint, 1000);
+        return true;
+    }
+
+    @Override
+    public boolean onDoubleTap(float x, float y) {
+        mMapController.setZoomEased(mMapController.getZoom() + 1.f, 500);
+        LngLat tapped = mMapController.screenPositionToLngLat(new PointF(x, y));
+        LngLat current = mMapController.getPosition();
+        LngLat next = new LngLat(
+                0.5 * (tapped.longitude + current.longitude),
+                0.5 * (tapped.latitude + current.latitude)
+        );
+        mMapController.setPositionEased(next, 500);
+        return true;
+    }
+
+    @Override
+    public void onFeaturePick(java.util.Map<String,String> properties,
+                              float positionX,
+                              float positionY) {
+        if (properties.isEmpty()) {
+            return;
+        }
+        String title = properties.get("title");
+        String description = properties.get("description");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(description)
+                .setTitle(title);
+        builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // No need to do anything
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
