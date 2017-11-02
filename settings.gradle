@@ -1,1 +1,1 @@
-include ':app', ':tangram-full-release'
+include ':app'
