@@ -28,8 +28,9 @@ import com.mapzen.tangram.MapView;
 import com.mapzen.tangram.SceneError;
 import com.mapzen.tangram.TouchInput.TapResponder;
 import com.mapzen.tangram.TouchInput.DoubleTapResponder;
+import com.mapzen.tangram.TouchInput.PanResponder;
 
-public class MapActivity extends Activity implements SceneLoadListener, TapResponder, DoubleTapResponder, FeaturePickListener {
+public class MapActivity extends Activity implements SceneLoadListener, TapResponder, DoubleTapResponder, FeaturePickListener, PanResponder {
 
     private static final String TAG = "MapActivity";
 
@@ -44,6 +45,8 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
     ViewGroup mDownloadUI;
     MapView mMapView;
     MapController mMapController;
+    TextView mSlideUpTitle;
+    TextView mSlideUpBody;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,8 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         });
         mDownloadUI = (ViewGroup) findViewById(R.id.downloadUI);
         mMapView = (MapView) findViewById(R.id.map);
+        mSlideUpTitle = (TextView) findViewById(R.id.slideUpTitle);
+        mSlideUpBody = (TextView) findViewById(R.id.slideUpBody);
         if (checkForRequiredFiles()) {
             mMapView.setVisibility(View.VISIBLE);
             mDownloadUI.setVisibility(View.GONE);
@@ -217,6 +222,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         mMapController.setTapResponder(this);
         mMapController.setDoubleTapResponder(this);
         mMapController.setFeaturePickListener(this);
+        mMapController.setPanResponder(this);
     }
 
     @Override
@@ -224,6 +230,9 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         Log.d("Tangram", "onSceneReady!");
         if (sceneError == null) {
             Toast.makeText(this, "Scene ready: " + sceneId, Toast.LENGTH_SHORT).show();
+            PointF center = mMapController.lngLatToScreenPosition(mMapController.getPosition());
+            Log.d(TAG, "center: " + center);
+            mMapController.pickFeature(center.x, center.y);
         } else {
             Toast.makeText(this, "Scene load error: " + sceneId + " "
                     + sceneError.getSceneUpdate().toString()
@@ -266,19 +275,24 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
                               float positionX,
                               float positionY) {
         if (properties.isEmpty()) {
-            return;
+            mSlideUpTitle.setText("Unknown");
+            mSlideUpBody.setText("");
         }
         String title = properties.get("title");
         String description = properties.get("description");
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(description)
-                .setTitle(title);
-        builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // No need to do anything
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        mSlideUpTitle.setText(title);
+        mSlideUpBody.setText(description);
+    }
+
+    @Override
+    public boolean onPan(float startX, float startY, float endX, float endY) {
+        PointF center = mMapController.lngLatToScreenPosition(mMapController.getPosition());
+        mMapController.pickFeature(center.x, center.y);
+        return false;
+    }
+
+    @Override
+    public boolean onFling(float posX, float posY, float velocityX, float velocityY) {
+        return false;
     }
 }
