@@ -47,6 +47,13 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
     MapController mMapController;
     TextView mSlideUpTitle;
     TextView mSlideUpBody;
+    double mLng;
+    double mLat;
+    float mZoom;
+
+    //
+    // Lifecycle
+    //
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,10 +79,31 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
             mMapView.setVisibility(View.GONE);
             mDownloadUI.setVisibility(View.VISIBLE);
         }
+        mZoom = 10;
+        mLng = -122.2583;
+        mLat = 37.8012;
+
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putFloat("mZoom", mZoom);
+        outState.putDouble("mLng", mLng);
+        outState.putDouble("mLat", mLat);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle inState) {
+        mZoom = inState.getFloat("mZoom");
+        mLng = inState.getDouble("mLng");
+        mLat= inState.getDouble("mLat");
+    }
+
+    //
+    // Underfoot
+    //
+
     private boolean checkForRequiredFiles() {
-        Log.d(TAG, "checkForRequiredFiles");
         ArrayList<String> filesToDownload = new ArrayList<String>();
         File file;
         for (String fileName: FILES) {
@@ -206,7 +234,9 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         mDownloadProgressLabel.setVisibility(View.VISIBLE);
     }
 
-    // MAP STUFF
+    //
+    // Mapzen
+    //
 
     @Override
     public void onPostCreate(Bundle savedInstanceState) {
@@ -217,8 +247,8 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         // This works but you actually don't need to do this if you know where the mbtiles file *will* be put in onCreate
 //        Log.d("Underfoot", "trying to load mbtiles from " + mbtilesPath);
 //        map.setMBTiles("osm", mbtilesPath);
-        mMapController.setPosition(new LngLat(-122.2583, 37.8012));
-        mMapController.setZoom(10);
+        mMapController.setPosition(new LngLat(mLng, mLat));
+        mMapController.setZoom(mZoom);
         mMapController.setTapResponder(this);
         mMapController.setDoubleTapResponder(this);
         mMapController.setFeaturePickListener(this);
@@ -286,7 +316,11 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     @Override
     public boolean onPan(float startX, float startY, float endX, float endY) {
-        PointF center = mMapController.lngLatToScreenPosition(mMapController.getPosition());
+        LngLat centerCoordinates = mMapController.getPosition();
+        mLng = centerCoordinates.longitude;
+        mLat = centerCoordinates.latitude;
+        mZoom = mMapController.getZoom();
+        PointF center = mMapController.lngLatToScreenPosition(centerCoordinates);
         mMapController.pickFeature(center.x, center.y);
         return false;
     }
