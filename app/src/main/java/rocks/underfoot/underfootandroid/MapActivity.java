@@ -66,6 +66,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
     Location mUserLocation;
     Marker mCurrentLocationMarker = null;
     boolean mRequestingLocationUpdates = false;
+    boolean mTrackingUserLocation = false;
 
     //
     // Lifecycle
@@ -103,13 +104,15 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "clicked button, mLocationManager: " + mLocationManager);
-                if (mRequestingLocationUpdates) {
-                    stopGettingLocation();
+                panToCurrentLocation();
+                if (mTrackingUserLocation) {
+                    stopTrackingUserLocation();
                 } else {
-                    startGettingLocation();
+                    startTrackingUserLocation();
                 }
             }
         });
+        startGettingLocation();
     }
 
     @Override
@@ -134,10 +137,19 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         mLat= inState.getDouble("mLat");
     }
 
+    @Override
     protected void onResume() {
         super.onResume();
         pickCenterFeature();
+        startGettingLocation();
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopGettingLocation();
+    }
+
 
     //
     // Underfoot
@@ -289,15 +301,11 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
             @Override
             public void onLocationChanged(Location location) {
                 if (isBetterLocation(location, mUserLocation) && location.getAccuracy() < 100) {
-                    if (mUserLocation == null) {
-                        mMapController.setPositionEased(new LngLat(location.getLongitude(), location.getLatitude()), 500);
-                        mMapController.setZoomEased(12, 1000);
-                    }
                     mUserLocation = location;
                     showCurrentLocation();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Stopping location updates", Toast.LENGTH_LONG);
-                    mLocationManager.removeUpdates(this);
+                    if (mTrackingUserLocation) {
+                        panToCurrentLocation();
+                    }
                 }
             }
 
@@ -323,10 +331,9 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
                     REQUEST_ACCESS_FINE_LOCATION_CODE);
             return;
         }
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, mLocationListener);
+        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10, mLocationListener);
         mRequestingLocationUpdates = true;
-//            mUserLocationButton.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent));
-        mUserLocationButton.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
     }
 
     private static final int TWO_MINUTES = 1000 * 60 * 2;
@@ -357,6 +364,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
         // Check whether the new location fix is more or less accurate
         int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+        Log.d(TAG, "accuracyDelta: " + accuracyDelta);
         boolean isLessAccurate = accuracyDelta > 0;
         boolean isMoreAccurate = accuracyDelta < 0;
         boolean isSignificantlyLessAccurate = accuracyDelta > 200;
@@ -391,14 +399,10 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
     public void stopGettingLocation() {
         Log.d(TAG, "stopGettingLocation");
         mRequestingLocationUpdates = false;
-        if (mLocationManager == null) {
+        if (mLocationManager == null || mLocationListener == null) {
             return;
         }
         mLocationManager.removeUpdates(mLocationListener);
-        hideCurrentLocation();
-        mUserLocationButton.setColorFilter(ContextCompat.getColor(this, R.color.black));
-//        ActionMenuItemView menuItem = (ActionMenuItemView) findViewById(R.id.action_current_location);
-//        menuItem.setIcon(R.drawable.ic_gps_off_black_24dp);
     }
 
     public void showCurrentLocation() {
@@ -421,12 +425,47 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         mCurrentLocationMarker.setVisible(false);
     }
 
+    public void panToCurrentLocation() {
+        if (mUserLocation == null) {
+            return;
+        }
+        mMapController.setPositionEased(new LngLat(mUserLocation.getLongitude(), mUserLocation.getLatitude()), 500);
+        mMapController.setZoomEased(15, 1000);
+        new android.os.Handler().postDelayed(
+                new Runnable() {
+                    public void run() {
+                        handleMapMove();
+                    }
+                },
+                1000);
+    }
+
+    private void startTrackingUserLocation() {
+        mTrackingUserLocation = true;
+        mUserLocationButton.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
+    }
+
+    private void stopTrackingUserLocation() {
+        mTrackingUserLocation = false;
+        mUserLocationButton.setColorFilter(ContextCompat.getColor(this, R.color.black));
+    }
+
+    private void handleMapMove() {
+        LngLat centerCoordinates = mMapController.getPosition();
+        mLng = centerCoordinates.longitude;
+        mLat = centerCoordinates.latitude;
+        mZoom = mMapController.getZoom();
+        PointF center = mMapController.lngLatToScreenPosition(centerCoordinates);
+        mMapController.pickFeature(center.x, center.y);
+    }
+
     //
     // Mapzen
     //
 
     @Override
     public void onPostCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onPostCreate");
         super.onPostCreate(savedInstanceState);
         mMapController = mMapView.getMap(this);
         mMapController.loadSceneFile("asset:///omt-scene.yml");
@@ -434,8 +473,6 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         // This works but you actually don't need to do this if you know where the mbtiles file *will* be put in onCreate
 //        Log.d("Underfoot", "trying to load mbtiles from " + mbtilesPath);
 //        map.setMBTiles("osm", mbtilesPath);
-        mMapController.setPosition(new LngLat(mLng, mLat));
-        mMapController.setZoom(mZoom);
         mMapController.setTapResponder(this);
         mMapController.setDoubleTapResponder(this);
         mMapController.setFeaturePickListener(this);
@@ -444,10 +481,16 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     @Override
     public void onSceneReady(int sceneId, SceneError sceneError) {
-        Log.d("Tangram", "onSceneReady!");
+        Log.d(TAG, "onSceneReady");
         if (sceneError == null) {
-            Toast.makeText(this, "Scene ready: " + sceneId, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "Scene ready: " + sceneId, Toast.LENGTH_SHORT).show();
             pickCenterFeature();
+            mMapController.setPosition(new LngLat(mLng, mLat));
+//            Toast.makeText(this, "setting zoom to " + mZoom, Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "mLat: " + mLat);
+            Log.d(TAG, "mLng: " + mLng);
+            Log.d(TAG, "mZoom: " + mZoom);
+            mMapController.setZoom(mZoom);
         } else {
             Toast.makeText(this, "Scene load error: " + sceneId + " "
                     + sceneError.getSceneUpdate().toString()
@@ -501,17 +544,15 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     @Override
     public boolean onPan(float startX, float startY, float endX, float endY) {
-        LngLat centerCoordinates = mMapController.getPosition();
-        mLng = centerCoordinates.longitude;
-        mLat = centerCoordinates.latitude;
-        mZoom = mMapController.getZoom();
-        PointF center = mMapController.lngLatToScreenPosition(centerCoordinates);
-        mMapController.pickFeature(center.x, center.y);
+        handleMapMove();
+        Log.d(TAG, "onPan");
+        stopTrackingUserLocation();
         return false;
     }
 
     @Override
     public boolean onFling(float posX, float posY, float velocityX, float velocityY) {
+        Log.d(TAG, "onFling");
         return false;
     }
 }
