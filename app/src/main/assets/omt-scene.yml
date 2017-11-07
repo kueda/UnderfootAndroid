@@ -9,12 +9,12 @@ sources:
     underfoot:
         type: MVT
         url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/underfoot.mbtiles'
-        max_zoom: 16
+        max_zoom: 14
 
     osm:
         type: MVT
         url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/2017-07-03_california_san-francisco-bay.mbtiles'
-        max_zoom: 16
+        max_zoom: 14
 
 cameras:
     cam:

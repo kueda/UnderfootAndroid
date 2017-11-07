@@ -74,6 +74,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         mProgressBar = (ProgressBar) findViewById(R.id.downloadProgress);
@@ -117,12 +118,15 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     @Override
     protected void onPause() {
+        Log.d(TAG, "onPause");
         super.onPause();
         stopGettingLocation();
+        mMapView.onPause();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState");
         super.onSaveInstanceState(outState);
         outState.putFloat("mZoom", mZoom);
         outState.putDouble("mLng", mLng);
@@ -131,6 +135,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     @Override
     protected void onRestoreInstanceState(Bundle inState) {
+        Log.d(TAG, "onRestoreInstanceState");
         super.onRestoreInstanceState(inState);
         mZoom = inState.getFloat("mZoom");
         mLng = inState.getDouble("mLng");
@@ -139,17 +144,33 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     @Override
     protected void onResume() {
+        Log.d(TAG, "onResume");
         super.onResume();
+        mMapView.onResume();
         pickCenterFeature();
         startGettingLocation();
     }
 
     @Override
     protected void onStop() {
+        Log.d(TAG, "onStop");
         super.onStop();
         stopGettingLocation();
     }
 
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        super.onDestroy();
+        mMapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        Log.d(TAG, "onLowMemory");
+        super.onLowMemory();
+        mMapView.onLowMemory();
+    }
 
     //
     // Underfoot
