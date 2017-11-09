@@ -39,6 +39,8 @@ import com.mapzen.tangram.TouchInput.TapResponder;
 import com.mapzen.tangram.TouchInput.DoubleTapResponder;
 import com.mapzen.tangram.TouchInput.PanResponder;
 
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
 public class MapActivity extends Activity implements SceneLoadListener, TapResponder, DoubleTapResponder, FeaturePickListener, PanResponder {
 
     private static final String TAG = "MapActivity";
@@ -67,6 +69,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
     Marker mCurrentLocationMarker = null;
     boolean mRequestingLocationUpdates = false;
     boolean mTrackingUserLocation = false;
+    SlidingUpPanelLayout mSlidingPanel;
 
     //
     // Lifecycle
@@ -113,6 +116,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
                 }
             }
         });
+        mSlidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         startGettingLocation();
     }
 
@@ -478,6 +482,15 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         mZoom = mMapController.getZoom();
         PointF center = mMapController.lngLatToScreenPosition(centerCoordinates);
         mMapController.pickFeature(center.x, center.y);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mSlidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+            mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     //
