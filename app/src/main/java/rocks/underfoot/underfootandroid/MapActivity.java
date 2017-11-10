@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +59,9 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
     MapView mMapView;
     MapController mMapController;
     TextView mSlideUpTitle;
-    TextView mSlideUpBody;
+    TextView mDescription;
+    TextView mEstAge;
+    TextView mSource;
     double mLng;
     double mLat;
     float mZoom;
@@ -92,7 +95,9 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         mDownloadUI = (ViewGroup) findViewById(R.id.downloadUI);
         mMapView = (MapView) findViewById(R.id.map);
         mSlideUpTitle = (TextView) findViewById(R.id.slideUpTitle);
-        mSlideUpBody = (TextView) findViewById(R.id.slideUpBody);
+        mDescription = (TextView) findViewById(R.id.description);
+        mEstAge = (TextView) findViewById(R.id.estAge);
+        mSource = (TextView) findViewById(R.id.source);
         if (checkForRequiredFiles()) {
             mMapView.setVisibility(View.VISIBLE);
             mDownloadUI.setVisibility(View.GONE);
@@ -117,6 +122,23 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
             }
         });
         mSlidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        mSlidingPanel.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+                // Nothing to see here
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                    mSlideUpTitle.setMaxLines(10);
+                    mSlideUpTitle.setEllipsize(null);
+                } else {
+                    mSlideUpTitle.setMaxLines(1);
+                    mSlideUpTitle.setEllipsize(TextUtils.TruncateAt.END);
+                }
+            }
+        });
         startGettingLocation();
     }
 
@@ -568,12 +590,20 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
                               float positionY) {
         if (properties.isEmpty()) {
             mSlideUpTitle.setText("Unknown");
-            mSlideUpBody.setText("");
+            mDescription.setText("Unknown");
         }
-        String title = properties.get("title");
+        mSlideUpTitle.setText(properties.get("title"));
         String description = properties.get("description");
-        mSlideUpTitle.setText(title);
-        mSlideUpBody.setText(description);
+        if (description == null || description.length() == 0) {
+            description = "Unknown";
+        }
+        mDescription.setText(description);
+        String estAge = properties.get("est_age");
+        if (estAge == null || estAge.length() == 0) {
+            estAge = "Unknown";
+        }
+        mEstAge.setText(estAge);
+        mSource.setText(properties.get("source"));
     }
 
     @Override

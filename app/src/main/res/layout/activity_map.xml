@@ -108,10 +108,10 @@
         <TextView
             android:id="@+id/slideUpTitle"
             android:layout_width="match_parent"
-            android:layout_height="68dp"
-            android:gravity="center|top"
+            android:layout_height="wrap_content"
+            android:gravity="left|top"
             android:text="Unknown"
-            android:textSize="28sp"
+            android:textSize="24sp"
             android:padding="15dp"
             android:ellipsize="end"
             android:maxLines="1" />
@@ -124,13 +124,56 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
                 <TextView
-                    android:id="@+id/slideUpBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="15dp"
+                    android:text="Description"/>
+                <TextView
+                    android:id="@+id/description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="left"
                     android:padding="15dp"
                     android:text="Unknown"
-                    android:textSize="24sp" />
+                    android:textSize="18sp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="15dp"
+                    android:text="Estimated Age"/>
+                <TextView
+                    android:id="@+id/estAge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:padding="15dp"
+                    android:text="Unknown"
+                    android:textSize="18sp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="15dp"
+                    android:text="Source"/>
+                <TextView
+                    android:id="@+id/source"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:padding="15dp"
+                    android:text="Unknown"
+                    android:textSize="18sp" />
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
