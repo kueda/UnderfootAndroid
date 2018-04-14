@@ -47,7 +47,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
     private static final String TAG = "MapActivity";
 
     private static final String[] FILES = {
-            "underfoot.mbtiles",
+            "underfoot-20180402-12.mbtiles",
             "2017-07-03_california_san-francisco-bay.mbtiles"
     };
     private static final ArrayList<Number> FILE_DOWNLOAD_IDS = new ArrayList<Number>();
@@ -58,6 +58,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
     ViewGroup mDownloadUI;
     MapView mMapView;
     MapController mMapController;
+    TextView mCrossHairs;
     TextView mSlideUpTitle;
     TextView mDescription;
     TextView mEstAge;
@@ -94,17 +95,11 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         });
         mDownloadUI = (ViewGroup) findViewById(R.id.downloadUI);
         mMapView = (MapView) findViewById(R.id.map);
+        mCrossHairs = (TextView) findViewById(R.id.crossHairs);
         mSlideUpTitle = (TextView) findViewById(R.id.slideUpTitle);
         mDescription = (TextView) findViewById(R.id.description);
         mEstAge = (TextView) findViewById(R.id.estAge);
         mSource = (TextView) findViewById(R.id.source);
-        if (checkForRequiredFiles()) {
-            mMapView.setVisibility(View.VISIBLE);
-            mDownloadUI.setVisibility(View.GONE);
-        } else {
-            mMapView.setVisibility(View.GONE);
-            mDownloadUI.setVisibility(View.VISIBLE);
-        }
         mZoom = 10;
         mLng = -122.2583;
         mLat = 37.8012;
@@ -139,6 +134,11 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
                 }
             }
         });
+        if (checkForRequiredFiles()) {
+            hideDownloadUI();
+        } else {
+            showDownloadUI();
+        }
         startGettingLocation();
     }
 
@@ -202,6 +202,22 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
     // Underfoot
     //
 
+    private void showDownloadUI() {
+        mMapView.setVisibility(View.GONE);
+        mDownloadUI.setVisibility(View.VISIBLE);
+        mUserLocationButton.setVisibility(View.GONE);
+        mCrossHairs.setVisibility(View.GONE);
+        mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+    }
+
+    private void hideDownloadUI() {
+        mMapView.setVisibility(View.VISIBLE);
+        mDownloadUI.setVisibility(View.GONE);
+        mUserLocationButton.setVisibility(View.VISIBLE);
+        mCrossHairs.setVisibility(View.VISIBLE);
+        mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+    }
+
     private boolean checkForRequiredFiles() {
         ArrayList<String> filesToDownload = new ArrayList<String>();
         File file;
@@ -247,6 +263,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     private void downloadRequiredFiles() {
         hideRetryDownloadButton();
+        Log.d(TAG, "toasting");
         Toast.makeText(this, "Downloading", Toast.LENGTH_SHORT).show();
         final ArrayList<String> filesToDownload = new ArrayList<String>();
         File file;
@@ -301,8 +318,8 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
                                 @Override
                                 public void run() {
                                     FILE_DOWNLOAD_IDS.clear();
-                                    mMapView.setVisibility(View.VISIBLE);
-                                    mDownloadUI.setVisibility(View.GONE);
+                                    hideDownloadUI();
+                                    mMapController.loadSceneFile("asset:///omt-scene.yml");
                                 }
                             } );
                         }
@@ -322,9 +339,10 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
     }
 
     private void showRetryDownloadButton() {
+        Log.d(TAG, "showRetryDownloadButton");
         mRetryDownloadButton.setVisibility(View.VISIBLE);
         mProgressBar.setVisibility(View.GONE);
-        mDownloadProgressLabel.setVisibility(View.GONE);
+        mDownloadProgressLabel.setVisibility(View.INVISIBLE);
     }
 
     private void hideRetryDownloadButton() {
@@ -477,7 +495,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
             return;
         }
         mMapController.setPositionEased(new LngLat(mUserLocation.getLongitude(), mUserLocation.getLatitude()), 500);
-        mMapController.setZoomEased(15, 1000);
+        mMapController.setZoomEased(10, 1000);
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {

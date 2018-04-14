@@ -8,13 +8,11 @@ scene:
 sources:
     underfoot:
         type: MVT
-        url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/underfoot.mbtiles'
-        max_zoom: 14
+        url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/underfoot-20180402-12.mbtiles'
 
     osm:
         type: MVT
         url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/2017-07-03_california_san-francisco-bay.mbtiles'
-        max_zoom: 14
 
 cameras:
     cam:
@@ -31,7 +29,7 @@ layers:
     vectile:
         data:
             source: underfoot
-            layer: vectile
+            layer: units
         interactive:
             draw: { polygons: { interactive: true } }
         draw:
