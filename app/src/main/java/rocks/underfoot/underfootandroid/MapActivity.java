@@ -47,8 +47,10 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
     private static final String TAG = "MapActivity";
 
     private static final String[] FILES = {
-            "underfoot-20180402-12.mbtiles",
-            "2017-07-03_california_san-francisco-bay.mbtiles"
+        // From https://github.com/kueda/underfoot
+        "underfoot-20180402-12.mbtiles",
+        // From https://openmaptiles.org
+        "2017-07-03_california_san-francisco-bay.mbtiles"
     };
     private static final ArrayList<Number> FILE_DOWNLOAD_IDS = new ArrayList<Number>();
     public static final int REQUEST_ACCESS_FINE_LOCATION_CODE = 1;
@@ -277,7 +279,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         }
         final DownloadManager downloadManager = (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
         for (String fileName: filesToDownload) {
-            Uri uri = Uri.parse("http://static.kueda.net/underfoot/" + fileName);
+            Uri uri = Uri.parse("https://static.kueda.net/underfoot/" + fileName);
             DownloadManager.Request request = new DownloadManager.Request(uri);
             request.setDestinationInExternalFilesDir(this, "underfoot", fileName);
             FILE_DOWNLOAD_IDS.add(downloadManager.enqueue(request));
