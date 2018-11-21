@@ -44,13 +44,12 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 public class MapActivity extends Activity implements SceneLoadListener, TapResponder, DoubleTapResponder, FeaturePickListener, PanResponder {
 
-    private static final String TAG = "MapActivity";
+    private static final String TAG = "Underfoot::MapActivity";
 
     private static final String[] FILES = {
         // From https://github.com/kueda/underfoot
         "underfoot-20180402-12.mbtiles",
-        // From https://openmaptiles.org
-        "2017-07-03_california_san-francisco-bay.mbtiles"
+        "underfoot_ways.mbtiles"
     };
     private static final ArrayList<Number> FILE_DOWNLOAD_IDS = new ArrayList<Number>();
     public static final int REQUEST_ACCESS_FINE_LOCATION_CODE = 1;
@@ -109,7 +108,6 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         mUserLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "clicked button, mLocationManager: " + mLocationManager);
                 panToCurrentLocation();
                 if (mTrackingUserLocation) {
                     stopTrackingUserLocation();
@@ -231,7 +229,6 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
                 filesToDownload.add(fileName);
             }
         }
-        Log.d(TAG, "filesToDownload.size(): " + filesToDownload.size());
         if (filesToDownload.size() > 0) {
             askToDownloadFiles();
             hideRetryDownloadButton();
@@ -265,7 +262,6 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     private void downloadRequiredFiles() {
         hideRetryDownloadButton();
-        Log.d(TAG, "toasting");
         Toast.makeText(this, "Downloading", Toast.LENGTH_SHORT).show();
         final ArrayList<String> filesToDownload = new ArrayList<String>();
         File file;
@@ -300,7 +296,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
                             cursor.moveToFirst();
                             bytesDownloaded = bytesDownloaded + cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
                             bytesTotal = bytesTotal + cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-                            if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
+                            if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) >= DownloadManager.STATUS_SUCCESSFUL) {
                                 finishes.add(true);
                             }
                             cursor.close();
@@ -341,7 +337,6 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
     }
 
     private void showRetryDownloadButton() {
-        Log.d(TAG, "showRetryDownloadButton");
         mRetryDownloadButton.setVisibility(View.VISIBLE);
         mProgressBar.setVisibility(View.GONE);
         mDownloadProgressLabel.setVisibility(View.INVISIBLE);
@@ -355,7 +350,6 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     private void pickCenterFeature() {
         PointF center = mMapController.lngLatToScreenPosition(mMapController.getPosition());
-        Log.d(TAG, "center: " + center);
         mMapController.pickFeature(center.x, center.y);
     }
 
@@ -393,7 +387,6 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         };
 
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "requesting fine location");
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_ACCESS_FINE_LOCATION_CODE);
             return;
@@ -421,17 +414,14 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         // If it's been more than two minutes since the current location, use the new location
         // because the user has likely moved
         if (isSignificantlyNewer) {
-//            Log.d(TAG, "location newer");
             return true;
             // If the new location is more than two minutes older, it must be worse
         } else if (isSignificantlyOlder) {
-//            Log.d(TAG, "location older");
             return false;
         }
 
         // Check whether the new location fix is more or less accurate
         int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
-        Log.d(TAG, "accuracyDelta: " + accuracyDelta);
         boolean isLessAccurate = accuracyDelta > 0;
         boolean isMoreAccurate = accuracyDelta < 0;
         boolean isSignificantlyLessAccurate = accuracyDelta > 200;

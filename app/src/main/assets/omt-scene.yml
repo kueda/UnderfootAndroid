@@ -1,6 +1,3 @@
-import:
-    - https://tangrams.github.io/blocks/filter/grain.yaml
-
 scene:
     background:
         color: '#555'
@@ -9,10 +6,9 @@ sources:
     underfoot:
         type: MVT
         url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/underfoot-20180402-12.mbtiles'
-
-    osm:
+    underfoot_ways:
         type: MVT
-        url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/2017-07-03_california_san-francisco-bay.mbtiles'
+        url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/underfoot_ways.mbtiles'
 
 cameras:
     cam:
@@ -44,59 +40,35 @@ layers:
                             0.9
                         ]
                     }
-    water:
+    ways:
         data:
-            source: osm
-            layer: water
-        draw:
-            water:
-                order: 10
-                color: [0.224, 0.224, 0.224, 1.00]
-    waterway:
-        data:
-            source: osm
-            layer: waterway
-        draw:
-            lines:
-                order: 11
-                color: '#353535'
-                width: 1.3px
-    landuse:
-        data:
-            source: osm
-            layer: landuse
-            filter:
-                class: residential
-        draw:
-            landuse:
-                order: 5
-                color: [0.349, 0.349, 0.349, 1.00]
-    park:
-        data:
-            source: osm
-            layer: park
-        draw:
-            park:
-                order: 5
-                color: [0.290, 0.290, 0.290, 1.00]
-    boundary:
-        data:
-            source: osm
-            layer: boundary
-        draw:
-            lines:
-                order: 30
-                color: [1, 0, 0, 1.00]
-                width: 2px
-    transportation:
-        data:
-            source: osm
-            layer: transportation
+            source: underfoot_ways
+            layer: underfoot_ways
         draw:
             lines:
                 order: 101
                 color: [0.314, 0.314, 0.314, 1.00]
                 width: 1.2px
+        highways:
+            filter:
+                highway: [motorway, primary, trunk]
+            draw:
+                lines:
+                    width: 2px
+        roads:
+            filter:
+                highway: [secondary, tertiary]
+            draw:
+                lines:
+                    width: 1.6px
+        trails:
+            filter:
+                highway: [path, track]
+            draw:
+                lines:
+                    style: dashed
+                    outline:
+                        width: 0
 styles:
     water:
         base: polygons
@@ -112,3 +84,6 @@ styles:
         mix: filter-grain
     boundary:
         base: lines
+    dashed:
+        base: lines
+        dash: [1]
