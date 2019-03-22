@@ -8,3 +8,4 @@ gradle
 /captures
 .externalNativeBuild
 tangram-full-release/tangram-full-release.aar
+app/src/main/assets/config.yaml

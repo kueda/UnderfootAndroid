@@ -1,14 +1,26 @@
+import: config.yaml
+
 scene:
     background:
         color: '#555'
 
 sources:
+    normals:
+        type: Raster
+        url: https://tile.nextzen.org/tilezen/terrain/v1/256/normal/{z}/{x}/{y}.png
+        url_params:
+            api_key: global.nextzen_api_key
+        tile_size: 256
+        max_zoom: 14
     underfoot:
         type: MVT
         url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/underfoot-20180402-12.mbtiles'
     underfoot_ways:
         type: MVT
         url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/underfoot_ways.mbtiles'
+    underfoot_elevation:
+        type: MVT
+        url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/elevation-20190228b-8-10.mbtiles'
 
 cameras:
     cam:
@@ -22,22 +34,30 @@ lights:
         ambient: .5
 
 layers:
+    hillshade:
+        data:
+            source: normals
+        draw:
+            hillshade:
+                order: 1
+                visible: true
+                order: function() { return feature.sort_rank || 0; }
     vectile:
         data:
             source: underfoot
             layer: units
         interactive:
-            draw: { polygons: { interactive: true } }
+            draw: { geologic_units: { interactive: true } }
         draw:
-            polygons:
-                order: 100
+            geologic_units:
+                order: 0
                 color:
                     function() {
                         return [
                             ( feature.code || "zzz" ).charCodeAt(0) / 150,
                             ( feature.code || "zzz" ).charCodeAt(1) / 150,
                             ( feature.code || "zzz" ).charCodeAt(2) / 150,
-                            0.9
+                            1.0
                         ]
                     }
     ways:
@@ -69,21 +89,73 @@ layers:
                     style: dashed
                     outline:
                         width: 0
+    contours10:
+        data:
+            source: underfoot_elevation
+            layer: contours10
+        hundred:
+            filter:
+                function() {
+                    return feature.elevation % 100 == 0;
+                }
+            draw:
+                contours:
+                    order: 100
+                    color: [0.5, 0.5, 0.5, 0.5]
+                    width: 1.5px
+        hundred:
+            filter:
+                function() {
+                    return feature.elevation % 100 != 0;
+                }
+            draw:
+                contours:
+                    order: 100
+                    color: [0.5, 0.5, 0.5, 0.5]
+                    width: 0.8px
 styles:
-    water:
-        base: polygons
-        mix: filter-grain
-    vectile:
-        base: polygons
-        mix: filter-grain
-    landuse:
-        base: polygons
-        mix: filter-grain
-    park:
-        base: polygons
-        mix: filter-grain
-    boundary:
+    contours:
         base: lines
+        blend: overlay
+        lighting: false
+        join: round
     dashed:
         base: lines
         dash: [1]
+    geologic_units:
+        base: polygons
+        lighting: false
+    hillshade:
+        base: polygons
+        lighting: false
+        raster: normal
+        blend: translucent
+        shaders:
+            uniforms:
+                u_envmap: images/draw-test10.jpg
+                u_contrast: 1.
+                # u_zoom_scale: 1.0
+                u_zoom_scale: 3.95
+                u_brightness_base: 0.5
+                u_brightness_scaler: 0.5
+            blocks:
+                global: |
+                    // Simplified view-independent environment map
+                    vec4 applyEnvmap (in sampler2D _tex, in vec3 _normal, in float scale) {
+                        _normal.z *= scale;
+                        return texture2D(_tex, .5*(normalize(_normal).xy + 1.));
+                    }
+                color: |
+                    // turn terrain exaggeration up/down
+                    // fade out spheremap normals with a function
+                    float scale1 = 20./(u_map_position.z + 1.0) + 1.5;
+                    float m = u_zoom_scale * (u_map_position.z + 0.4) * exp(u_map_position.z * -.29);
+                    m = clamp(m, 0., 1.5);
+                    color = applyEnvmap(u_envmap, normal, 1./scale1);
+
+                    // apply contrast and brightness
+                    float contrast = m;
+                    color.rgb = ((color.rgb - 0.5) * max(contrast, 0.)) + 0.5;
+                    float brightness = u_brightness_base - m * u_brightness_scaler;
+                    color.rgb += brightness;
+                    color.a = 0.3;

@@ -39,23 +39,28 @@ import com.mapzen.tangram.SceneError;
 import com.mapzen.tangram.TouchInput.TapResponder;
 import com.mapzen.tangram.TouchInput.DoubleTapResponder;
 import com.mapzen.tangram.TouchInput.PanResponder;
+import com.mapzen.tangram.TouchInput.RotateResponder;
+import com.mapzen.tangram.TouchInput.ShoveResponder;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-public class MapActivity extends Activity implements SceneLoadListener, TapResponder, DoubleTapResponder, FeaturePickListener, PanResponder {
+public class MapActivity extends Activity implements SceneLoadListener, TapResponder, DoubleTapResponder, FeaturePickListener, PanResponder, RotateResponder, ShoveResponder {
 
     private static final String TAG = "Underfoot::MapActivity";
+
+    private static final String SCENE_FILE_PATH = "asset:///omt-scene.yml";
 
     private static final String[] FILES = {
         // From https://github.com/kueda/underfoot
         "underfoot-20180402-12.mbtiles",
-        "underfoot_ways.mbtiles"
+        "underfoot_ways.mbtiles",
+        "elevation-20190228b-8-10.mbtiles"
     };
     private static final ArrayList<Number> FILE_DOWNLOAD_IDS = new ArrayList<Number>();
     public static final int REQUEST_ACCESS_FINE_LOCATION_CODE = 1;
     private ProgressBar mProgressBar;
     private Button mRetryDownloadButton;
-    private TextView mDownloadProgressLabel ;
+    private TextView mDownloadProgressLabel;
     ViewGroup mDownloadUI;
     MapView mMapView;
     MapController mMapController;
@@ -317,7 +322,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
                                 public void run() {
                                     FILE_DOWNLOAD_IDS.clear();
                                     hideDownloadUI();
-                                    mMapController.loadSceneFile("asset:///omt-scene.yml");
+                                    mMapController.loadSceneFile(SCENE_FILE_PATH);
                                 }
                             } );
                         }
@@ -534,7 +539,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         Log.d(TAG, "onPostCreate");
         super.onPostCreate(savedInstanceState);
         mMapController = mMapView.getMap(this);
-        mMapController.loadSceneFile("asset:///omt-scene.yml");
+        mMapController.loadSceneFile(SCENE_FILE_PATH);
         // url: 'http://10.0.2.2:8080/data/v3/{z}/{x}/{y}.pbf'
         // This works but you actually don't need to do this if you know where the mbtiles file *will* be put in onCreate
 //        Log.d("Underfoot", "trying to load mbtiles from " + mbtilesPath);
@@ -543,6 +548,8 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         mMapController.setDoubleTapResponder(this);
         mMapController.setFeaturePickListener(this);
         mMapController.setPanResponder(this);
+        mMapController.setRotateResponder(this);
+        mMapController.setShoveResponder(this);
     }
 
     @Override
@@ -602,6 +609,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
             mSlideUpTitle.setText("Unknown");
             mDescription.setText("Unknown");
         }
+        // mSlideUpTitle.setText(mZoom + " - " + properties.get("title"));
         mSlideUpTitle.setText(properties.get("title"));
         String description = properties.get("description");
         if (description == null || description.length() == 0) {
@@ -628,5 +636,17 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
     public boolean onFling(float posX, float posY, float velocityX, float velocityY) {
         Log.d(TAG, "onFling");
         return false;
+    }
+
+    @Override
+    public boolean onRotate(float x, float y, float rotation) {
+        // Disable rotation
+        return true;
+    }
+
+    @Override
+    public boolean onShove(float distance) {
+        // Disable perspective changes
+        return true;
     }
 }
