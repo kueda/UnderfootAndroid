@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.Handler;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -66,9 +67,14 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
     MapController mMapController;
     TextView mCrossHairs;
     TextView mSlideUpTitle;
+    TextView mSlideUpLithology;
+    TextView mSlideUpEstAge;
     TextView mDescription;
     TextView mEstAge;
     TextView mSource;
+    TextView mMapMetadataLat;
+    TextView mMapMetadataLon;
+    TextView mMapMetadataZoom;
     double mLng;
     double mLat;
     float mZoom;
@@ -87,7 +93,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
+        // Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         mProgressBar = (ProgressBar) findViewById(R.id.downloadProgress);
@@ -103,9 +109,14 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         mMapView = (MapView) findViewById(R.id.map);
         mCrossHairs = (TextView) findViewById(R.id.crossHairs);
         mSlideUpTitle = (TextView) findViewById(R.id.slideUpTitle);
+        mSlideUpLithology = (TextView) findViewById(R.id.slideUpLithology);
+        mSlideUpEstAge = (TextView) findViewById(R.id.slideUpEstAge);
         mDescription = (TextView) findViewById(R.id.description);
         mEstAge = (TextView) findViewById(R.id.estAge);
         mSource = (TextView) findViewById(R.id.source);
+        mMapMetadataLat = (TextView) findViewById(R.id.mapMetadataLat);
+        mMapMetadataLon = (TextView) findViewById(R.id.mapMetadataLon);
+        mMapMetadataZoom = (TextView) findViewById(R.id.mapMetadataZoom);
         mZoom = 10;
         mLng = -122.2583;
         mLat = 37.8012;
@@ -149,7 +160,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     @Override
     protected void onPause() {
-        Log.d(TAG, "onPause");
+        // Log.d(TAG, "onPause");
         super.onPause();
         stopGettingLocation();
         mMapView.onPause();
@@ -157,7 +168,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        Log.d(TAG, "onSaveInstanceState");
+        // Log.d(TAG, "onSaveInstanceState");
         super.onSaveInstanceState(outState);
         outState.putFloat("mZoom", mZoom);
         outState.putDouble("mLng", mLng);
@@ -166,7 +177,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     @Override
     protected void onRestoreInstanceState(Bundle inState) {
-        Log.d(TAG, "onRestoreInstanceState");
+        // Log.d(TAG, "onRestoreInstanceState");
         super.onRestoreInstanceState(inState);
         mZoom = inState.getFloat("mZoom");
         mLng = inState.getDouble("mLng");
@@ -175,7 +186,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume");
+        // Log.d(TAG, "onResume");
         super.onResume();
         mMapView.onResume();
         pickCenterFeature();
@@ -184,21 +195,21 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     @Override
     protected void onStop() {
-        Log.d(TAG, "onStop");
+        // Log.d(TAG, "onStop");
         super.onStop();
         stopGettingLocation();
     }
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestroy");
+        // Log.d(TAG, "onDestroy");
         super.onDestroy();
         mMapView.onDestroy();
     }
 
     @Override
     public void onLowMemory() {
-        Log.d(TAG, "onLowMemory");
+        // Log.d(TAG, "onLowMemory");
         super.onLowMemory();
         mMapView.onLowMemory();
     }
@@ -239,7 +250,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
             hideRetryDownloadButton();
             return false;
         } else {
-            Log.d(TAG, "All files loaded");
+            // Log.d(TAG, "All files loaded");
             return true;
         }
     }
@@ -359,7 +370,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
     }
 
     private void startGettingLocation() {
-        Log.d(TAG, "starGettingLocation");
+        // Log.d(TAG, "starGettingLocation");
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         }
@@ -459,7 +470,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
     }
 
     public void stopGettingLocation() {
-        Log.d(TAG, "stopGettingLocation");
+        // Log.d(TAG, "stopGettingLocation");
         mRequestingLocationUpdates = false;
         if (mLocationManager == null || mLocationListener == null) {
             return;
@@ -477,7 +488,6 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         mCurrentLocationMarker.setVisible(true);
         mCurrentLocationMarker.setPoint(new LngLat(mUserLocation.getLongitude(), mUserLocation.getLatitude()));
         mCurrentLocationMarker.setStylingFromString("{ style: 'points', color: [1, 0.25, 0.5, 0.5], size: [10px, 10px], order: 2000, collide: false }");
-        Log.d(TAG, "currentLocationMarker: " + mCurrentLocationMarker);
     }
 
     public void hideCurrentLocation() {
@@ -517,6 +527,9 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         mLng = centerCoordinates.longitude;
         mLat = centerCoordinates.latitude;
         mZoom = mMapController.getZoom();
+        mMapMetadataLat.setText(String.format("%.2f", mLat));
+        mMapMetadataLon.setText(String.format("%.2f", mLng));
+        mMapMetadataZoom.setText(String.format("%.2f", mZoom));
         PointF center = mMapController.lngLatToScreenPosition(centerCoordinates);
         mMapController.pickFeature(center.x, center.y);
     }
@@ -536,7 +549,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     @Override
     public void onPostCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onPostCreate");
+        // Log.d(TAG, "onPostCreate");
         super.onPostCreate(savedInstanceState);
         mMapController = mMapView.getMap(this);
         mMapController.loadSceneFile(SCENE_FILE_PATH);
@@ -554,15 +567,12 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     @Override
     public void onSceneReady(int sceneId, SceneError sceneError) {
-        Log.d(TAG, "onSceneReady");
+        // Log.d(TAG, "onSceneReady");
         if (sceneError == null) {
 //            Toast.makeText(this, "Scene ready: " + sceneId, Toast.LENGTH_SHORT).show();
             pickCenterFeature();
             mMapController.setPosition(new LngLat(mLng, mLat));
 //            Toast.makeText(this, "setting zoom to " + mZoom, Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "mLat: " + mLat);
-            Log.d(TAG, "mLng: " + mLng);
-            Log.d(TAG, "mZoom: " + mZoom);
             mMapController.setZoom(mZoom);
         } else {
             Toast.makeText(this, "Scene load error: " + sceneId + " "
@@ -573,6 +583,14 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
                     + sceneError.getSceneUpdate().toString()
                     + " " + sceneError.getError().toString());
         }
+        // Get the unit at the current location in a second, maybe b/c the local map data isn't loaded when onSceneReady fires
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                MapActivity.this.handleMapMove();
+            }
+        }, 1000);
     }
 
     @Override
@@ -607,10 +625,17 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
                               float positionY) {
         if (properties.isEmpty()) {
             mSlideUpTitle.setText("Unknown");
+            mSlideUpLithology.setText("Lithology: Unknown");
+            mSlideUpEstAge.setText("Est. Age: Unknown");
             mDescription.setText("Unknown");
         }
         // mSlideUpTitle.setText(mZoom + " - " + properties.get("title"));
         mSlideUpTitle.setText(properties.get("title"));
+        String lithology = properties.get("lithology");
+        if (lithology == null || lithology.length() == 0) {
+            lithology = "Unknown";
+        }
+        mSlideUpLithology.setText("Lithology: " + lithology);
         String description = properties.get("description");
         if (description == null || description.length() == 0) {
             description = "Unknown";
@@ -619,7 +644,15 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         String estAge = properties.get("est_age");
         if (estAge == null || estAge.length() == 0) {
             estAge = "Unknown";
+        } else {
+            try {
+                Integer estAgeInt = Integer.parseInt(estAge);
+                estAge = String.format("%,d", estAgeInt) + " years";
+            } catch (NumberFormatException e) {
+                // Just leave estAge alone
+            }
         }
+        mSlideUpEstAge.setText("Est. Age: " + estAge);
         mEstAge.setText(estAge);
         mSource.setText(properties.get("source"));
     }
@@ -627,14 +660,14 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
     @Override
     public boolean onPan(float startX, float startY, float endX, float endY) {
         handleMapMove();
-        Log.d(TAG, "onPan");
+        // Log.d(TAG, "onPan");
         stopTrackingUserLocation();
         return false;
     }
 
     @Override
     public boolean onFling(float posX, float posY, float velocityX, float velocityY) {
-        Log.d(TAG, "onFling");
+        // Log.d(TAG, "onFling");
         return false;
     }
 

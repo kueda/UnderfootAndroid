@@ -98,8 +98,78 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="parent" />
-
+            app:layout_constraintBottom_toBottomOf="parent" />
+        
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/mapMetadata"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="15dp">
+            <TextView
+                android:id="@+id/mapMetadataLatLabel"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toStartOf="@+id/mapMetadataLat"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintStart_toStartOf="parent"
+                android:text="Lat"
+                style="@style/WhiteTextBlackShadow"
+                android:textSize="12sp"/>
+            <TextView
+                android:id="@+id/mapMetadataLat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@+id/mapMetadataLatLabel"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:text="?"
+                style="@style/WhiteTextBlackShadow"
+                android:textSize="12sp"/>
+            <TextView
+                android:id="@+id/mapMetadataLonLabel"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/mapMetadataLatLabel"
+                app:layout_constraintEnd_toStartOf="@+id/mapMetadataLon"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintStart_toStartOf="parent"
+                android:text="Lon"
+                style="@style/WhiteTextBlackShadow"
+                android:textSize="12sp"/>
+            <TextView
+                android:id="@+id/mapMetadataLon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/mapMetadataLat"
+                app:layout_constraintStart_toEndOf="@+id/mapMetadataLonLabel"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:text="?"
+                style="@style/WhiteTextBlackShadow"
+                android:textSize="12sp"/>
+            <TextView
+                android:id="@+id/mapMetadataZoomLabel"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/mapMetadataLonLabel"
+                app:layout_constraintEnd_toStartOf="@+id/mapMetadataZoom"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintStart_toStartOf="parent"
+                android:text="Zoom"
+                style="@style/WhiteTextBlackShadow"
+                android:textSize="12sp"/>
+            <TextView
+                android:id="@+id/mapMetadataZoom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/mapMetadataLon"
+                app:layout_constraintStart_toEndOf="@+id/mapMetadataZoomLabel"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:text="?"
+                style="@style/WhiteTextBlackShadow"
+                android:textSize="12sp"/>
+        </android.support.constraint.ConstraintLayout>
     </android.support.constraint.ConstraintLayout>
     <LinearLayout
         android:id="@+id/contextPanel"
@@ -107,16 +177,44 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         sothree:umanoScrollableView="@+id/slideUpScrollView">
-        <TextView
-            android:id="@+id/slideUpTitle"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="left|top"
-            android:text="Unknown"
-            android:textSize="24sp"
-            android:padding="15dp"
-            android:ellipsize="end"
-            android:maxLines="1" />
+            android:padding="15dp">
+            <TextView
+                android:id="@+id/slideUpTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:text="Unknown"
+                android:textSize="18sp"
+                android:ellipsize="end"
+                android:maxLines="1" />
+            <TextView
+                android:id="@+id/slideUpLithology"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/slideUpTitle"
+                app:layout_constraintEnd_toStartOf="@+id/slideUpEstAge"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintStart_toStartOf="parent"
+                android:text="Lithology: Unknown"
+                android:textSize="12sp"
+                android:ellipsize="end"
+                android:maxLines="1" />
+            <TextView
+                android:id="@+id/slideUpEstAge"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/slideUpTitle"
+                app:layout_constraintStart_toEndOf="@+id/slideUpLithology"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="15dp"
+                android:text="Est. Age: Unknown"
+                android:textSize="12sp"
+                android:ellipsize="end"
+                android:maxLines="1" />
+        </android.support.constraint.ConstraintLayout>
         <ScrollView
             android:id="@+id/slideUpScrollView"
             android:layout_width="match_parent"
