@@ -52,9 +52,9 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     private static final String[] FILES = {
         // From https://github.com/kueda/underfoot
-        "underfoot-20180402-12.mbtiles",
-        "underfoot_ways.mbtiles",
-        "elevation-20190228b-8-10.mbtiles"
+        "underfoot_units-20190826.mbtiles",
+        "underfoot_ways-20190912.mbtiles",
+        "elevation-20190408.mbtiles"
     };
     private static final ArrayList<Number> FILE_DOWNLOAD_IDS = new ArrayList<Number>();
     public static final int REQUEST_ACCESS_FINE_LOCATION_CODE = 1;

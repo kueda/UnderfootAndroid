@@ -14,13 +14,13 @@ sources:
         max_zoom: 14
     underfoot:
         type: MVT
-        url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/underfoot-20180402-12.mbtiles'
+        url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/underfoot_units-20190826.mbtiles'
     underfoot_ways:
         type: MVT
-        url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/underfoot_ways.mbtiles'
+        url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/underfoot_ways-20190912.mbtiles'
     underfoot_elevation:
         type: MVT
-        url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/elevation-20190228b-8-10.mbtiles'
+        url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/elevation-20190408.mbtiles'
 
 cameras:
     cam:
@@ -89,10 +89,10 @@ layers:
                     style: dashed
                     outline:
                         width: 0
-    contours10:
+    contours12:
         data:
             source: underfoot_elevation
-            layer: contours10
+            layer: contours12
         hundred:
             filter:
                 function() {
