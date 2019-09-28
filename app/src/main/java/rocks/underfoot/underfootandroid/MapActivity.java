@@ -45,6 +45,8 @@ import com.mapzen.tangram.TouchInput.ShoveResponder;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import org.apache.commons.text.WordUtils;
+
 public class MapActivity extends Activity implements SceneLoadListener, TapResponder, DoubleTapResponder, FeaturePickListener, PanResponder, RotateResponder, ShoveResponder {
 
     private static final String TAG = "Underfoot::MapActivity";
@@ -68,7 +70,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
     TextView mCrossHairs;
     TextView mSlideUpTitle;
     TextView mSlideUpLithology;
-    TextView mSlideUpEstAge;
+    TextView mSlideUpAge;
     TextView mDescription;
     TextView mEstAge;
     TextView mSource;
@@ -110,7 +112,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         mCrossHairs = (TextView) findViewById(R.id.crossHairs);
         mSlideUpTitle = (TextView) findViewById(R.id.slideUpTitle);
         mSlideUpLithology = (TextView) findViewById(R.id.slideUpLithology);
-        mSlideUpEstAge = (TextView) findViewById(R.id.slideUpEstAge);
+        mSlideUpAge = (TextView) findViewById(R.id.slideUpAge);
         mDescription = (TextView) findViewById(R.id.description);
         mEstAge = (TextView) findViewById(R.id.estAge);
         mSource = (TextView) findViewById(R.id.source);
@@ -502,7 +504,9 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
             return;
         }
         mMapController.setPositionEased(new LngLat(mUserLocation.getLongitude(), mUserLocation.getLatitude()), 500);
-        mMapController.setZoomEased(10, 1000);
+        if (mZoom < 10) {
+            mMapController.setZoomEased(10, 1000);
+        }
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
@@ -541,6 +545,28 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         } else {
             super.onBackPressed();
         }
+    }
+
+    public String humanizeAge(String age) {
+        if (age == null || age.length() == 0) {
+            age = "?";
+        } else {
+            try {
+                Float ageNum = Float.parseFloat(age);
+                if (ageNum >= 1000000000) {
+                    age = String.format("%.1f", ageNum / 1000000000.0 ) + " Ga";
+                } else if (ageNum >= 1000000) {
+                    age = String.format("%.1f", ageNum / 1000000.0 ) + " Ma";
+                } else if (ageNum >= 100000) {
+                    age = String.format("%.1f", ageNum / 1000.0 ) + " ka";
+                } else {
+                    age = String.format("%,d", Math.round(ageNum)) + " years";
+                }
+            } catch (NumberFormatException e) {
+                // Just leave age alone
+            }
+        }
+        return age;
     }
 
     //
@@ -626,7 +652,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         if (properties.isEmpty()) {
             mSlideUpTitle.setText("Unknown");
             mSlideUpLithology.setText("Lithology: Unknown");
-            mSlideUpEstAge.setText("Est. Age: Unknown");
+            mSlideUpAge.setText("Age: Unknown");
             mDescription.setText("Unknown");
         }
         // mSlideUpTitle.setText(mZoom + " - " + properties.get("title"));
@@ -641,19 +667,23 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
             description = "Unknown";
         }
         mDescription.setText(description);
-        String estAge = properties.get("est_age");
-        if (estAge == null || estAge.length() == 0) {
-            estAge = "Unknown";
+        String span = properties.get("span");
+        if (span == null || span.length() == 0) {
+            span = "Unknown";
         } else {
-            try {
-                Integer estAgeInt = Integer.parseInt(estAge);
-                estAge = String.format("%,d", estAgeInt) + " years";
-            } catch (NumberFormatException e) {
-                // Just leave estAge alone
-            }
+            span = WordUtils.capitalize(span).replace(" To ", " to ");
         }
-        mSlideUpEstAge.setText("Est. Age: " + estAge);
-        mEstAge.setText(estAge);
+        String estAge = this.humanizeAge(properties.get("est_age"));
+        String age = span + " (" + estAge + ")";
+        mSlideUpAge.setText("Age: " + age);
+        mEstAge.setText(
+            span +
+            " (" +
+            this.humanizeAge(properties.get("max_age")) +
+            " - " +
+            this.humanizeAge(properties.get("min_age")) +
+            ")"
+        );
         mSource.setText(properties.get("source"));
     }
 

@@ -189,13 +189,14 @@
                 android:text="Unknown"
                 android:textSize="18sp"
                 android:ellipsize="end"
+                android:textStyle="bold"
                 android:maxLines="1" />
             <TextView
                 android:id="@+id/slideUpLithology"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@+id/slideUpTitle"
-                app:layout_constraintEnd_toStartOf="@+id/slideUpEstAge"
+                app:layout_constraintEnd_toStartOf="@+id/slideUpAge"
                 app:layout_constraintHorizontal_chainStyle="spread_inside"
                 app:layout_constraintStart_toStartOf="parent"
                 android:text="Lithology: Unknown"
@@ -203,14 +204,14 @@
                 android:ellipsize="end"
                 android:maxLines="1" />
             <TextView
-                android:id="@+id/slideUpEstAge"
+                android:id="@+id/slideUpAge"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@+id/slideUpTitle"
                 app:layout_constraintStart_toEndOf="@+id/slideUpLithology"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginStart="15dp"
-                android:text="Est. Age: Unknown"
+                android:text="Age: Unknown"
                 android:textSize="12sp"
                 android:ellipsize="end"
                 android:maxLines="1" />

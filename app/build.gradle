@@ -2,6 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
+
+    // Need the following for org.apache.commons:commons-text:1.8
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "rocks.underfoot.underfootandroid"
@@ -39,6 +46,7 @@ dependencies {
     implementation 'com.android.support:design:26.0.2'
     testImplementation 'junit:junit:4.12'
     implementation 'com.mapzen.tangram:tangram:0.9.6'
+    implementation 'org.apache.commons:commons-text:1.8'
     
     repositories {
         mavenCentral()
