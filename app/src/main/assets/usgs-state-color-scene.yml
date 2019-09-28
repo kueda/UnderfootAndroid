@@ -1,0 +1,648 @@
+# Adapted from https://mrdata.usgs.gov/catalog/lithrgb.txt
+import: omt-scene.yml
+
+layers:
+    vectile:
+        units:
+            artificial:
+                filter: {lithology: "artificial"}
+                draw: {geologic_units: {color: pink}}
+            unconsolidated_material:
+                filter: {lithology: "unconsolidated material"}
+                draw: {geologic_units: {color: "rgb(253,244,63)"}}
+            alluvium:
+                filter: {lithology: "alluvium"}
+                draw: {geologic_units: {color: "rgb(255,255,137)"}}
+            silt:
+                filter: {lithology: "silt"}
+                draw: {geologic_units: {color: "rgb(255,211,69)"}}
+            sand:
+                filter: {lithology: "sand"}
+                draw: {geologic_units: {color: "rgb(255,203,35)"}}
+            flood_plain:
+                filter: {lithology: "flood plain"}
+                draw: {geologic_units: {color: "rgb(255,255,213)"}}
+            gravel:
+                filter: {lithology: "gravel"}
+                draw: {geologic_units: {color: "rgb(236,180,0)"}}
+            levee:
+                filter: {lithology: "levee"}
+                draw: {geologic_units: {color: "rgb(255,250,233)"}}
+            delta:
+                filter: {lithology: "delta"}
+                draw: {geologic_units: {color: "rgb(255,250,200)"}}
+            alluvial_fan:
+                filter: {lithology: "alluvial fan"}
+                draw: {geologic_units: {color: "rgb(255,255,183)"}}
+            alluvial_terrace:
+                filter: {lithology: "alluvial terrace"}
+                draw: {geologic_units: {color: "rgb(250,238,122)"}}
+            lake_or_marine_sediment:
+                filter: {lithology: "lake or marine sediment"}
+                draw: {geologic_units: {color: "rgb(244,239,228)"}}
+            playa:
+                filter: {lithology: "playa"}
+                draw: {geologic_units: {color: "rgb(241,229,223)"}}
+            mud_flat:
+                filter: {lithology: "mud flat"}
+                draw: {geologic_units: {color: "rgb(228,208,190)"}}
+            beach_sand:
+                filter: {lithology: "beach sand"}
+                draw: {geologic_units: {color: "rgb(228,216,190)"}}
+            terrace:
+                filter: {lithology: "terrace"}
+                draw: {geologic_units: {color: "rgb(255,246,217)"}}
+            eolian_material:
+                filter: {lithology: "eolian material"}
+                draw: {geologic_units: {color: "rgb(224,197,158)"}}
+            dune_sand:
+                filter: {lithology: "dune sand"}
+                draw: {geologic_units: {color: "rgb(224,210,180)"}}
+            sand_sheet:
+                filter: {lithology: "sand sheet"}
+                draw: {geologic_units: {color: "rgb(219,204,169)"}}
+            loess:
+                filter: {lithology: "loess"}
+                draw: {geologic_units: {color: "rgb(245,225,189)"}}
+            volcanic_ash:
+                filter: {lithology: "volcanic ash"}
+                draw: {geologic_units: {color: "rgb(224,176,158)"}}
+            mass_wasting_material:
+                filter: {lithology: "mass wasting material"}
+                draw: {geologic_units: {color: "rgb(207,187,143)"}}
+            colluvium:
+                filter: {lithology: "colluvium"}
+                draw: {geologic_units: {color: "rgb(225,227,195)"}}
+            mudflow:
+                filter: {lithology: "mudflow"}
+                draw: {geologic_units: {color: "rgb(229,219,179)"}}
+            lahar:
+                filter: {lithology: "lahar"}
+                draw: {geologic_units: {color: "rgb(220,213,180)"}}
+            debris_flow:
+                filter: {lithology: "debris flow"}
+                draw: {geologic_units: {color: "rgb(211,202,159)"}}
+            landslide:
+                filter: {lithology: "landslide"}
+                draw: {geologic_units: {color: "rgb(201,190,137)"}}
+            talus:
+                filter: {lithology: "talus"}
+                draw: {geologic_units: {color: "rgb(188,175,108)"}}
+            glacial_drift:
+                filter: {lithology: "glacial drift"}
+                draw: {geologic_units: {color: "rgb(191,167,67)"}}
+            till:
+                filter: {lithology: "till"}
+                draw: {geologic_units: {color: "rgb(210,194,124)"}}
+            moraine:
+                filter: {lithology: "moraine"}
+                draw: {geologic_units: {color: "rgb(255,238,191)"}}
+            stratified_glacial_sediment:
+                filter: {lithology: "stratified glacial sediment"}
+                draw: {geologic_units: {color: "rgb(255,229,157)"}}
+            glacial_outwash_sediment:
+                filter: {lithology: "glacial outwash sediment"}
+                draw: {geologic_units: {color: "rgb(255,223,133)"}}
+            sub/supra-glacial_sediment:
+                filter: {lithology: "sub/supra-glacial sediment"}
+                draw: {geologic_units: {color: "rgb(254,230,112)"}}
+            glaciolacustrine_sediment:
+                filter: {lithology: "glaciolacustrine sediment"}
+                draw: {geologic_units: {color: "rgb(254,226,88)"}}
+            glacial-marine_sediment:
+                filter: {lithology: "glacial-marine sediment"}
+                draw: {geologic_units: {color: "rgb(254,219,46)"}}
+            biogenic_material:
+                filter: {lithology: "biogenic material"}
+                draw: {geologic_units: {color: "rgb(247,243,161)"}}
+            peat:
+                filter: {lithology: "peat"}
+                draw: {geologic_units: {color: "rgb(255,207,129)"}}
+            coral:
+                filter: {lithology: "coral"}
+                draw: {geologic_units: {color: "rgb(255,204,153)"}}
+            residuum:
+                filter: {lithology: "residuum"}
+                draw: {geologic_units: {color: "rgb(255,227,137)"}}
+            clay_or_mud:
+                filter: {lithology: ["clay or mud", "clay", "mud"]}
+                draw: {geologic_units: {color: "rgb(255,219,103)"}}
+            sedimentary_rock:
+                filter: {lithology: "sedimentary rock"}
+                draw: {geologic_units: {color: "rgb(146,220,183)"}}
+            clastic_rock:
+                filter: {lithology: "clastic rock"}
+                draw: {geologic_units: {color: "rgb(217,253,211)"}}
+            mudstone:
+                filter: {lithology: "mudstone"}
+                draw: {geologic_units: {color: "rgb(207,239,223)"}}
+            claystone:
+                filter: {lithology: "claystone"}
+                draw: {geologic_units: {color: "rgb(213,230,204)"}}
+            bentonite:
+                filter: {lithology: "bentonite"}
+                draw: {geologic_units: {color: "rgb(192,208,192)"}}
+            shale:
+                filter: {lithology: "shale"}
+                draw: {geologic_units: {color: "rgb(172,228,200)"}}
+            black_shale:
+                filter: {lithology: "black shale"}
+                draw: {geologic_units: {color: "rgb(219,254,188)"}}
+            oil_shale:
+                filter: {lithology: "oil shale"}
+                draw: {geologic_units: {color: "rgb(187,255,221)"}}
+            argillite:
+                filter: {lithology: "argillite"}
+                draw: {geologic_units: {color: "rgb(225,240,216)"}}
+            siltstone:
+                filter: {lithology: "siltstone"}
+                draw: {geologic_units: {color: "rgb(214,254,154)"}}
+            fine-grained_mixed_clastic_rock:
+                filter: {lithology: "fine-grained mixed clastic rock"}
+                draw: {geologic_units: {color: "rgb(149,255,202)"}}
+            sandstone:
+                filter: {lithology: "sandstone"}
+                draw: {geologic_units: {color: "rgb(205,255,217)"}}
+            arenite:
+                filter: {lithology: "arenite"}
+                draw: {geologic_units: {color: "rgb(166,252,170)"}}
+            orthoquartzite:
+                filter: {lithology: "orthoquartzite"}
+                draw: {geologic_units: {color: "rgb(203,239,206)"}}
+            calcarenite:
+                filter: {lithology: "calcarenite"}
+                draw: {geologic_units: {color: "rgb(154,206,254)"}}
+            arkose:
+                filter: {lithology: "arkose"}
+                draw: {geologic_units: {color: "rgb(105,207,156)"}}
+            wacke:
+                filter: {lithology: "wacke"}
+                draw: {geologic_units: {color: "rgb(189,219,241)"}}
+            graywacke:
+                filter: {lithology: "graywacke"}
+                draw: {geologic_units: {color: "rgb(184,234,195)"}}
+            medium-grained_mixed_clastic_rock:
+                filter: {lithology: "medium-grained mixed clastic rock"}
+                draw: {geologic_units: {color: "rgb(144,165,101)"}}
+            conglomerate:
+                filter: {lithology: "conglomerate"}
+                draw: {geologic_units: {color: "rgb(183,217,204)"}}
+            sedimentary_breccia:
+                filter: {lithology: "sedimentary breccia"}
+                draw: {geologic_units: {color: "rgb(167,186,134)"}}
+            coarse-grained_mixed_clastic_rock:
+                filter: {lithology: "coarse-grained mixed clastic rock"}
+                draw: {geologic_units: {color: "rgb(165,170,173)"}}
+            olistostrome:
+                filter: {lithology: "olistostrome"}
+                draw: {geologic_units: {color: "rgb(141,190,205)"}}
+            melange:
+                filter: {lithology: ["mélange", "melange"]}
+                draw: {geologic_units: {color: "rgb(187,192,197)"}}
+            carbonate_rock:
+                filter: {lithology: "carbonate rock"}
+                draw: {geologic_units: {color: "rgb(86,224,252)"}}
+            limestone:
+                filter: {lithology: "limestone"}
+                draw: {geologic_units: {color: "rgb(67,175,249)"}}
+            dolostone:
+                filter: {lithology: "dolostone"}
+                draw: {geologic_units: {color: "rgb(107,195,255)"}}
+            mixed_carbonate/clastic_rock:
+                filter: {lithology: "mixed carbonate/clastic rock"}
+                draw: {geologic_units: {color: "rgb(56,180,177)"}}
+            mixed_volcanic/clastic_rock:
+                filter: {lithology: "mixed volcanic/clastic rock"}
+                draw: {geologic_units: {color: "rgb(96,204,191)"}}
+            phosphorite:
+                filter: {lithology: "phosphorite"}
+                draw: {geologic_units: {color: "rgb(191,227,220)"}}
+            chemical_sedimentary_rock:
+                filter: {lithology: "chemical sedimentary rock"}
+                draw: {geologic_units: {color: "rgb(205,222,255)"}}
+            evaporite:
+                filter: {lithology: "evaporite"}
+                draw: {geologic_units: {color: "rgb(1,156,205)"}}
+            chert:
+                filter: {lithology: "chert"}
+                draw: {geologic_units: {color: "rgb(154,191,192)"}}
+            novaculite:
+                filter: {lithology: "novaculite"}
+                draw: {geologic_units: {color: "rgb(192,174,182)"}}
+            iron_formation:
+                filter: {lithology: "iron formation"}
+                draw: {geologic_units: {color: "rgb(185,149,152)"}}
+            exhalite:
+                filter: {lithology: "exhalite"}
+                draw: {geologic_units: {color: "rgb(217,194,163)"}}
+            coal:
+                filter: {lithology: "coal"}
+                draw: {geologic_units: {color: "rgb(130,0,65)"}}
+            mixed_coal/clastic_rock:
+                filter: {lithology: "mixed coal/clastic rock"}
+                draw: {geologic_units: {color: "rgb(110,73,9)"}}
+            volcanic_rock:
+                filter: {lithology: "volcanic rock"}
+                draw: {geologic_units: {color: "rgb(255,183,222)"}}
+            glassy_volcanic_rock:
+                filter: {lithology: "glassy volcanic rock"}
+                draw: {geologic_units: {color: "rgb(255,195,228)"}}
+            obsidian:
+                filter: {lithology: "obsidian"}
+                draw: {geologic_units: {color: "rgb(255,209,234)"}}
+            vitrophyre:
+                filter: {lithology: "vitrophyre"}
+                draw: {geologic_units: {color: "rgb(255,195,248)"}}
+            pumice:
+                filter: {lithology: "pumice"}
+                draw: {geologic_units: {color: "rgb(255,229,243)"}}
+            pyroclastic_rock:
+                filter: {lithology: "pyroclastic rock"}
+                draw: {geologic_units: {color: "rgb(255,224,222)"}}
+            tuff:
+                filter: {lithology: "tuff"}
+                draw: {geologic_units: {color: "rgb(249,211,211)"}}
+            welded_tuff:
+                filter: {lithology: "welded tuff"}
+                draw: {geologic_units: {color: "rgb(255,243,201)"}}
+            ash-flow_tuff:
+                filter: {lithology: "ash-flow tuff"}
+                draw: {geologic_units: {color: "rgb(255,239,217)"}}
+            ignimbrite:
+                filter: {lithology: "ignimbrite"}
+                draw: {geologic_units: {color: "rgb(255,229,195)"}}
+            volcanic_breccia:
+                filter: {lithology: "volcanic breccia"}
+                draw: {geologic_units: {color: "rgb(255,213,157)"}}
+            lava_flow:
+                filter: {lithology: "lava flow"}
+                draw: {geologic_units: {color: "rgb(255,162,39)"}}
+            bimodal_suite:
+                filter: {lithology: "bimodal suite"}
+                draw: {geologic_units: {color: "rgb(255,193,111)"}}
+            felsic_volcanic_rock:
+                filter: {lithology: "felsic volcanic rock"}
+                draw: {geologic_units: {color: "rgb(244,139,0)"}}
+            alkali-feldspar_rhyolite:
+                filter: {lithology: "alkali-feldspar rhyolite"}
+                draw: {geologic_units: {color: "rgb(254,220,126)"}}
+            rhyolite:
+                filter: {lithology: "rhyolite"}
+                draw: {geologic_units: {color: "rgb(254,204,104)"}}
+            rhyodacite:
+                filter: {lithology: "rhyodacite"}
+                draw: {geologic_units: {color: "rgb(254,198,42)"}}
+            dacite:
+                filter: {lithology: "dacite"}
+                draw: {geologic_units: {color: "rgb(254,205,172)"}}
+            alkali-feldspar_trachyte:
+                filter: {lithology: "alkali-feldspar trachyte"}
+                draw: {geologic_units: {color: "rgb(254,183,134)"}}
+            trachyte:
+                filter: {lithology: "trachyte"}
+                draw: {geologic_units: {color: "rgb(254,160,96)"}}
+            quartz_latite:
+                filter: {lithology: "quartz latite"}
+                draw: {geologic_units: {color: "rgb(254,135,54)"}}
+            latite:
+                filter: {lithology: "latite"}
+                draw: {geologic_units: {color: "rgb(254,117,24)"}}
+            intermediate_volcanic_rock:
+                filter: {lithology: "intermediate volcanic rock"}
+                draw: {geologic_units: {color: "rgb(235,96,1)"}}
+            trachyandesite:
+                filter: {lithology: "trachyandesite"}
+                draw: {geologic_units: {color: "rgb(201,82,1)"}}
+            andesite:
+                filter: {lithology: "andesite"}
+                draw: {geologic_units: {color: "rgb(177,72,1)"}}
+            mafic_volcanic_rock:
+                filter: {lithology: "mafic volcanic rock"}
+                draw: {geologic_units: {color: "rgb(147,60,1)"}}
+            trachybasalt:
+                filter: {lithology: "trachybasalt"}
+                draw: {geologic_units: {color: "rgb(236,213,198)"}}
+            basalt:
+                filter: {lithology: "basalt"}
+                draw: {geologic_units: {color: "rgb(221,179,151)"}}
+            tholeiite:
+                filter: {lithology: "tholeiite"}
+                draw: {geologic_units: {color: "rgb(211,157,121)"}}
+            hawaiite:
+                filter: {lithology: "hawaiite"}
+                draw: {geologic_units: {color: "rgb(198,128,80)"}}
+            alkaline_basalt:
+                filter: {lithology: "alkaline basalt"}
+                draw: {geologic_units: {color: "rgb(169,101,55)"}}
+            alkalic_volcanic_rock:
+                filter: {lithology: "alkalic volcanic rock"}
+                draw: {geologic_units: {color: "rgb(194,65,0)"}}
+            phonolite:
+                filter: {lithology: "phonolite"}
+                draw: {geologic_units: {color: "rgb(95,57,31)"}}
+            tephrite:
+                filter: {lithology: "tephrite"}
+                draw: {geologic_units: {color: "rgb(133,79,43)"}}
+            ultramafitite:
+                filter: {lithology: "ultramafitite"}
+                draw: {geologic_units: {color: "rgb(160,53,0)"}}
+            volcanic_carbonatite:
+                filter: {lithology: "volcanic carbonatite"}
+                draw: {geologic_units: {color: "rgb(110,37,0)"}}
+            plutonic_rock:
+                filter: {lithology: "plutonic rock"}
+                draw: {geologic_units: {color: "rgb(252,110,124)"}}
+            aplite:
+                filter: {lithology: "aplite"}
+                draw: {geologic_units: {color: "rgb(255,193,183)"}}
+            porphyry:
+                filter: {lithology: "porphyry"}
+                draw: {geologic_units: {color: "rgb(255,225,232)"}}
+            lamprophyre:
+                filter: {lithology: "lamprophyre"}
+                draw: {geologic_units: {color: "rgb(228,88,145)"}}
+            pegmatite:
+                filter: {lithology: "pegmatite"}
+                draw: {geologic_units: {color: "rgb(255,239,243)"}}
+            granitoid:
+                filter: {lithology: "granitoid"}
+                draw: {geologic_units: {color: "rgb(221,41,114)"}}
+            alkali-feldspar_granite:
+                filter: {lithology: "alkali-feldspar granite"}
+                draw: {geologic_units: {color: "rgb(255,209,220)"}}
+            quartz_monzodiorite:
+                filter: {lithology: "quartz monzodiorite"}
+                draw: {geologic_units: {color: "rgb(255,129,159)"}}
+            monzodiorite:
+                filter: {lithology: "monzodiorite"}
+                draw: {geologic_units: {color: "rgb(255,169,157)"}}
+            quartz_diorite:
+                filter: {lithology: "quartz diorite"}
+                draw: {geologic_units: {color: "rgb(232,28,0)"}}
+            diorite:
+                filter: {lithology: "diorite"}
+                draw: {geologic_units: {color: "rgb(255,51,23)"}}
+            diabase:
+                filter: {lithology: "diabase"}
+                draw: {geologic_units: {color: "rgb(214,0,0)"}}
+            granite:
+                filter: {lithology: "granite"}
+                draw: {geologic_units: {color: "rgb(249,181,187)"}}
+            peraluminous_granite:
+                filter: {lithology: "peraluminous granite"}
+                draw: {geologic_units: {color: "rgb(248,190,174)"}}
+            metaluminous_granite:
+                filter: {lithology: "metaluminous granite"}
+                draw: {geologic_units: {color: "rgb(255,179,197)"}}
+            subaluminous_granite:
+                filter: {lithology: "subaluminous granite"}
+                draw: {geologic_units: {color: "rgb(255,111,107)"}}
+            peralkaline_granite:
+                filter: {lithology: "peralkaline granite"}
+                draw: {geologic_units: {color: "rgb(252,82,98)"}}
+            granodiorite:
+                filter: {lithology: "granodiorite"}
+                draw: {geologic_units: {color: "rgb(233,121,166)"}}
+            tonalite:
+                filter: {lithology: "tonalite"}
+                draw: {geologic_units: {color: "rgb(252,182,182)"}}
+            trondhjemite:
+                filter: {lithology: "trondhjemite"}
+                draw: {geologic_units: {color: "rgb(255,167,188)"}}
+            alkali-feldspar_syenite:
+                filter: {lithology: "alkali-feldspar syenite"}
+                draw: {geologic_units: {color: "rgb(244,60,108)"}}
+            quartz_syenite:
+                filter: {lithology: "quartz syenite"}
+                draw: {geologic_units: {color: "rgb(251,35,56)"}}
+            syenite:
+                filter: {lithology: "syenite"}
+                draw: {geologic_units: {color: "rgb(244,26,135)"}}
+            quartz_monzonite:
+                filter: {lithology: "quartz monzonite"}
+                draw: {geologic_units: {color: "rgb(255,99,136)"}}
+            monzonite:
+                filter: {lithology: "monzonite"}
+                draw: {geologic_units: {color: "rgb(255,39,90)"}}
+            gabbroid:
+                filter: {lithology: "gabbroid"}
+                draw: {geologic_units: {color: "rgb(172,0,0)"}}
+            quartz_monzogabbro:
+                filter: {lithology: "quartz monzogabbro"}
+                draw: {geologic_units: {color: "rgb(255,111,91)"}}
+            monzogabbro:
+                filter: {lithology: "monzogabbro"}
+                draw: {geologic_units: {color: "rgb(227,119,173)"}}
+            quartz_gabbro:
+                filter: {lithology: "quartz gabbro"}
+                draw: {geologic_units: {color: "rgb(237,167,202)"}}
+            gabbro:
+                filter: {lithology: "gabbro"}
+                draw: {geologic_units: {color: "rgb(233,147,190)"}}
+            norite:
+                filter: {lithology: "norite"}
+                draw: {geologic_units: {color: "rgb(255,214,209)"}}
+            troctolite:
+                filter: {lithology: "troctolite"}
+                draw: {geologic_units: {color: "rgb(255,191,206)"}}
+            anorthosite:
+                filter: {lithology: "anorthosite"}
+                draw: {geologic_units: {color: "rgb(255,149,174)"}}
+            alkalic_intrusive_rock:
+                filter: {lithology: "alkalic intrusive rock"}
+                draw: {geologic_units: {color: "rgb(255,111,145)"}}
+            nepheline_syenite:
+                filter: {lithology: "nepheline syenite"}
+                draw: {geologic_units: {color: "rgb(255,27,81)"}}
+            ultramafic_intrusive_rock:
+                filter: {lithology: "ultramafic intrusive rock"}
+                draw: {geologic_units: {color: "rgb(232,0,55)"}}
+            peridotite:
+                filter: {lithology: "peridotite"}
+                draw: {geologic_units: {color: "rgb(206,0,49)"}}
+            dunite:
+                filter: {lithology: "dunite"}
+                draw: {geologic_units: {color: "rgb(176,0,42)"}}
+            kimberlite:
+                filter: {lithology: "kimberlite"}
+                draw: {geologic_units: {color: "rgb(193,1,10)"}}
+            pyroxenite:
+                filter: {lithology: "pyroxenite"}
+                draw: {geologic_units: {color: "rgb(148,0,35)"}}
+            hornblendite:
+                filter: {lithology: "hornblendite"}
+                draw: {geologic_units: {color: "rgb(163,1,9)"}}
+            intrusive_carbonatite:
+                filter: {lithology: "intrusive carbonatite"}
+                draw: {geologic_units: {color: "rgb(117,1,7)"}}
+            metamorphic_rock:
+                filter: {lithology: "metamorphic rock"}
+                draw: {geologic_units: {color: "rgb(167,167,255)"}}
+            hornfels:
+                filter: {lithology: "hornfels"}
+                draw: {geologic_units: {color: "rgb(234,175,255)"}}
+            eclogite:
+                filter: {lithology: "eclogite"}
+                draw: {geologic_units: {color: "rgb(206,157,255)"}}
+            greisen:
+                filter: {lithology: "greisen"}
+                draw: {geologic_units: {color: "rgb(164,73,255)"}}
+            skarn:
+                filter: {lithology: "skarn"}
+                draw: {geologic_units: {color: "rgb(129,3,255)"}}
+            calc-silicate_rock:
+                filter: {lithology: "calc-silicate rock"}
+                draw: {geologic_units: {color: "rgb(70,0,140)"}}
+            serpentinite:
+                filter: {lithology: "serpentinite"}
+                draw: {geologic_units: {color: "rgb(0,92,0)"}}
+            metasedimentary_rock:
+                filter: {lithology: "metasedimentary rock"}
+                draw: {geologic_units: {color: "rgb(125,255,125)"}}
+            meta-argillite:
+                filter: {lithology: "meta-argillite"}
+                draw: {geologic_units: {color: "rgb(201,255,201)"}}
+            slate:
+                filter: {lithology: "slate"}
+                draw: {geologic_units: {color: "rgb(230,205,255)"}}
+            quartzite:
+                filter: {lithology: "quartzite"}
+                draw: {geologic_units: {color: "rgb(159,255,159)"}}
+            metaconglomerate:
+                filter: {lithology: "metaconglomerate"}
+                draw: {geologic_units: {color: "rgb(233,255,233)"}}
+            marble:
+                filter: {lithology: "marble"}
+                draw: {geologic_units: {color: "rgb(0,0,255)"}}
+            metavolcanic_rock:
+                filter: {lithology: "metavolcanic rock"}
+                draw: {geologic_units: {color: "rgb(255,87,255)"}}
+            felsic_metavolcanic_rock:
+                filter: {lithology: "felsic metavolcanic rock"}
+                draw: {geologic_units: {color: "rgb(255,141,255)"}}
+            metarhyolite:
+                filter: {lithology: "metarhyolite"}
+                draw: {geologic_units: {color: "rgb(255,167,255)"}}
+            keratophyre:
+                filter: {lithology: "keratophyre"}
+                draw: {geologic_units: {color: "rgb(254,103,0)"}}
+            intermediate_metavolcanic_rock:
+                filter: {lithology: "intermediate metavolcanic rock"}
+                draw: {geologic_units: {color: "rgb(255,0,0)"}}
+            mafic_metavolcanic_rock:
+                filter: {lithology: "mafic metavolcanic rock"}
+                draw: {geologic_units: {color: "rgb(185,59,104)"}}
+            metabasalt:
+                filter: {lithology: "metabasalt"}
+                draw: {geologic_units: {color: "rgb(135,43,76)"}}
+            spilite:
+                filter: {lithology: "spilite"}
+                draw: {geologic_units: {color: "rgb(201,85,126)"}}
+            greenstone:
+                filter: {lithology: "greenstone"}
+                draw: {geologic_units: {color: "rgb(0,128,0)"}}
+            phyllite:
+                filter: {lithology: "phyllite"}
+                draw: {geologic_units: {color: "rgb(180,207,228)"}}
+            schist:
+                filter: {lithology: "schist"}
+                draw: {geologic_units: {color: "rgb(219,219,231)"}}
+            greenschist:
+                filter: {lithology: "greenschist"}
+                draw: {geologic_units: {color: "rgb(237,237,243)"}}
+            blueschist:
+                filter: {lithology: "blueschist"}
+                draw: {geologic_units: {color: "rgb(192,192,192)"}}
+            mica_schist:
+                filter: {lithology: "mica schist"}
+                draw: {geologic_units: {color: "rgb(177,177,177)"}}
+            pelitic_schist:
+                filter: {lithology: "pelitic schist"}
+                draw: {geologic_units: {color: "rgb(202,202,220)"}}
+            quartz-feldspar_schist:
+                filter: {lithology: "quartz-feldspar schist"}
+                draw: {geologic_units: {color: "rgb(162,162,192)"}}
+            calc-silicate_schist:
+                filter: {lithology: "calc-silicate schist"}
+                draw: {geologic_units: {color: "rgb(182,182,206)"}}
+            amphibole_schist:
+                filter: {lithology: "amphibole schist"}
+                draw: {geologic_units: {color: "rgb(150,150,150)"}}
+            granofels:
+                filter: {lithology: "granofels"}
+                draw: {geologic_units: {color: "rgb(163,55,253)"}}
+            gneiss:
+                filter: {lithology: "gneiss"}
+                draw: {geologic_units: {color: "rgb(236,214,254)"}}
+            felsic_gneiss:
+                filter: {lithology: "felsic gneiss"}
+                draw: {geologic_units: {color: "rgb(224,188,254)"}}
+            granitic_gneiss:
+                filter: {lithology: "granitic gneiss"}
+                draw: {geologic_units: {color: "rgb(213,164,254)"}}
+            biotite_gneiss:
+                filter: {lithology: "biotite gneiss"}
+                draw: {geologic_units: {color: "rgb(200,134,254)"}}
+            mafic_gneiss:
+                filter: {lithology: "mafic gneiss"}
+                draw: {geologic_units: {color: "rgb(204,183,255)"}}
+            orthogneiss:
+                filter: {lithology: "orthogneiss"}
+                draw: {geologic_units: {color: "rgb(179,149,255)"}}
+            paragneiss:
+                filter: {lithology: "paragneiss"}
+                draw: {geologic_units: {color: "rgb(144,99,255)"}}
+            migmatite:
+                filter: {lithology: "migmatite"}
+                draw: {geologic_units: {color: "rgb(159,0,202)"}}
+            amphibolite:
+                filter: {lithology: "amphibolite"}
+                draw: {geologic_units: {color: "rgb(123,0,156)"}}
+            granulite:
+                filter: {lithology: "granulite"}
+                draw: {geologic_units: {color: "rgb(106,0,106)"}}
+            tectonite:
+                filter: {lithology: "tectonite"}
+                draw: {geologic_units: {color: "rgb(132,97,62)"}}
+            tectonic_mélange:
+                filter: {lithology: "tectonic mélange"}
+                draw: {geologic_units: {color: "rgb(208,203,176)"}}
+            tectonic_breccia:
+                filter: {lithology: "tectonic breccia"}
+                draw: {geologic_units: {color: "rgb(176,167,120)"}}
+            cataclasite:
+                filter: {lithology: "cataclasite"}
+                draw: {geologic_units: {color: "rgb(136,127,80)"}}
+            phyllonite:
+                filter: {lithology: "phyllonite"}
+                draw: {geologic_units: {color: "rgb(172,127,80)"}}
+            mylonite:
+                filter: {lithology: "mylonite"}
+                draw: {geologic_units: {color: "rgb(109,80,51)"}}
+            flaser_gneiss:
+                filter: {lithology: "flaser gneiss"}
+                draw: {geologic_units: {color: "rgb(100,2,11)"}}
+            augen_gneiss:
+                filter: {lithology: "augen gneiss"}
+                draw: {geologic_units: {color: "rgb(136,127,80)"}}
+            ice:
+                filter: {lithology: "ice"}
+                draw: {geologic_units: {color: "rgb(255,255,255)"}}
+            water:
+                filter: {lithology: "water"}
+                draw: {geologic_units: {color: "rgb(153,204,255)"}}
+            agglomerate:
+                filter: {lithology: "agglomerate"}
+                draw: {geologic_units: {color: "rgb(255,213,157)"}}
+            alaskite:
+                filter: {lithology: "alaskite"}
+                draw: {geologic_units: {color: "rgb(255,209,220)"}}
+            basanite:
+                filter: {lithology: "basanite"}
+                draw: {geologic_units: {color: "rgb(133,79,43)"}}
+            dolomite:
+                filter: {lithology: "dolomite"}
+                draw: {geologic_units: {color: "rgb(107,195,255)"}}
+            komatiite:
+                filter: {lithology: "komatiite"}
+                draw: {geologic_units: {color: "rgb(160,53,0)"}}

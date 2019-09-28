@@ -51,7 +51,8 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     private static final String TAG = "Underfoot::MapActivity";
 
-    private static final String SCENE_FILE_PATH = "asset:///omt-scene.yml";
+    // private static final String SCENE_FILE_PATH = "asset:///omt-scene.yml";
+    private static final String SCENE_FILE_PATH = "asset:///usgs-state-color-scene.yml";
 
     private static final String[] FILES = {
         // From https://github.com/kueda/underfoot

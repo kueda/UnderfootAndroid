@@ -60,6 +60,13 @@ layers:
                             1.0
                         ]
                     }
+        borders:
+            filter: function() { return $zoom >= 14; }
+            draw:
+                geologic_unit_borders:
+                    order: 1
+                    color: [0,0,0,0.1]
+                    width: 2px
     ways:
         data:
             source: underfoot_ways
@@ -103,7 +110,7 @@ layers:
                     order: 100
                     color: [0.5, 0.5, 0.5, 0.5]
                     width: 1.5px
-        hundred:
+        not_hundred:
             filter:
                 function() {
                     return feature.elevation % 100 != 0;
@@ -124,6 +131,10 @@ styles:
         dash: [1]
     geologic_units:
         base: polygons
+        lighting: false
+    geologic_unit_borders:
+        base: lines
+        blend: overlay
         lighting: false
     hillshade:
         base: polygons
