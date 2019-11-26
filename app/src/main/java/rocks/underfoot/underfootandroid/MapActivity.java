@@ -17,8 +17,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -47,16 +52,18 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.apache.commons.text.WordUtils;
 
-public class MapActivity extends Activity implements SceneLoadListener, TapResponder, DoubleTapResponder, FeaturePickListener, PanResponder, RotateResponder, ShoveResponder {
+public class MapActivity extends AppCompatActivity implements SceneLoadListener, TapResponder, DoubleTapResponder, FeaturePickListener, PanResponder, RotateResponder, ShoveResponder {
 
     private static final String TAG = "Underfoot::MapActivity";
 
     // private static final String SCENE_FILE_PATH = "asset:///omt-scene.yml";
     private static final String SCENE_FILE_PATH = "asset:///usgs-state-color-scene.yml";
+    private static final String UNIT_AGE_SCENE_FILE_PATH = "asset:///unit-age-scene.yml";
+    private static final String SPAN_COLOR_SCENE_FILE_PATH = "asset:///span-color.yml";
 
     private static final String[] FILES = {
         // From https://github.com/kueda/underfoot
-        "underfoot_units-20190826.mbtiles",
+        "underfoot_units-20191124.mbtiles",
         "underfoot_ways-20190912.mbtiles",
         "elevation-20190408.mbtiles"
     };
@@ -153,11 +160,17 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
                 }
             }
         });
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        // getSupportActionBar().setDisplayShowTitleEnabled(false);
         if (checkForRequiredFiles()) {
             hideDownloadUI();
         } else {
             showDownloadUI();
         }
+
+        // If we're loading things up for the first time, let's make sure we get the current location and pan there
+        mTrackingUserLocation = true;
         startGettingLocation();
     }
 
@@ -215,6 +228,35 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         // Log.d(TAG, "onLowMemory");
         super.onLowMemory();
         mMapView.onLowMemory();
+    }
+
+    //
+    // Activity Menu
+    //
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.map_activity_layers_menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.map_activity_layer_menu_lithology:
+                mMapController.loadSceneFile(SCENE_FILE_PATH);
+                break;
+            case R.id.map_activity_layer_menu_age:
+                mMapController.loadSceneFile(UNIT_AGE_SCENE_FILE_PATH);
+                break;
+            case R.id.map_activity_layer_menu_span:
+                mMapController.loadSceneFile(SPAN_COLOR_SCENE_FILE_PATH);
+                break;
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
     //
@@ -488,6 +530,10 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         if (mCurrentLocationMarker == null) {
             mCurrentLocationMarker = mMapController.addMarker();
         }
+        if (mCurrentLocationMarker == null) {
+            Log.d(TAG, "mCurrentLocationMarker null even after addition");
+            return;
+        }
         mCurrentLocationMarker.setVisible(true);
         mCurrentLocationMarker.setPoint(new LngLat(mUserLocation.getLongitude(), mUserLocation.getLatitude()));
         mCurrentLocationMarker.setStylingFromString("{ style: 'points', color: [1, 0.25, 0.5, 0.5], size: [10px, 10px], order: 2000, collide: false }");
@@ -594,9 +640,9 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
 
     @Override
     public void onSceneReady(int sceneId, SceneError sceneError) {
-        // Log.d(TAG, "onSceneReady");
+        Log.d(TAG, "onSceneReady");
         if (sceneError == null) {
-//            Toast.makeText(this, "Scene ready: " + sceneId, Toast.LENGTH_SHORT).show();
+           Toast.makeText(this, "Scene ready: " + sceneId, Toast.LENGTH_SHORT).show();
             pickCenterFeature();
             mMapController.setPosition(new LngLat(mLng, mLat));
 //            Toast.makeText(this, "setting zoom to " + mZoom, Toast.LENGTH_SHORT).show();
@@ -610,6 +656,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
                     + sceneError.getSceneUpdate().toString()
                     + " " + sceneError.getError().toString());
         }
+        mCurrentLocationMarker = null;
         // Get the unit at the current location in a second, maybe b/c the local map data isn't loaded when onSceneReady fires
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -669,6 +716,7 @@ public class MapActivity extends Activity implements SceneLoadListener, TapRespo
         }
         mDescription.setText(description);
         String span = properties.get("span");
+        // String span = properties.get("controlled_span");
         if (span == null || span.length() == 0) {
             span = "Unknown";
         } else {

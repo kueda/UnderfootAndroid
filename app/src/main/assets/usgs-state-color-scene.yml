@@ -11,7 +11,7 @@ layers:
                 filter: {lithology: "unconsolidated material"}
                 draw: {geologic_units: {color: "rgb(253,244,63)"}}
             alluvium:
-                filter: {lithology: "alluvium"}
+                filter: {lithology: ["alluvium", "surficial deposits"]}
                 draw: {geologic_units: {color: "rgb(255,255,137)"}}
             silt:
                 filter: {lithology: "silt"}
@@ -44,7 +44,7 @@ layers:
                 filter: {lithology: "playa"}
                 draw: {geologic_units: {color: "rgb(241,229,223)"}}
             mud_flat:
-                filter: {lithology: "mud flat"}
+                filter: {lithology: ["mud flat", "mud"]}
                 draw: {geologic_units: {color: "rgb(228,208,190)"}}
             beach_sand:
                 filter: {lithology: "beach sand"}
@@ -125,7 +125,7 @@ layers:
                 filter: {lithology: "residuum"}
                 draw: {geologic_units: {color: "rgb(255,227,137)"}}
             clay_or_mud:
-                filter: {lithology: ["clay or mud", "clay", "mud"]}
+                filter: {lithology: ["clay or mud", "clay"]}
                 draw: {geologic_units: {color: "rgb(255,219,103)"}}
             sedimentary_rock:
                 filter: {lithology: "sedimentary rock"}
@@ -167,7 +167,7 @@ layers:
                 filter: {lithology: "arenite"}
                 draw: {geologic_units: {color: "rgb(166,252,170)"}}
             orthoquartzite:
-                filter: {lithology: "orthoquartzite"}
+                filter: {lithology: ["orthoquartzite", "quartz arenite"]}
                 draw: {geologic_units: {color: "rgb(203,239,206)"}}
             calcarenite:
                 filter: {lithology: "calcarenite"}
@@ -630,7 +630,9 @@ layers:
                 draw: {geologic_units: {color: "rgb(255,255,255)"}}
             water:
                 filter: {lithology: "water"}
-                draw: {geologic_units: {color: "rgb(153,204,255)"}}
+                # This USGS blue is really, really light
+                # draw: {geologic_units: {color: "rgb(153,204,255)"}}
+                draw: {geologic_units: {color: "rgb(0,15,33))"}}
             agglomerate:
                 filter: {lithology: "agglomerate"}
                 draw: {geologic_units: {color: "rgb(255,213,157)"}}

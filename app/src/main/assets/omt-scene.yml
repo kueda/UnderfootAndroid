@@ -14,13 +14,15 @@ sources:
         max_zoom: 14
     underfoot:
         type: MVT
-        url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/underfoot_units-20190826.mbtiles'
+        url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/underfoot_units-20191124.mbtiles'
     underfoot_ways:
         type: MVT
         url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/underfoot_ways-20190912.mbtiles'
     underfoot_elevation:
         type: MVT
         url: 'file:///storage/emulated/0/Android/data/rocks.underfoot.underfootandroid/files/underfoot/elevation-20190408.mbtiles'
+        # For whatever reason, zoom filtering in layer filters doesn't work, but this does
+        min_display_zoom: 13
 
 cameras:
     cam:
@@ -52,14 +54,15 @@ layers:
             geologic_units:
                 order: 0
                 color:
-                    function() {
-                        return [
-                            ( feature.code || "zzz" ).charCodeAt(0) / 150,
-                            ( feature.code || "zzz" ).charCodeAt(1) / 150,
-                            ( feature.code || "zzz" ).charCodeAt(2) / 150,
-                            1.0
-                        ]
-                    }
+                    [0,0,0]
+                    # function() {
+                    #     return [
+                    #         ( feature.code || "zzz" ).charCodeAt(0) / 150,
+                    #         ( feature.code || "zzz" ).charCodeAt(1) / 150,
+                    #         ( feature.code || "zzz" ).charCodeAt(2) / 150,
+                    #         1.0
+                    #     ]
+                    # }
         borders:
             filter: function() { return $zoom >= 14; }
             draw:

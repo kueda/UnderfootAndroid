@@ -1,0 +1,1068 @@
+# Adapted from https://en.wikipedia.org/w/index.php?title=Template:Period_color&action=edit
+import: omt-scene.yml
+
+layers:
+    vectile:
+        units:
+                phanerozoic:
+                    filter:
+                      controlled_span: ["phanerozoic"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(111,218,237)'
+                cenozoic:
+                    filter:
+                      controlled_span: ["cenozoic", "early cenozoic", "late cenozoic", "middle cenozoic"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(246,236,57)'
+                quaternary:
+                    filter:
+                      controlled_span: ["quaternary"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,246,145)'
+                tertiary:
+                    filter:
+                      controlled_span: ["tertiary"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(242,249,2)'
+                neogene:
+                    filter:
+                      controlled_span: ["neogene"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,221,45)'
+                holocene:
+                    filter:
+                      controlled_span: ["holocene", "present"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,241,224)'
+                pleistocene:
+                    filter:
+                      controlled_span: ["pleistocene", "lower pleistocene", "upper pleistocene", "middle pleistocene"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,239,184)'
+                upper_pleistocene:
+                    filter:
+                      controlled_span: ["upper pleistocene","tarantian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,241,214)'
+                middle_pleistocene:
+                    filter:
+                      controlled_span: ["middle pleistocene","ionian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,240,204)'
+                calabrian:
+                    filter:
+                      controlled_span: ["calabrian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,239,193)'
+                gelasian:
+                    filter:
+                      controlled_span: ["gelasian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,238,173)'
+                pliocene:
+                    filter:
+                      controlled_span: ["pliocene", "lower pliocene", "middle pliocene", "upper pliocene"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,248,166)'
+                piacenzian:
+                    filter:
+                      controlled_span: ["piacenzian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,250,200)'
+                zanclean:
+                    filter:
+                      controlled_span: ["zanclean"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,249,189)'
+                miocene:
+                    filter:
+                      controlled_span: ["miocene", "upper miocene", "lower miocene", "middle miocene"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,239,0)'
+                messinian:
+                    filter:
+                      controlled_span: ["messinian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,245,135)'
+                tortonian:
+                    filter:
+                      controlled_span: ["tortonian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,244,125)'
+                serravallian:
+                    filter:
+                      controlled_span: ["serravallian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,244,114)'
+                langhian:
+                    filter:
+                      controlled_span: ["langhian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,243,102)'
+                burdigalian:
+                    filter:
+                      controlled_span: ["burdigalian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,242,89)'
+                aquitanian:
+                    filter:
+                      controlled_span: ["aquitanian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,241,77)'
+                paleogene:
+                    filter:
+                      controlled_span: ["paleogene","palæogene","palaeogene"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,161,99)'
+                oligocene:
+                    filter:
+                      controlled_span: ["oligocene"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,195,134)'
+                chattian:
+                    filter:
+                      controlled_span: ["chattian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,228,178)'
+                rupelian:
+                    filter:
+                      controlled_span: ["rupelian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,217,162)'
+                eocene:
+                    filter:
+                      controlled_span: ["eocene", "upper eocene", "middle eocene", "lower eocene"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,185,121)'
+                priabonian:
+                    filter:
+                      controlled_span: ["priabonian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,207,167)'
+                bartonian:
+                    filter:
+                      controlled_span: ["bartonian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,196,152)'
+                lutetian:
+                    filter:
+                      controlled_span: ["lutetian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,185,138)'
+                ypresian:
+                    filter:
+                      controlled_span: ["ypresian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,174,125)'
+                paleocene:
+                    filter:
+                      controlled_span: ["paleocene","palæocene","palaeocene"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,173,110)'
+                thanetian:
+                    filter:
+                      controlled_span: ["thanetian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,195,125)'
+                selandian:
+                    filter:
+                      controlled_span: ["selandian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,194,116)'
+                danian:
+                    filter:
+                      controlled_span: ["danian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,184,114)'
+                mesozoic:
+                    filter:
+                      controlled_span: ["mesozoic"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(7,202,234)'
+                cretaceous:
+                    filter:
+                      controlled_span: ["cretaceous"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(111,200,107)'
+                late_cretaceous:
+                    filter:
+                      controlled_span: ["late cretaceous","upper cretaceous"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(166,212,104)'
+                maastrichtian:
+                    filter:
+                      controlled_span: ["maastrichtian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(243,242,156)'
+                campanian:
+                    filter:
+                      controlled_span: ["campanian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(234,237,147)'
+                santonian:
+                    filter:
+                      controlled_span: ["santonian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(222,231,138)'
+                coniacian:
+                    filter:
+                      controlled_span: ["coniacian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(209,227,130)'
+                turonian:
+                    filter:
+                      controlled_span: ["turonian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(195,223,121)'
+                cenomanian:
+                    filter:
+                      controlled_span: ["cenomanian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(181,218,113)'
+                early_cretaceous:
+                    filter:
+                      controlled_span: ["early cretaceous","lower cretaceous"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(126,205,116)'
+                albian:
+                    filter:
+                      controlled_span: ["albian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(205,229,168)'
+                aptian:
+                    filter:
+                      controlled_span: ["aptian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(191,225,159)'
+                barremian:
+                    filter:
+                      controlled_span: ["barremian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(175,221,151)'
+                hauterivian:
+                    filter:
+                      controlled_span: ["hauterivian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(158,215,142)'
+                valanginian:
+                    filter:
+                      controlled_span: ["valanginian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(141,210,133)'
+                berriasian:
+                    filter:
+                      controlled_span: ["berriasian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(124,206,124)'
+                jurassic:
+                    filter:
+                      controlled_span: ["jurassic"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(0,187,231)'
+                late_jurassic:
+                    filter:
+                      controlled_span: ["late jurassic","upper jurassic"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(151,227,250)'
+                tithonian:
+                    filter:
+                      controlled_span: ["tithonian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(207,240,252)'
+                kimmeridgian:
+                    filter:
+                      controlled_span: ["kimmeridgian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(189,235,251)'
+                oxfordian:
+                    filter:
+                      controlled_span: ["oxfordian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(171,231,251)'
+                mid_jurassic:
+                    filter:
+                      controlled_span: ["mid jurassic","middle jurassic"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(52,209,235)'
+                callovian:
+                    filter:
+                      controlled_span: ["callovian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(174,230,240)'
+                bathonian:
+                    filter:
+                      controlled_span: ["bathonian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(156,226,239)'
+                bajocian:
+                    filter:
+                      controlled_span: ["bajocian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(135,222,238)'
+                aalenian:
+                    filter:
+                      controlled_span: ["aalenian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(111,218,237)'
+                early_jurassic:
+                    filter:
+                      controlled_span: ["early jurassic","lower jurassic"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(0,183,234)'
+                toarcian:
+                    filter:
+                      controlled_span: ["toarcian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(116,209,240)'
+                pliensbachian:
+                    filter:
+                      controlled_span: ["pliensbachian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(60,201,239)'
+                sinemurian:
+                    filter:
+                      controlled_span: ["sinemurian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(7,193,237)'
+                hettangian:
+                    filter:
+                      controlled_span: ["hettangian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(0,187,235)'
+                triassic:
+                    filter:
+                      controlled_span: ["triassic"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(153,78,150)'
+                late_triassic:
+                    filter:
+                      controlled_span: ["late triassic","upper triassic"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(198,152,194)'
+                rhaetian:
+                    filter:
+                      controlled_span: ["rhaetian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(232,194,216)'
+                norian:
+                    filter:
+                      controlled_span: ["norian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(221,180,209)'
+                carnian:
+                    filter:
+                      controlled_span: ["carnian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(209,166,201)'
+                mid_triassic:
+                    filter:
+                      controlled_span: ["mid triassic","middle triassic"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(191,124,177)'
+                ladinian:
+                    filter:
+                      controlled_span: ["ladinian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(212,146,189)'
+                anisian:
+                    filter:
+                      controlled_span: ["anisian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(201,134,182)'
+                lower_triassic:
+                    filter:
+                      controlled_span: ["lower triassic","early triassic"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(173,87,154)'
+                olenekian:
+                    filter:
+                      controlled_span: ["olenekian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(194,106,165)'
+                induan:
+                    filter:
+                      controlled_span: ["induan"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(184,97,160)'
+                palæozoic:
+                    filter:
+                      controlled_span: ["palæozoic","paleozoic","palaeozoic"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(146,195,160)'
+                permian:
+                    filter:
+                      controlled_span: ["permian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(247,88,60)'
+                late_permian:
+                    filter:
+                      controlled_span: ["late permian","upper permian","lopingian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,175,151)'
+                changhsingian:
+                    filter:
+                      controlled_span: ["changhsingian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,198,179)'
+                wuchiapingian:
+                    filter:
+                      controlled_span: ["wuchiapingian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,187,165)'
+                middle_permian:
+                    filter:
+                      controlled_span: ["middle permian","mid permian","guadalupian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,131,103)'
+                capitanian:
+                    filter:
+                      controlled_span: ["capitanian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,163,138)'
+                wordian:
+                    filter:
+                      controlled_span: ["wordian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,152,126)'
+                roadian:
+                    filter:
+                      controlled_span: ["roadian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,142,114)'
+                early_permian:
+                    filter:
+                      controlled_span: ["early permian","lower permian","cisuralian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(247,110,84)'
+                kungurian:
+                    filter:
+                      controlled_span: ["kungurian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(239,148,127)'
+                artinskian:
+                    filter:
+                      controlled_span: ["artinskian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(239,138,116)'
+                sakmarian:
+                    filter:
+                      controlled_span: ["sakmarian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(239,128,106)'
+                asselian:
+                    filter:
+                      controlled_span: ["asselian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(240,119,95)'
+                carboniferous:
+                    filter:
+                      controlled_span: ["carboniferous"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(63,174,173)'
+                upper_carboniferous:
+                    filter:
+                      controlled_span: ["upper carboniferous","pennsylvanian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(138,198,195)'
+                upper_pennsylvanian:
+                    filter:
+                      controlled_span: ["upper pennsylvanian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(189,208,196)'
+                gzhelian:
+                    filter:
+                      controlled_span: ["gzhelian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(203,213,205)'
+                kasimovian:
+                    filter:
+                      controlled_span: ["kasimovian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(187,209,205)'
+                middle_pennsylvanian:
+                    filter:
+                      controlled_span: ["middle pennsylvanian","mid pennsylvanian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(157,202,196)'
+                moscovian:
+                    filter:
+                      controlled_span: ["moscovian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(174,205,196)'
+                lower_pennsylvanian:
+                    filter:
+                      controlled_span: ["lower pennsylvanian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(119,194,195)'
+                bashkirian:
+                    filter:
+                      controlled_span: ["bashkirian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(138,198,195)'
+                lower_carboniferous:
+                    filter:
+                      controlled_span: ["lower carboniferous","mississippian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(97,157,126)'
+                upper_mississippian:
+                    filter:
+                      controlled_span: ["upper mississippian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(187,192,130)'
+                serpukhovian:
+                    filter:
+                      controlled_span: ["serpukhovian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(200,194,129)'
+                middle_mississippian:
+                    filter:
+                      controlled_span: ["middle mississippian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(155,185,131)'
+                visean:
+                    filter:
+                      controlled_span: ["visean"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(171,188,130)'
+                lower_mississippian:
+                    filter:
+                      controlled_span: ["lower mississippian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(122,178,132)'
+                tournaisian:
+                    filter:
+                      controlled_span: ["tournaisian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(138,181,132)'
+                devonian:
+                    filter:
+                      controlled_span: ["devonian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(221,150,81)'
+                upper_devonian:
+                    filter:
+                      controlled_span: ["upper devonian","late devonian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(244,224,169)'
+                famennian:
+                    filter:
+                      controlled_span: ["famennian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(243,235,204)'
+                frasnian:
+                    filter:
+                      controlled_span: ["frasnian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(244,234,185)'
+                middle_devonian:
+                    filter:
+                      controlled_span: ["middle devonian","mid devonian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(246,200,122)'
+                givetian:
+                    filter:
+                      controlled_span: ["givetian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(245,222,148)'
+                eifelian:
+                    filter:
+                      controlled_span: ["eifelian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(245,211,134)'
+                lower_devonian:
+                    filter:
+                      controlled_span: ["lower devonian","early devonian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(239,176,99)'
+                emsian:
+                    filter:
+                      controlled_span: ["emsian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(236,207,135)'
+                pragian:
+                    filter:
+                      controlled_span: ["pragian","praghian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(238,197,123)'
+                lochkovian:
+                    filter:
+                      controlled_span: ["lochkovian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(238,186,110)'
+                silurian:
+                    filter:
+                      controlled_span: ["silurian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(166,223,197)'
+                latest_silurian:
+                    filter:
+                      controlled_span: ["latest silurian","pridoli"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(228,242,230)'
+                late_silurian:
+                    filter:
+                      controlled_span: ["late silurian","upper silurian","ludlow"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(180,229,219)'
+                ludfordian:
+                    filter:
+                      controlled_span: ["ludfordian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(212,238,230)'
+                gorstian:
+                    filter:
+                      controlled_span: ["gorstian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(195,234,230)'
+                middle_silurian:
+                    filter:
+                      controlled_span: ["middle silurian","mid silurian","wenlock"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(164,224,208)'
+                homerian:
+                    filter:
+                      controlled_span: ["homerian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(197,233,219)'
+                sheinwoodian:
+                    filter:
+                      controlled_span: ["sheinwoodian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(182,228,208)'
+                lower_silurian:
+                    filter:
+                      controlled_span: ["lower silurian","early silurian","llandovery"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(126,215,198)'
+                telychian:
+                    filter:
+                      controlled_span: ["telychian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(180,229,219)'
+                aeronian:
+                    filter:
+                      controlled_span: ["aeronian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(164,224,208)'
+                rhuddanian:
+                    filter:
+                      controlled_span: ["rhuddanian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(147,219,198)'
+                ordovician:
+                    filter:
+                      controlled_span: ["ordovician"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(0,169,138)'
+                upper_ordovician:
+                    filter:
+                      controlled_span: ["upper ordovician","late ordovician"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(94,204,169)'
+                hirnantian:
+                    filter:
+                      controlled_span: ["hirnantian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(149,218,188)'
+                katian:
+                    filter:
+                      controlled_span: ["katian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(129,214,188)'
+                sandbian:
+                    filter:
+                      controlled_span: ["sandbian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(114,208,169)'
+                middle_ordovician:
+                    filter:
+                      controlled_span: ["middle ordovician","mid ordovician"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(0,189,151)'
+                darriwilian:
+                    filter:
+                      controlled_span: ["darriwilian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(53,201,178)'
+                dapingian:
+                    filter:
+                      controlled_span: ["dapingian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(18,197,169)'
+                lower_ordovician:
+                    filter:
+                      controlled_span: ["lower ordovician","early ordovician","tremadoc","ashgill"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(0,175,137)'
+                floian:
+                    filter:
+                      controlled_span: ["floian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(0,186,160)'
+                tremadocian:
+                    filter:
+                      controlled_span: ["tremadocian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(0,182,152)'
+                cambrian:
+                    filter:
+                      controlled_span: ["cambrian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(129,170,114)'
+                furongian:
+                    filter:
+                      controlled_span: ["furongian","cambrian series 4","series 4"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(173,221,168)'
+                cambrian_stage_10:
+                    filter:
+                      controlled_span: ["cambrian stage 10","stage 10"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(229,241,209)'
+                jiangshanian:
+                    filter:
+                      controlled_span: ["jiangshanian","cambrian stage 9","stage 9"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(216,236,198)'
+                paibian:
+                    filter:
+                      controlled_span: ["paibian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(202,231,188)'
+                miaolingian:
+                    filter:
+                      controlled_span: ["miaolingian","cambrian series 3","series 3","middle cambrian","mid cambrian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(161,207,155)'
+                guzhangian:
+                    filter:
+                      controlled_span: ["guzhangian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(204,221,184)'
+                drumian:
+                    filter:
+                      controlled_span: ["drumian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(191,216,173)'
+                wuliuan:
+                    filter:
+                      controlled_span: ["wuliuan","cambrian stage 5","stage 5"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(178,212,163)'
+                cambrian_series_2:
+                    filter:
+                      controlled_span: ["cambrian series 2","lower cambrian","series 2"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(149,194,143)'
+                cambrian_stage_4:
+                    filter:
+                      controlled_span: ["cambrian stage 4","stage 4"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(180,203,160)'
+                cambrian_stage_3:
+                    filter:
+                      controlled_span: ["cambrian stage 3","stage 3"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(165,198,151)'
+                terreneuvian:
+                    filter:
+                      controlled_span: ["terreneuvian","cambrian series 1","series 1"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(138,181,132)'
+                cambrian_stage_2:
+                    filter:
+                      controlled_span: ["cambrian stage 2","stage 2"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(168,189,147)'
+                fortunian:
+                    filter:
+                      controlled_span: ["fortunian","cambrian stage 1","stage 1"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(154,186,139)'
+                early_cambrian:
+                    filter:
+                      controlled_span: ["early cambrian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(159,184,133)'
+                precambrian:
+                    filter:
+                      controlled_span: ["precambrian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,91,113)'
+                proterozoic:
+                    filter:
+                      controlled_span: ["proterozoic"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,76,104)'
+                neoproterozoic:
+                    filter:
+                      controlled_span: ["neoproterozoic"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,183,87)'
+                ediacaran:
+                    filter:
+                      controlled_span: ["ediacaran"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,214,123)'
+                cryogenian:
+                    filter:
+                      controlled_span: ["cryogenian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,204,111)'
+                tonian:
+                    filter:
+                      controlled_span: ["tonian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,194,98)'
+                mesoproterozoic:
+                    filter:
+                      controlled_span: ["mesoproterozoic"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,184,114)'
+                stenian:
+                    filter:
+                      controlled_span: ["stenian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,217,162)'
+                ectasian:
+                    filter:
+                      controlled_span: ["ectasian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,206,148)'
+                calymmian:
+                    filter:
+                      controlled_span: ["calymmian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,195,134)'
+                paleoproterozoic:
+                    filter:
+                      controlled_span: ["paleoproterozoic","palaeoproterozoic","palæoproterozoic"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,91,113)'
+                statherian:
+                    filter:
+                      controlled_span: ["statherian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,134,161)'
+                orosirian:
+                    filter:
+                      controlled_span: ["orosirian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,123,148)'
+                rhyacian:
+                    filter:
+                      controlled_span: ["rhyacian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,112,135)'
+                siderian:
+                    filter:
+                      controlled_span: ["siderian"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,101,123)'
+                archean:
+                    filter:
+                      controlled_span: ["archean"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,0,124)'
+                neoarchean:
+                    filter:
+                      controlled_span: ["neoarchean"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,166,186)'
+                mesoarchean:
+                    filter:
+                      controlled_span: ["mesoarchean"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,124,163)'
+                paleoarchean:
+                    filter:
+                      controlled_span: ["paleoarchean","palæoarchean","palaeoarchean"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(254,91,151)'
+                eoarchean:
+                    filter:
+                      controlled_span: ["eoarchean"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(238,0,125)'
+                hadean:
+                    filter:
+                      controlled_span: ["hadean"]
+                    draw:
+                      geologic_units:
+                        color: 'rgb(203,3,129)'
