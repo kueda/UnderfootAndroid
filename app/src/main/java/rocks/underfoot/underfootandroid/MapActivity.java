@@ -33,7 +33,11 @@ import android.widget.Toast;
 import android.os.Handler;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.io.IOException;
 
 import com.mapzen.tangram.LngLat;
 import com.mapzen.tangram.MapController;
@@ -66,6 +70,9 @@ public class MapActivity extends AppCompatActivity implements SceneLoadListener,
         "underfoot_units-20191124.mbtiles",
         "underfoot_ways-20190912.mbtiles",
         "elevation-20190408.mbtiles"
+
+        // // small one for download testing
+        // "underfoot-20180401-14.mbtiles"
     };
     private static final ArrayList<Number> FILE_DOWNLOAD_IDS = new ArrayList<Number>();
     public static final int REQUEST_ACCESS_FINE_LOCATION_CODE = 1;
@@ -283,7 +290,7 @@ public class MapActivity extends AppCompatActivity implements SceneLoadListener,
         ArrayList<String> filesToDownload = new ArrayList<String>();
         File file;
         for (String fileName: FILES) {
-            file = new File(getExternalFilesDir("underfoot"), fileName);
+            file = new File(getFilesDir(), fileName);
             if (file.exists()) {
                 Log.d(TAG, "Required file exists at " + file.getAbsolutePath());
             } else {
@@ -359,6 +366,34 @@ public class MapActivity extends AppCompatActivity implements SceneLoadListener,
                             bytesTotal = bytesTotal + cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
                             if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) >= DownloadManager.STATUS_SUCCESSFUL) {
                                 finishes.add(true);
+                                // When the download is complete, move the file to internal storage so it only gets deleted when the app is uninstalled
+                                // Try to get a URI out of the DownloadManager
+                                Uri downloadURI = Uri.parse(cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)));
+                                // Create a new file pointing at internal storage
+                                String fileName = downloadURI.getLastPathSegment();
+                                File targetFile = new File(getFilesDir(), fileName);
+                                if (!targetFile.exists()) {
+                                    Log.d(TAG, "Trying to copy " + downloadURI + " to " + targetFile);
+                                    try {
+                                        FileInputStream is = new FileInputStream(new File(downloadURI.getPath()));
+                                        FileOutputStream os = new FileOutputStream(targetFile);
+                                        int count = 0;
+                                        byte data[] = new byte[1024];
+                                        while ((count = is.read(data)) != -1) {
+                                            os.write(data, 0, count);
+                                        }
+                                        // flushing output
+                                        os.flush();
+                                        // closing streams
+                                        os.close();
+                                        is.close();
+                                        Log.d(TAG, "Finished copying " + downloadURI + " to " + targetFile);
+                                    } catch (FileNotFoundException e) {
+                                        Log.d(TAG, "Couldn't find file for " + fileName + ": " + e);
+                                    } catch (IOException e) {
+                                        Log.d(TAG, "IOException wile copying " + fileName + ": " + e);
+                                    }
+                                }
                             }
                             cursor.close();
                         }
