@@ -1,7 +1,6 @@
 package rocks.underfoot.underfootandroid;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.Context;
@@ -15,10 +14,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.Toolbar;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -32,6 +27,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Handler;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -39,13 +39,19 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.io.IOException;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.mapzen.tangram.CameraUpdate;
+import com.mapzen.tangram.CameraUpdateFactory;
+import com.mapzen.tangram.FeaturePickListener;
+import com.mapzen.tangram.FeaturePickResult;
 import com.mapzen.tangram.LngLat;
+import com.mapzen.tangram.MapChangeListener;
 import com.mapzen.tangram.MapController;
 import com.mapzen.tangram.MapController.SceneLoadListener;
-import com.mapzen.tangram.MapController.FeaturePickListener;
 import com.mapzen.tangram.MapView;
 import com.mapzen.tangram.Marker;
 import com.mapzen.tangram.SceneError;
+import com.mapzen.tangram.TouchInput;
 import com.mapzen.tangram.TouchInput.TapResponder;
 import com.mapzen.tangram.TouchInput.DoubleTapResponder;
 import com.mapzen.tangram.TouchInput.PanResponder;
@@ -56,7 +62,9 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.apache.commons.text.WordUtils;
 
-public class MapActivity extends AppCompatActivity implements SceneLoadListener, TapResponder, DoubleTapResponder, FeaturePickListener, PanResponder, RotateResponder, ShoveResponder {
+public class MapActivity extends AppCompatActivity implements SceneLoadListener, TapResponder,
+        DoubleTapResponder, FeaturePickListener, RotateResponder, ShoveResponder,
+        MapView.MapReadyCallback {
 
     private static final String TAG = "Underfoot::MapActivity";
 
@@ -138,8 +146,8 @@ public class MapActivity extends AppCompatActivity implements SceneLoadListener,
         mMapMetadataLon = (TextView) findViewById(R.id.mapMetadataLon);
         mMapMetadataZoom = (TextView) findViewById(R.id.mapMetadataZoom);
         mZoom = 10;
-        mLng = -122.2583;
-        mLat = 37.8012;
+        mLng = -122.24;
+        mLat = 37.73;
         mUserLocationButton = (FloatingActionButton) findViewById(R.id.userLocationButton);
         mUserLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,6 +190,7 @@ public class MapActivity extends AppCompatActivity implements SceneLoadListener,
         // If we're loading things up for the first time, let's make sure we get the current location and pan there
         mTrackingUserLocation = true;
         startGettingLocation();
+        mMapView.getMapAsync(this);
     }
 
     @Override
@@ -251,6 +260,9 @@ public class MapActivity extends AppCompatActivity implements SceneLoadListener,
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (mMapController == null) {
+            return false;
+        }
         switch (item.getItemId()) {
             case R.id.map_activity_layer_menu_lithology:
                 mMapController.loadSceneFile(SCENE_FILE_PATH);
@@ -448,7 +460,13 @@ public class MapActivity extends AppCompatActivity implements SceneLoadListener,
     }
 
     private void pickCenterFeature() {
-        PointF center = mMapController.lngLatToScreenPosition(mMapController.getPosition());
+        if (mMapController == null) {
+            return;
+        }
+        PointF center = mMapController.lngLatToScreenPosition(
+                mMapController.getCameraPosition().getPosition()
+        );
+        Log.d(TAG, "pickCenterFeature, center: " + center);
         mMapController.pickFeature(center.x, center.y);
     }
 
@@ -565,6 +583,9 @@ public class MapActivity extends AppCompatActivity implements SceneLoadListener,
         if (mUserLocation == null) {
             return;
         }
+        if (mMapController == null) {
+            return;
+        }
         if (mCurrentLocationMarker == null) {
             mCurrentLocationMarker = mMapController.addMarker();
         }
@@ -588,17 +609,29 @@ public class MapActivity extends AppCompatActivity implements SceneLoadListener,
         if (mUserLocation == null) {
             return;
         }
-        mMapController.setPositionEased(new LngLat(mUserLocation.getLongitude(), mUserLocation.getLatitude()), 500);
-        if (mZoom < 10) {
-            mMapController.setZoomEased(10, 1000);
+        if (mMapController == null) {
+            return;
         }
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        handleMapMove();
-                    }
-                },
-                1000);
+        LngLat userLocation = new LngLat(mUserLocation.getLongitude(), mUserLocation.getLatitude());
+        CameraUpdate cameraUpdate;
+        if (mZoom < 10) {
+            mMapController.updateCameraPosition(CameraUpdateFactory.setZoom(10), 1000);
+            cameraUpdate = CameraUpdateFactory.newLngLatZoom(userLocation, 10);
+        } else {
+            cameraUpdate = CameraUpdateFactory.setPosition(userLocation);
+        }
+        mMapController.updateCameraPosition(cameraUpdate, 500, new MapController.CameraAnimationCallback() {
+
+            @Override
+            public void onFinish() {
+                handleMapMove();
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
     }
 
     private void startTrackingUserLocation() {
@@ -612,14 +645,18 @@ public class MapActivity extends AppCompatActivity implements SceneLoadListener,
     }
 
     private void handleMapMove() {
-        LngLat centerCoordinates = mMapController.getPosition();
+        if (mMapController == null) {
+            return;
+        }
+        LngLat centerCoordinates = mMapController.getCameraPosition().getPosition();
         mLng = centerCoordinates.longitude;
         mLat = centerCoordinates.latitude;
-        mZoom = mMapController.getZoom();
+        mZoom = mMapController.getCameraPosition().getZoom();
         mMapMetadataLat.setText(String.format("%.2f", mLat));
         mMapMetadataLon.setText(String.format("%.2f", mLng));
         mMapMetadataZoom.setText(String.format("%.2f", mZoom));
         PointF center = mMapController.lngLatToScreenPosition(centerCoordinates);
+        Log.d(TAG, "handleMapMove, center: " + center);
         mMapController.pickFeature(center.x, center.y);
     }
 
@@ -659,32 +696,36 @@ public class MapActivity extends AppCompatActivity implements SceneLoadListener,
     //
 
     @Override
-    public void onPostCreate(Bundle savedInstanceState) {
-        // Log.d(TAG, "onPostCreate");
-        super.onPostCreate(savedInstanceState);
-        mMapController = mMapView.getMap(this);
-        mMapController.loadSceneFile(SCENE_FILE_PATH);
-        // url: 'http://10.0.2.2:8080/data/v3/{z}/{x}/{y}.pbf'
-        // This works but you actually don't need to do this if you know where the mbtiles file *will* be put in onCreate
-//        Log.d("Underfoot", "trying to load mbtiles from " + mbtilesPath);
-//        map.setMBTiles("osm", mbtilesPath);
-        mMapController.setTapResponder(this);
-        mMapController.setDoubleTapResponder(this);
-        mMapController.setFeaturePickListener(this);
-        mMapController.setPanResponder(this);
-        mMapController.setRotateResponder(this);
-        mMapController.setShoveResponder(this);
-    }
-
-    @Override
     public void onSceneReady(int sceneId, SceneError sceneError) {
-        Log.d(TAG, "onSceneReady");
+        Log.d(TAG, "onSceneReady, mMapController: " + mMapController + ", sceneError: " + sceneError);
+        if (mMapController == null) {
+            return;
+        }
         if (sceneError == null) {
-           Toast.makeText(this, "Scene ready: " + sceneId, Toast.LENGTH_SHORT).show();
-            pickCenterFeature();
-            mMapController.setPosition(new LngLat(mLng, mLat));
-//            Toast.makeText(this, "setting zoom to " + mZoom, Toast.LENGTH_SHORT).show();
-            mMapController.setZoom(mZoom);
+            Toast.makeText(this, "Scene ready: " + sceneId, Toast.LENGTH_SHORT).show();
+            LngLat pos = new LngLat(mLng, mLat);
+            Log.d(TAG, "onSceneReady, updating map to " + pos);
+            mMapController.updateCameraPosition(CameraUpdateFactory.newLngLatZoom(pos, mZoom), 500,
+                    new MapController.CameraAnimationCallback() {
+                @Override
+                public void onFinish() {
+                    Log.d(TAG, "finished initial move to coords after onSceneReady");
+                    // Get the unit at the current location in a second, maybe b/c the local map data isn't loaded when onSceneReady fires
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d(TAG, "handling map move after scene ready");
+                            MapActivity.this.handleMapMove();
+                        }
+                    }, 2000);
+                }
+
+                @Override
+                public void onCancel() {
+
+                }
+            });
         } else {
             Toast.makeText(this, "Scene load error: " + sceneId + " "
                     + sceneError.getSceneUpdate().toString()
@@ -695,14 +736,6 @@ public class MapActivity extends AppCompatActivity implements SceneLoadListener,
                     + " " + sceneError.getError().toString());
         }
         mCurrentLocationMarker = null;
-        // Get the unit at the current location in a second, maybe b/c the local map data isn't loaded when onSceneReady fires
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                MapActivity.this.handleMapMove();
-            }
-        }, 1000);
     }
 
     @Override
@@ -712,29 +745,67 @@ public class MapActivity extends AppCompatActivity implements SceneLoadListener,
 
     @Override
     public boolean onSingleTapConfirmed(float x, float y) {
+        if (mMapController == null) {
+            return false;
+        }
         LngLat tappedPoint = mMapController.screenPositionToLngLat(new PointF(x, y));
         mMapController.pickFeature(x,y);
-        mMapController.setPositionEased(tappedPoint, 1000);
+//        mMapController.setPositionEased(tappedPoint, 1000);
+        mMapController.updateCameraPosition(CameraUpdateFactory.setPosition(tappedPoint), 1000);
         return true;
     }
 
     @Override
     public boolean onDoubleTap(float x, float y) {
-        mMapController.setZoomEased(mMapController.getZoom() + 1.f, 500);
+        Log.d(TAG, "onDoubleTap");
+        if (mMapController == null) {
+            return false;
+        }
+        float newZoom = mMapController.getCameraPosition().getZoom() + 1.f;
         LngLat tapped = mMapController.screenPositionToLngLat(new PointF(x, y));
-        LngLat current = mMapController.getPosition();
-        LngLat next = new LngLat(
-                0.5 * (tapped.longitude + current.longitude),
-                0.5 * (tapped.latitude + current.latitude)
-        );
-        mMapController.setPositionEased(next, 500);
+        mMapController.updateCameraPosition(CameraUpdateFactory.newLngLatZoom(tapped, newZoom), 500);
         return true;
     }
 
     @Override
-    public void onFeaturePick(java.util.Map<String,String> properties,
-                              float positionX,
-                              float positionY) {
+    public boolean onRotateBegin() {
+        return true;
+    }
+
+    @Override
+    public boolean onRotate(float x, float y, float rotation) {
+        // Disable rotation
+        return true;
+    }
+
+    @Override
+    public boolean onRotateEnd() {
+        return true;
+    }
+
+    @Override
+    public boolean onShoveBegin() {
+        return false;
+    }
+
+    @Override
+    public boolean onShove(float distance) {
+        // Disable perspective changes
+        return true;
+    }
+
+    @Override
+    public boolean onShoveEnd() {
+        return false;
+    }
+
+    @Override
+    public void onFeaturePickComplete(@Nullable FeaturePickResult result) {
+        Log.d(TAG, "onFeaturePickComplete, result: " + result);
+        if (result == null) {
+            return;
+        }
+        java.util.Map<String,String> properties = result.getProperties();
         if (properties.isEmpty()) {
             mSlideUpTitle.setText("Unknown");
             mSlideUpLithology.setText("Lithology: Unknown");
@@ -775,28 +846,43 @@ public class MapActivity extends AppCompatActivity implements SceneLoadListener,
     }
 
     @Override
-    public boolean onPan(float startX, float startY, float endX, float endY) {
-        handleMapMove();
-        // Log.d(TAG, "onPan");
-        stopTrackingUserLocation();
-        return false;
-    }
+    public void onMapReady(@Nullable MapController mapController) {
+        Log.d(TAG, "onMapReady, mapController: " + mapController);
+        mMapController = mapController;
+        Log.d(TAG, "onMapReady, loading scene file at " + SCENE_FILE_PATH);
+        mMapController.setSceneLoadListener(this);
+        mMapController.loadSceneFile(SCENE_FILE_PATH);
+        // url: 'http://10.0.2.2:8080/data/v3/{z}/{x}/{y}.pbf'
+        // This works but you actually don't need to do this if you know where the mbtiles file *will* be put in onCreate
+//        Log.d("Underfoot", "trying to load mbtiles from " + mbtilesPath);
+//        map.setMBTiles("osm", mbtilesPath);;
+        mMapController.setFeaturePickListener(this);
+        TouchInput touchInput = mMapController.getTouchInput();
+        touchInput.setTapResponder(this);
+        touchInput.setDoubleTapResponder(this);
+        touchInput.setRotateResponder(this);
+        mMapController.setMapChangeListener(new MapChangeListener() {
+            @Override
+            public void onViewComplete() {
+                Log.d(TAG, "onViewComplete");
+            }
 
-    @Override
-    public boolean onFling(float posX, float posY, float velocityX, float velocityY) {
-        // Log.d(TAG, "onFling");
-        return false;
-    }
+            @Override
+            public void onRegionWillChange(boolean animated) {
 
-    @Override
-    public boolean onRotate(float x, float y, float rotation) {
-        // Disable rotation
-        return true;
-    }
+            }
 
-    @Override
-    public boolean onShove(float distance) {
-        // Disable perspective changes
-        return true;
+            @Override
+            public void onRegionIsChanging() {
+
+            }
+
+            @Override
+            public void onRegionDidChange(boolean animated) {
+                Log.d(TAG, "onRegionDidChange");
+                handleMapMove();
+                stopTrackingUserLocation();
+            }
+        });
     }
 }
