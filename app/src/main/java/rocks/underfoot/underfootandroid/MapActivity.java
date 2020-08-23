@@ -67,9 +67,12 @@ public class MapActivity extends AppCompatActivity implements SceneLoadListener,
 
     private static final String[] FILES = {
         // From https://github.com/kueda/underfoot
-        "underfoot_units-20191124.mbtiles",
-        "underfoot_ways-20190912.mbtiles",
-        "elevation-20190408.mbtiles"
+        // "underfoot_units-20191124.mbtiles",
+        // "underfoot_ways-20190912.mbtiles",
+        // "elevation-20190408.mbtiles"
+        "rocks-20200509.mbtiles",
+        "ways-20200509.mbtiles",
+        "contours-20200509.mbtiles",
 
         // // small one for download testing
         // "underfoot-20180401-14.mbtiles"

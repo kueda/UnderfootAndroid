@@ -14,13 +14,13 @@ sources:
         max_zoom: 14
     underfoot:
         type: MVT
-        url: 'file:///data/user/0/rocks.underfoot.underfootandroid/files/underfoot_units-20191124.mbtiles'
+        url: 'file:///data/user/0/rocks.underfoot.underfootandroid/files/rocks-20200509.mbtiles'
     underfoot_ways:
         type: MVT
-        url: 'file:///data/user/0/rocks.underfoot.underfootandroid/files/underfoot_ways-20190912.mbtiles'
+        url: 'file:///data/user/0/rocks.underfoot.underfootandroid/files/ways-20200509.mbtiles'
     underfoot_elevation:
         type: MVT
-        url: 'file:///data/user/0/rocks.underfoot.underfootandroid/files/elevation-20190408.mbtiles'
+        url: 'file:///data/user/0/rocks.underfoot.underfootandroid/files/contours-20200509.mbtiles'
         # For whatever reason, zoom filtering in layer filters doesn't work, but this does
         min_display_zoom: 13
 
@@ -47,7 +47,7 @@ layers:
     vectile:
         data:
             source: underfoot
-            layer: units
+            layer: rock_units
         interactive:
             draw: { geologic_units: { interactive: true } }
         draw:
@@ -99,10 +99,10 @@ layers:
                     style: dashed
                     outline:
                         width: 0
-    contours12:
+    contours:
         data:
             source: underfoot_elevation
-            layer: contours12
+            layer: contours
         hundred:
             filter:
                 function() {
