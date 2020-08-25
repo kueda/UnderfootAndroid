@@ -60,7 +60,7 @@ import com.mapzen.tangram.TouchInput.ShoveResponder;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import org.apache.commons.text.WordUtils;
+//import org.apache.commons.text.WordUtils;
 
 public class MapActivity extends AppCompatActivity implements SceneLoadListener, TapResponder,
         DoubleTapResponder, FeaturePickListener, RotateResponder, ShoveResponder,
@@ -829,7 +829,7 @@ public class MapActivity extends AppCompatActivity implements SceneLoadListener,
         if (span == null || span.length() == 0) {
             span = "Unknown";
         } else {
-            span = WordUtils.capitalize(span).replace(" To ", " to ");
+//            span = WordUtils.capitalize(span).replace(" To ", " to ");
         }
         String estAge = this.humanizeAge(properties.get("est_age"));
         String age = span + " (" + estAge + ")";
