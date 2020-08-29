@@ -1,5 +1,6 @@
 package rocks.underfoot.underfootandroid.rocks
 
+import android.graphics.PointF
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,7 +9,10 @@ import androidx.lifecycle.ViewModel
 import com.mapzen.tangram.*
 
 class RocksViewModel : ViewModel(),
-    MapController.SceneLoadListener
+    MapController.SceneLoadListener,
+    TouchInput.RotateResponder,
+    TouchInput.DoubleTapResponder,
+    TouchInput.ShoveResponder
 {
     private val TAG = "RocksViewModel"
     private val SCENE_FILE_PATH = "asset:///usgs-state-color-scene.yml"
@@ -69,9 +73,17 @@ class RocksViewModel : ViewModel(),
     // is supposed to establish
     fun onMapReady(mc: MapController) {
         mapController = mc
-        mapController.setSceneLoadListener(this)
-        mapController.loadSceneFile(SCENE_FILE_PATH)
-        mapController.setMapChangeListener(mapChangeListener)
+        mapController.let {
+            it.setSceneLoadListener(this)
+            it.loadSceneFile(SCENE_FILE_PATH)
+            it.setMapChangeListener(mapChangeListener)
+            it.touchInput.let {ti ->
+//            ti.setTapResponder(this);
+                ti.setDoubleTapResponder(this);
+                ti.setRotateResponder(this);
+                ti.setShoveResponder(this)
+            }
+        }
     }
 
     // Tangram overrides
@@ -84,4 +96,24 @@ class RocksViewModel : ViewModel(),
         mapController.updateCameraPosition(
             CameraUpdateFactory.newLngLatZoom(pos, zoom.value!!), 500)
     }
+
+    // Disable rotation
+    override fun onRotateBegin(): Boolean { return true }
+    override fun onRotate(x: Float, y: Float, rotation: Float): Boolean { return true }
+    override fun onRotateEnd(): Boolean { return true }
+
+    // Zoom on double tap
+    override fun onDoubleTap(x: Float, y: Float): Boolean {
+        val newZoom = mapController.cameraPosition.zoom + 1F;
+        val tapped = mapController.screenPositionToLngLat(PointF(x, y));
+        tapped?.let {
+            mapController.updateCameraPosition(CameraUpdateFactory.newLngLatZoom(it, newZoom), 500);
+        }
+        return true;
+    }
+
+    // Disable perspective changes, though dang, how cool would it be to have a 3D DEM
+    override fun onShoveBegin(): Boolean { return false }
+    override fun onShove(distance: Float): Boolean { return true }
+    override fun onShoveEnd(): Boolean { return false }
 }
