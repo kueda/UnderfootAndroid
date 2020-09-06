@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt' // needed for Kotlin data binding functionality
+apply plugin: 'kotlinx-serialization' // JSON serialization
 
 android {
     compileSdkVersion 29
@@ -60,9 +62,12 @@ dependencies {
     // Mapping
     implementation "com.mapzen.tangram:tangram:$tangram_version"
 
-    // Slide-up panel
+    // Slide-up panel. Can probably remove that when I remove the old activity
     repositories {
         mavenCentral()
     }
     implementation 'com.sothree.slidinguppanel:library:3.4.0'
+
+    // Kotlinx serialization for JSON processing
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC" // JVM dependency
 }
