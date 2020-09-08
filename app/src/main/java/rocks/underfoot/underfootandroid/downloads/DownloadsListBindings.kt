@@ -15,16 +15,12 @@ object DownloadsListBindings {
 
     // The annotation value is the name of the attribute used in the layout, i.e.
     // app:underfootPacks="@{theList}". I'm using the awkward underfootPacks to make to super clear that this is a custom attribute
-    @BindingAdapter("bind:packs")
-    @JvmStatic fun setUnderfootPacks(listView: ListView, items: List<Pack>?) {
-        val newPacks = items ?: listOf<Pack>()
-        Log.d(tag, "newPacks.size: ${newPacks.size}")
-        if (listView.adapter == null) {
-            listView.adapter = PacksAdapter(newPacks)
-        } else {
-            with(listView.adapter as PacksAdapter) {
-                updatePacks(newPacks)
-            }
+    @BindingAdapter("bind:downloads")
+    @JvmStatic fun setUnderfootDownloads(listView: ListView, items: List<Download>?) {
+        val newDownloads = items ?: listOf<Download>()
+        Log.d(tag, "binding ${newDownloads.size} new downloads")
+        with(listView.adapter as DownloadsAdapter) {
+            updateDownloads(newDownloads)
         }
     }
 }

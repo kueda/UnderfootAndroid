@@ -20,5 +20,12 @@
       <item name="android:shadowDy">1</item>
       <item name="android:shadowRadius">10</item>
     </style>
+    
+    <style name="ListControlImageButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:background">@color/transparent</item>
+    </style>
 
 </resources>
