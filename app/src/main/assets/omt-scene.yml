@@ -41,7 +41,6 @@ layers:
             source: normals
         draw:
             hillshade:
-                order: 1
                 visible: true
                 order: function() { return feature.sort_rank || 0; }
     vectile:

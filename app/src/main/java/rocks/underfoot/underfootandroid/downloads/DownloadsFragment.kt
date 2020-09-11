@@ -1,13 +1,16 @@
 package rocks.underfoot.underfootandroid.downloads
 
 import android.app.DownloadManager
+import android.content.Context
 import android.content.Context.DOWNLOAD_SERVICE
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.edit
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -27,6 +30,8 @@ class DownloadsFragment : Fragment() {
 //    private var param1: String? = null
 //    private var param2: String? = null
 
+    val logTag = "DownloadsFragment"
+
     private lateinit var viewModel: DownloadsViewModel
     private lateinit var binding: FragmentDownloadsBinding
 
@@ -38,15 +43,14 @@ class DownloadsFragment : Fragment() {
 //        }
         viewModel = ViewModelProvider(this).get(DownloadsViewModel::class.java)
         viewModel.downloadManager = (activity?.getSystemService(DOWNLOAD_SERVICE) as DownloadManager)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        // Observe the progress map and notify the list adapter so we can update progressbars
-        viewModel.progressMap.observe(viewLifecycleOwner, Observer<MutableMap<String, DownloadProgress>> { progressMap ->
-            (binding.downloadsList.adapter as DownloadsAdapter).updateDownloadProgress(progressMap)
-        })
-        viewModel.fetchManifest()
+        // Initialize the selected pack
+        val prefsName = getString(R.string.packsPrefName)
+        val selectedPrefName = getString(R.string.selectedPackPrefName)
+        viewModel.selectedPackName.value ?:
+            context?.apply { with(getSharedPreferences(prefsName, Context.MODE_PRIVATE)) {
+                viewModel.selectedPackName.value = getString(selectedPrefName, null)
+            } }
+        viewModel.downloads.value?.isEmpty() ?: viewModel.fetchManifest()
     }
 
     override fun onCreateView(
@@ -62,6 +66,26 @@ class DownloadsFragment : Fragment() {
         binding.viewModel = viewModel
         // Without this, the binding will not update when the view model updates
         binding.lifecycleOwner = viewLifecycleOwner
+        // This seems like a crutch, but it's simpler than other solutions I've found to this
+        // problem, which is that updating items in a LiveData<List> does *not* notify observers of
+        // that list
+        viewModel.listNeedsUpdate.observe(viewLifecycleOwner, Observer {listNeedsUpdate ->
+            if (listNeedsUpdate) {
+                (binding.downloadsList.adapter as DownloadsAdapter).notifyDataSetChanged()
+                viewModel.listNeedsUpdate.value = false
+            }
+        })
+        // When the selected pack changes, save it in preferences
+        viewModel.selectedPackName.observe(viewLifecycleOwner, Observer { packName ->
+            context?.apply {
+                with(getSharedPreferences(getString(R.string.packsPrefName), Context.MODE_PRIVATE)) {
+                    edit {
+                        putString(getString(R.string.selectedPackPrefName), packName)
+                    }
+                }
+            }
+        })
+        viewModel.downloads.observe(viewLifecycleOwner, Observer { viewModel.checkPacksDownloaded() })
         return binding.root
     }
 

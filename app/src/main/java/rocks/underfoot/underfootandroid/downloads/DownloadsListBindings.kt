@@ -18,7 +18,6 @@ object DownloadsListBindings {
     @BindingAdapter("bind:downloads")
     @JvmStatic fun setUnderfootDownloads(listView: ListView, items: List<Download>?) {
         val newDownloads = items ?: listOf<Download>()
-        Log.d(tag, "binding ${newDownloads.size} new downloads")
         with(listView.adapter as DownloadsAdapter) {
             updateDownloads(newDownloads)
         }

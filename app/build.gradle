@@ -70,4 +70,6 @@ dependencies {
 
     // Kotlinx serialization for JSON processing
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC" // JVM dependency
+
+    implementation "net.lingala.zip4j:zip4j:2.6.2"
 }

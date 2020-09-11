@@ -34,6 +34,8 @@ class RocksViewModel : ViewModel(),
 
     private lateinit var mapController: MapController
 
+    val selectedPackName = MutableLiveData<String>("")
+
     private val lat = MutableLiveData<Double>(37.73)
     val latString: LiveData<String> = Transformations.map(lat) { l -> "%.2f".format(l) }
 
@@ -100,7 +102,20 @@ class RocksViewModel : ViewModel(),
         mapController = mc
         mapController.let {
             it.setSceneLoadListener(this)
-            it.loadSceneFile(SCENE_FILE_PATH)
+            it.loadSceneFile(SCENE_FILE_PATH, listOf(
+                SceneUpdate(
+                    "sources.underfoot.url",
+                    "file:///data/user/0/rocks.underfoot.underfootandroid/files/${selectedPackName.value}/rocks.mbtiles"
+                ),
+                SceneUpdate(
+                    "sources.underfoot_ways.url",
+                    "file:///data/user/0/rocks.underfoot.underfootandroid/files/${selectedPackName.value}/ways.mbtiles"
+                ),
+                SceneUpdate(
+                    "sources.underfoot_elevation.url",
+                    "file:///data/user/0/rocks.underfoot.underfootandroid/files/${selectedPackName.value}/contours.mbtiles"
+                )
+            ))
             it.setMapChangeListener(this)
             it.setFeaturePickListener(this)
             it.touchInput.let {ti ->

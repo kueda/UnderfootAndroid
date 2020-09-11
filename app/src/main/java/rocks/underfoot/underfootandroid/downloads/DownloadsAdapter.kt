@@ -45,24 +45,4 @@ class DownloadsAdapter(
 //        This *is* necessary
         notifyDataSetChanged()
     }
-
-    fun updateDownloadProgress(progressMap: MutableMap<String, DownloadProgress>) {
-        var changed = false
-        for ((packName, progress) in progressMap) {
-            downloads.find { it.pack.name == packName }?.let {d ->
-                if (d.downloadedBytes != progress.bytesDownloaded) {
-                    d.downloadedBytes = progress.bytesDownloaded
-                    changed = true
-                }
-                if (d.maxBytes != progress.totalBytes) {
-                    d.maxBytes = progress.totalBytes
-                    changed = true
-                }
-            }
-        }
-        if (changed) {
-            notifyDataSetChanged()
-        }
-    }
-
 }

@@ -1,5 +1,6 @@
 package rocks.underfoot.underfootandroid.rocks
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -67,6 +68,11 @@ class RocksFragment : Fragment(),
         binding.lifecycleOwner = viewLifecycleOwner
         mapView = binding.root.findViewById<MapView>(R.id.map);
         mapView?.getMapAsync(this);
+        val prefsName = getString(R.string.packsPrefName)
+        val selectedPrefName = getString(R.string.selectedPackPrefName)
+        context?.apply { with(getSharedPreferences(prefsName, Context.MODE_PRIVATE)) {
+            viewModel.selectedPackName.value = getString(selectedPrefName, "")
+        } }
         return binding.root
     }
 

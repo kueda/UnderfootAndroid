@@ -20,15 +20,27 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingTop="@dimen/list_gutter"
-            android:paddingStart="@dimen/list_gutter"
+            android:paddingStart="12dp"
             android:paddingEnd="@dimen/list_gutter"
             android:paddingBottom="@{@dimen/list_gutter - @dimen/progress_bar_height}"
             >
+            <RadioButton
+                android:id="@+id/selected_radio"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:paddingEnd="@dimen/list_gutter"
+                android:checked="@{viewModel.selectedPackName.contentEquals(download.pack.name)}"
+                android:onClick="@{() -> viewModel.selectDownload(download)}"
+                android:enabled="@{download.downloaded}"
+                />
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/selected_radio"
                 app:layout_constraintRight_toLeftOf="@id/action"
                 android:layout_marginRight="@dimen/list_gutter"
                 >
