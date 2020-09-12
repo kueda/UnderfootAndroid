@@ -177,8 +177,11 @@ class DownloadsViewModel(application: Application) : AndroidViewModel(applicatio
             packDir.deleteRecursively()
             checkPacksDownloaded()
         }
-        // Reset the livedata
-        selectedPackName.value = ""
+        // If we just deleted the selected pack, choose the first downloaded one instead, or set
+        // to null
+        if (selectedPackName.value == pack.name) {
+            selectedPackName.value = downloads.value?.first {it.downloaded}?.pack?.name
+        }
     }
 
     fun checkPacksDownloaded() {
