@@ -11,13 +11,13 @@ import java.lang.IllegalStateException
 
 // Derived from https://github.com/android/architecture-samples/blob/todo-mvvm-live-kotlin/todoapp/app/src/main/java/com/example/android/architecture/blueprints/todoapp/tasks/TasksAdapter.kt
 //  and https://github.com/trsquarelab/androidexamples/blob/master/DataBindingListView/src/main/java/com/example/databindinglistview/ListAdapter.java
-class DownloadsAdapter(
-    private var downloads: List<Download> = listOf<Download>(),
+class PacksAdapter(
+    private var packs: List<Pack> = listOf<Pack>(),
     private var viewModel: DownloadsViewModel
 ) : BaseAdapter() {
-    override fun getCount() = downloads.size
+    override fun getCount() = packs.size
 
-    override fun getItem(position: Int) = downloads[position]
+    override fun getItem(position: Int) = packs[position]
 
     override fun getItemId(position: Int) = position.toLong()
 
@@ -32,16 +32,16 @@ class DownloadsAdapter(
             // If there *is* a view that we're recycling, get its binding
             DataBindingUtil.getBinding(convertView) ?: throw IllegalStateException()
         }
-        binding.download = getItem(position)
+        binding.pack = getItem(position)
         binding.viewModel = viewModel
 //        This is in the architecture sample app but doesn't seem necessary here
         binding.executePendingBindings()
         return binding.root
     }
 
-    fun updateDownloads(newDownloads: List<Download>) {
-        Log.d("DownloadsAdapter", "adapting ${newDownloads.size} new downloads")
-        downloads = newDownloads
+    fun updateDownloads(newPacks: List<Pack>) {
+        Log.d("DownloadsAdapter", "adapting ${newPacks.size} new packs")
+        packs = newPacks
 //        This *is* necessary
         notifyDataSetChanged()
     }

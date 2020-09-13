@@ -5,8 +5,8 @@
         <!-- https://stackoverflow.com/a/44420598 -->
         <import type="android.view.View"/>
         <variable
-            name="download"
-            type="rocks.underfoot.underfootandroid.downloads.Download" />
+            name="pack"
+            type="rocks.underfoot.underfootandroid.downloads.Pack" />
         <variable
             name="viewModel"
             type="rocks.underfoot.underfootandroid.downloads.DownloadsViewModel" />
@@ -32,9 +32,9 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:paddingEnd="@dimen/list_gutter"
-                android:checked="@{viewModel.selectedPackName.contentEquals(download.pack.name)}"
-                android:onClick="@{() -> viewModel.selectDownload(download)}"
-                android:enabled="@{download.downloaded}"
+                android:checked="@{viewModel.selectedPackName == pack.name}"
+                android:onClick="@{() -> viewModel.selectPack(pack)}"
+                android:enabled="@{pack.downloaded}"
                 />
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="0dp"
@@ -49,7 +49,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:text="@{download.pack.name}"
+                    android:text="@{pack.name}"
                     android:hint="us-ca-oakland"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
                     />
@@ -73,35 +73,35 @@
 
                 <ImageButton
                     android:id="@+id/download_button"
-                    android:clickable="@{!download.downloading}"
-                    android:enabled="@{!download.downloading}"
-                    android:onClick="@{() -> viewModel.startDownload(download)}"
+                    android:clickable="@{!pack.downloading}"
+                    android:enabled="@{!pack.downloading}"
+                    android:onClick="@{() -> viewModel.downloadPack(pack)}"
                     android:src="@drawable/get_app_black_24dp"
-                    android:visibility="@{download.downloaded || download.downloading ? View.GONE : View.VISIBLE}"
+                    android:visibility="@{pack.downloaded || pack.downloading ? View.GONE : View.VISIBLE}"
                     style="@style/ListControlImageButton"
                     />
 
                 <ImageButton
                     android:id="@+id/cancel_button"
-                    android:onClick="@{() -> viewModel.cancelDownload(download)}"
+                    android:onClick="@{() -> viewModel.cancelDownload(pack)}"
                     android:src="@drawable/clear_black_24dp"
                     android:enabled="true"
-                    android:visibility="@{download.downloading ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{pack.downloading ? View.VISIBLE : View.GONE}"
                     style="@style/ListControlImageButton"
                     />
 
                 <ImageButton
                     android:id="@+id/update_button"
                     android:src="@drawable/update_black_24dp"
-                    android:visibility="@{download.updatable ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{pack.updatable ? View.VISIBLE : View.GONE}"
                     style="@style/ListControlImageButton"
                     />
 
                 <ImageButton
                     android:id="@+id/delete_button"
-                    android:onClick="@{() -> viewModel.deletePack(download.pack)}"
+                    android:onClick="@{() -> viewModel.deletePack(pack)}"
                     android:src="@drawable/delete_black_24dp"
-                    android:visibility="@{download.downloaded ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{pack.downloaded ? View.VISIBLE : View.GONE}"
                     style="@style/ListControlImageButton"
                     />
             </LinearLayout>
@@ -109,9 +109,9 @@
         <ProgressBar
             android:layout_width="match_parent"
             android:layout_height="@dimen/progress_bar_height"
-            android:progress="@{download.downloadedBytes}"
-            android:max="@{download.maxBytes}"
-            android:visibility="@{download.downloading ? View.VISIBLE : View.INVISIBLE}"
+            android:progress="@{pack.downloadedBytes}"
+            android:max="@{pack.maxBytes}"
+            android:visibility="@{pack.downloading ? View.VISIBLE : View.INVISIBLE}"
             style="@android:style/Widget.Material.Light.ProgressBar.Horizontal"
             />
     </LinearLayout>
