@@ -89,7 +89,7 @@ class RocksViewModel : ViewModel(),
     ): String {
         if (properties.isEmpty()) return default
         properties[propName]?.let {
-            if (it.length > 0 ) return it
+            if (it.isNotEmpty()) return it
         }
         return default
     }

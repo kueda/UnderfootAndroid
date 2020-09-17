@@ -1,15 +1,19 @@
 package rocks.underfoot.underfootandroid.rocks
 
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.mapzen.tangram.*
 import rocks.underfoot.underfootandroid.MainActivity
 import rocks.underfoot.underfootandroid.R
@@ -68,6 +72,17 @@ class RocksFragment : Fragment(),
         binding.lifecycleOwner = viewLifecycleOwner
         mapView = binding.root.findViewById<MapView>(R.id.map);
         mapView?.getMapAsync(this);
+        viewModel.selectedPackName.observe(viewLifecycleOwner, Observer {
+            if (it.isNullOrEmpty()) {
+                AlertDialog.Builder(requireActivity())
+                    .setTitle(getString(R.string.map_no_data_title))
+                    .setMessage(getString(R.string.map_no_data_description))
+                    .setPositiveButton(getString(R.string.choose_downloads), DialogInterface.OnClickListener { _, _ ->
+                        findNavController().navigate(RocksFragmentDirections.actionNavRocksToNavDownloads())
+                    })
+                    .create().show()
+            }
+        })
         val prefsName = getString(R.string.packsPrefName)
         val selectedPrefName = getString(R.string.selectedPackPrefName)
         context?.apply { with(getSharedPreferences(prefsName, Context.MODE_PRIVATE)) {

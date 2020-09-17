@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt' // needed for Kotlin data binding functionality
 apply plugin: 'kotlinx-serialization' // JSON serialization
+apply plugin: 'androidx.navigation.safeargs'
 
 android {
     compileSdkVersion 29

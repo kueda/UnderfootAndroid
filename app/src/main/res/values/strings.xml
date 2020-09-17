@@ -2,4 +2,7 @@
     <string name="app_name">Underfoot</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="map_no_data_title">Time To Download Some Data</string>
+    <string name="map_no_data_description">Underfoot is an offline-first mapping application, so you need to download map data so it will be available online.</string>
+    <string name="choose_downloads">Choose Downloads</string>
 </resources>
