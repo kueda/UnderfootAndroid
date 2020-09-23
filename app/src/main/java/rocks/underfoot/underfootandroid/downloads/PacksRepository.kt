@@ -112,15 +112,16 @@ class PacksRepository(private val context: Context) {
 
     private suspend fun fetchLocalPacks() {
         withContext(Dispatchers.IO) {
-            val jsonFiles = context.filesDir.listFiles(FilenameFilter { _, name ->
+            context.filesDir.listFiles(FilenameFilter { _, name ->
                 name.endsWith(".json")
-            })
-            packs.postValue(jsonFiles.map {f ->
-                val packMetadata = json.decodeFromString<PackMetadata>(f.readText())
-                val pack = Pack(packMetadata)
-                pack.downloaded = true
-                pack
-            })
+            })?.let {jsonFiles ->
+                packs.postValue(jsonFiles.map {f ->
+                    val packMetadata = json.decodeFromString<PackMetadata>(f.readText())
+                    val pack = Pack(packMetadata)
+                    pack.downloaded = true
+                    pack
+                })
+            }
         }
     }
 

@@ -1,73 +1,134 @@
 package rocks.underfoot.underfootandroid.rocks
 
-import android.graphics.PointF
+import android.annotation.SuppressLint
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.mapzen.tangram.*
+import rocks.underfoot.underfootandroid.maptuils.*
 import kotlin.math.roundToInt
 
 class RocksViewModel : ViewModel(),
     MapController.SceneLoadListener,
-    TouchInput.DoubleTapResponder,
-    MapChangeListener,
-    FeaturePickListener
+    MapCenterTrackable,
+    FeatureChoosable,
+    TapToPanable,
+    DoubleTapToPanAndZoomable,
+    Unrotatable,
+    Unshovable
 {
     private val TAG = "RocksViewModel"
     private val SCENE_FILE_PATH = "asset:///usgs-state-color-scene.yml"
     private val UNIT_AGE_SCENE_FILE_PATH = "asset:///unit-age-scene.yml"
     private val SPAN_COLOR_SCENE_FILE_PATH = "asset:///span-color.yml"
-    private val FILES = listOf(
-        // From https://github.com/kueda/underfoot
-        // "underfoot_units-20191124.mbtiles",
-        // "underfoot_ways-20190912.mbtiles",
-        // "elevation-20190408.mbtiles"
-        "rocks-20200509.mbtiles",
-        "ways-20200509.mbtiles",
-        "contours-20200509.mbtiles"
 
-        // // small one for download testing
-        // "underfoot-20180401-14.mbtiles"
-    )
-
-    private lateinit var mapController: MapController
+    lateinit var mapController: MapController
 
     val selectedPackName = MutableLiveData<String>("")
 
-    private val lat = MutableLiveData<Double>(37.73)
+    override val lat = MutableLiveData<Double>(37.73)
     val latString: LiveData<String> = Transformations.map(lat) { l -> "%.2f".format(l) }
 
-    private val lng = MutableLiveData<Double>(-122.24)
+    override val lng = MutableLiveData<Double>(-122.24)
     val lngString: LiveData<String> = Transformations.map(lng) { l -> "%.2f".format(l) }
 
-    private val zoom = MutableLiveData<Float>(10.0F)
-    val zoomString: LiveData<String> = Transformations.map(zoom) {z -> "%.1f".format(z) }
+    override val zoom = MutableLiveData<Float>(10.0F)
+    val zoomString: LiveData<String> = Transformations.map(zoom) { z -> "%.1f".format(z) }
 
-    private var feature = MutableLiveData<FeaturePickResult>()
-    val featureTitle: LiveData<String> = Transformations.map(feature) {f ->
+    override var feature = MutableLiveData<FeaturePickResult>()
+    val featureTitle: LiveData<String> = Transformations.map(feature) { f ->
         featurePropertyString("title", f.properties)
     }
-    val featureLithology: LiveData<String> = Transformations.map(feature) {f ->
-        featurePropertyString("lithology", f.properties, default="Lithology: Unknown")
+    val featureLithology: LiveData<String> = Transformations.map(feature) { f ->
+        featurePropertyString("lithology", f.properties, default = "Lithology: Unknown")
     }
-    val featureDescription: LiveData<String> = Transformations.map(feature) {f ->
+    val featureDescription: LiveData<String> = Transformations.map(feature) { f ->
         featurePropertyString("description", f.properties)
     }
-    val featureAge: LiveData<String> = Transformations.map(feature) {f ->
+    val featureAge: LiveData<String> = Transformations.map(feature) { f ->
         val estAge = humanizeAge(f.properties["est_age"]);
         val span = featurePropertyString("span", f.properties)
             .capitalize().replace(" To ", " to ")
         "Age: $span ($estAge)"
     }
-    val featureEstAge: LiveData<String> = Transformations.map(feature) {f ->
+    val featureEstAge: LiveData<String> = Transformations.map(feature) { f ->
         val span = featurePropertyString("span", f.properties)
             .capitalize().replace(" To ", " to ")
         "$span (${humanizeAge(f.properties["max_age"])} - ${humanizeAge(f.properties["min_age"])})"
     }
-    val featureSource: LiveData<String> = Transformations.map(feature) {f ->
+    val featureSource: LiveData<String> = Transformations.map(feature) { f ->
         featurePropertyString("source", f.properties)
+    }
+
+    lateinit var locationManager: LocationManager
+    var userLocation: Location? = null
+    override val trackingUserLocation = MutableLiveData<Boolean>(false)
+    val requestingLocationUpdates = MutableLiveData<Boolean>(false)
+
+    private val locationListener = object: LocationListener {
+        override fun onLocationChanged(location: Location?) {
+            Log.d(TAG, "onLocationChanged, location: $location")
+            location ?: return
+            val isBetter = MapHelpers.isBetterLocation(location, userLocation)
+            if (isBetter && location.accuracy < 100) {
+                userLocation = location
+//                showCurrentLocation()
+                if (trackingUserLocation.value == true) {
+                    panToCurrentLocation()
+                }
+            }
+        }
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+        override fun onProviderEnabled(provider: String?) {}
+        override fun onProviderDisabled(provider: String?) {}
+    }
+
+    fun panToCurrentLocation() {
+        userLocation?.let {
+            val lngLat = LngLat(it.longitude, it.latitude)
+            val z = if (zoom.value!! < 10) 10f else zoom.value
+            panToLocation(lngLat, zoom = z, manual = false)
+        }
+    }
+
+    override fun panToLocation(lngLat: LngLat, zoom: Float?, manual: Boolean) {
+        val cameraUpdate = if (zoom == null) {
+            CameraUpdateFactory.setPosition(lngLat)
+        } else {
+            CameraUpdateFactory.newLngLatZoom(lngLat, zoom)
+        }
+        mapController.updateCameraPosition(cameraUpdate, 500)
+        if (manual) {
+            trackingUserLocation.value = false
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun startGettingLocation() {
+        locationManager.requestLocationUpdates(
+            LocationManager.GPS_PROVIDER,
+            5000,
+            10f,
+            locationListener
+        )
+        locationManager.requestLocationUpdates(
+            LocationManager.NETWORK_PROVIDER,
+            5000,
+            10f,
+            locationListener
+        )
+
+    }
+
+    fun requestLocationUpdates() {
+        requestingLocationUpdates.value = true
+        trackingUserLocation.value = true
     }
 
     private fun humanizeAge(ageArg: String?): String {
@@ -98,11 +159,27 @@ class RocksViewModel : ViewModel(),
     // MapController to the view model and perform the associated setup. It's not clear to me if
     // the MapController contains references to views and will thus violate separation a view model
     // is supposed to establish
-    fun onMapReady(mc: MapController) {
+    override fun onMapReady(mc: MapController) {
+        super<MapCenterTrackable>.onMapReady(mc)
+        super<FeatureChoosable>.onMapReady(mc)
+        super<TapToPanable>.onMapReady(mc)
+        super<DoubleTapToPanAndZoomable>.onMapReady(mc)
+        super<Unrotatable>.onMapReady(mc)
+        super<Unshovable>.onMapReady(mc)
         mapController = mc
-        mapController.let {
-            it.setSceneLoadListener(this)
-            it.loadSceneFile(SCENE_FILE_PATH, listOf(
+        mapController.touchInput?.let {touchInput ->
+            val defaultPanResponder = mapController.panResponder
+            touchInput.setPanResponder(object : TouchInput.PanResponder by defaultPanResponder {
+                override fun onPanEnd(): Boolean {
+                    // custom thing
+                    trackingUserLocation.value = false
+                    return defaultPanResponder.onPanEnd()
+                }
+            })
+        }
+        mapController.setSceneLoadListener(this)
+        mapController.loadSceneFile(
+            SCENE_FILE_PATH, listOf(
                 SceneUpdate(
                     "sources.underfoot.url",
                     "file:///data/user/0/rocks.underfoot.underfootandroid/files/${selectedPackName.value}/rocks.mbtiles"
@@ -115,26 +192,8 @@ class RocksViewModel : ViewModel(),
                     "sources.underfoot_elevation.url",
                     "file:///data/user/0/rocks.underfoot.underfootandroid/files/${selectedPackName.value}/contours.mbtiles"
                 )
-            ))
-            it.setMapChangeListener(this)
-            it.setFeaturePickListener(this)
-            it.touchInput.let {ti ->
-//            ti.setTapResponder(this);
-                ti.setDoubleTapResponder(this);
-                ti.setRotateResponder(object: TouchInput.RotateResponder {
-                    // Disable rotation
-                    override fun onRotateBegin(): Boolean { return true }
-                    override fun onRotate(x: Float, y: Float, rotation: Float): Boolean { return true }
-                    override fun onRotateEnd(): Boolean { return true }
-                });
-                ti.setShoveResponder(object: TouchInput.ShoveResponder {
-                    // Disable perspective changes, though dang, how cool would it be to have a 3D DEM
-                    override fun onShoveBegin(): Boolean { return false }
-                    override fun onShove(distance: Float): Boolean { return true }
-                    override fun onShoveEnd(): Boolean { return false }
-                })
-            }
-        }
+            )
+        )
     }
 
     // Tangram overrides
@@ -144,44 +203,6 @@ class RocksViewModel : ViewModel(),
             return
         }
         val pos = LngLat(lng.value!!, lat.value!!);
-        mapController.updateCameraPosition(
-            CameraUpdateFactory.newLngLatZoom(pos, zoom.value!!), 500)
-    }
-
-    // Zoom on double tap
-    override fun onDoubleTap(x: Float, y: Float): Boolean {
-        val newZoom = mapController.cameraPosition.zoom + 1F;
-        val tapped = mapController.screenPositionToLngLat(PointF(x, y));
-        tapped?.let {
-            mapController.updateCameraPosition(CameraUpdateFactory.newLngLatZoom(it, newZoom), 500);
-        }
-        return true;
-    }
-
-    // MapChangeListener ovverrides
-    override fun onViewComplete() {}
-    override fun onRegionWillChange(animated: Boolean) {}
-    override fun onRegionIsChanging() {
-        // update the map metadata as you move the map
-        val p = mapController.cameraPosition
-        zoom.value = p.zoom
-        lat.value = p.position.latitude
-        lng.value = p.position.longitude
-    }
-    override fun onRegionDidChange(animated: Boolean) {
-        // update the map metadata when done moving, including on initial load
-        val p = mapController.cameraPosition
-        zoom.value = p.zoom
-        lat.value = p.position.latitude
-        lng.value = p.position.longitude
-        val center = mapController.lngLatToScreenPosition(p.position)
-        Log.d(TAG, "center: $center")
-        mapController.pickFeature(center.x, center.y)
-    }
-
-    override fun onFeaturePickComplete(result: FeaturePickResult?) {
-        Log.d(TAG, "onFeaturePickComplete, result: $result")
-        if (result == null) { return }
-        feature.value = result
+        panToLocation(pos, zoom.value!!, false)
     }
 }
