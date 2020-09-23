@@ -14,34 +14,42 @@ import com.mapzen.tangram.*
 import rocks.underfoot.underfootandroid.maptuils.*
 import kotlin.math.roundToInt
 
-class RocksViewModel : ViewModel(),
-    MapController.SceneLoadListener,
-    MapCenterTrackable,
-    FeatureChoosable,
-    TapToPanable,
-    DoubleTapToPanAndZoomable,
-    Unrotatable,
-    Unshovable
-{
+class RocksViewModel : ViewModel() {
     private val TAG = "RocksViewModel"
-    private val SCENE_FILE_PATH = "asset:///usgs-state-color-scene.yml"
-    private val UNIT_AGE_SCENE_FILE_PATH = "asset:///unit-age-scene.yml"
-    private val SPAN_COLOR_SCENE_FILE_PATH = "asset:///span-color.yml"
-
-    lateinit var mapController: MapController
 
     val selectedPackName = MutableLiveData<String>("")
+    val sceneUpdatesForSelectedPack: LiveData<List<SceneUpdate>> = Transformations.map(selectedPackName) { packName ->
+        listOf(
+            SceneUpdate(
+                "sources.underfoot.url",
+                "file:///data/user/0/rocks.underfoot.underfootandroid/files/${packName}/rocks.mbtiles"
+            ),
+            SceneUpdate(
+                "sources.underfoot_ways.url",
+                "file:///data/user/0/rocks.underfoot.underfootandroid/files/${packName}/ways.mbtiles"
+            ),
+            SceneUpdate(
+                "sources.underfoot_elevation.url",
+                "file:///data/user/0/rocks.underfoot.underfootandroid/files/${packName}/contours.mbtiles"
+            )
+        )
+    }
+    // Current position of the map's camera
+    val cameraPosition = MutableLiveData<CameraPosition>()
+    val latString: LiveData<String> = Transformations.map(cameraPosition) { cp ->
+        "%.2f".format(cp.latitude)
+    }
+    val lngString: LiveData<String> = Transformations.map(cameraPosition) { cp ->
+        "%.2f".format(cp.longitude)
+    }
+    val zoomString: LiveData<String> = Transformations.map(cameraPosition) { cp ->
+        "%.1f".format(cp.zoom)
+    }
 
-    override val lat = MutableLiveData<Double>(37.73)
-    val latString: LiveData<String> = Transformations.map(lat) { l -> "%.2f".format(l) }
+    // Update to the camera, to be executed in an observer
+    val cameraUpdate = MutableLiveData<CameraUpdate>()
 
-    override val lng = MutableLiveData<Double>(-122.24)
-    val lngString: LiveData<String> = Transformations.map(lng) { l -> "%.2f".format(l) }
-
-    override val zoom = MutableLiveData<Float>(10.0F)
-    val zoomString: LiveData<String> = Transformations.map(zoom) { z -> "%.1f".format(z) }
-
-    override var feature = MutableLiveData<FeaturePickResult>()
+    val feature = MutableLiveData<FeaturePickResult>()
     val featureTitle: LiveData<String> = Transformations.map(feature) { f ->
         featurePropertyString("title", f.properties)
     }
@@ -68,7 +76,7 @@ class RocksViewModel : ViewModel(),
 
     lateinit var locationManager: LocationManager
     var userLocation: Location? = null
-    override val trackingUserLocation = MutableLiveData<Boolean>(false)
+    val trackingUserLocation = MutableLiveData<Boolean>(false)
     val requestingLocationUpdates = MutableLiveData<Boolean>(false)
 
     private val locationListener = object: LocationListener {
@@ -80,7 +88,11 @@ class RocksViewModel : ViewModel(),
                 userLocation = location
 //                showCurrentLocation()
                 if (trackingUserLocation.value == true) {
-                    panToCurrentLocation()
+//                    panToCurrentLocation()
+                    cameraUpdate.value = CameraUpdateFactory.newLngLatZoom(
+                        LngLat(location.longitude, location.latitude),
+                        cameraPosition.value?.zoom ?: 10f
+                    )
                 }
             }
         }
@@ -89,21 +101,12 @@ class RocksViewModel : ViewModel(),
         override fun onProviderDisabled(provider: String?) {}
     }
 
-    fun panToCurrentLocation() {
-        userLocation?.let {
-            val lngLat = LngLat(it.longitude, it.latitude)
-            val z = if (zoom.value!! < 10) 10f else zoom.value
-            panToLocation(lngLat, zoom = z, manual = false)
-        }
-    }
-
-    override fun panToLocation(lngLat: LngLat, zoom: Float?, manual: Boolean) {
-        val cameraUpdate = if (zoom == null) {
+    fun panToLocation(lngLat: LngLat, zoom: Float?, manual: Boolean = false) {
+        cameraUpdate.value = if (zoom == null) {
             CameraUpdateFactory.setPosition(lngLat)
         } else {
             CameraUpdateFactory.newLngLatZoom(lngLat, zoom)
         }
-        mapController.updateCameraPosition(cameraUpdate, 500)
         if (manual) {
             trackingUserLocation.value = false
         }
@@ -153,56 +156,5 @@ class RocksViewModel : ViewModel(),
             if (it.isNotEmpty()) return it
         }
         return default
-    }
-
-    // Note that this isn't an override, it's just a way for the fragment to assign the
-    // MapController to the view model and perform the associated setup. It's not clear to me if
-    // the MapController contains references to views and will thus violate separation a view model
-    // is supposed to establish
-    override fun onMapReady(mc: MapController) {
-        super<MapCenterTrackable>.onMapReady(mc)
-        super<FeatureChoosable>.onMapReady(mc)
-        super<TapToPanable>.onMapReady(mc)
-        super<DoubleTapToPanAndZoomable>.onMapReady(mc)
-        super<Unrotatable>.onMapReady(mc)
-        super<Unshovable>.onMapReady(mc)
-        mapController = mc
-        mapController.touchInput?.let {touchInput ->
-            val defaultPanResponder = mapController.panResponder
-            touchInput.setPanResponder(object : TouchInput.PanResponder by defaultPanResponder {
-                override fun onPanEnd(): Boolean {
-                    // custom thing
-                    trackingUserLocation.value = false
-                    return defaultPanResponder.onPanEnd()
-                }
-            })
-        }
-        mapController.setSceneLoadListener(this)
-        mapController.loadSceneFile(
-            SCENE_FILE_PATH, listOf(
-                SceneUpdate(
-                    "sources.underfoot.url",
-                    "file:///data/user/0/rocks.underfoot.underfootandroid/files/${selectedPackName.value}/rocks.mbtiles"
-                ),
-                SceneUpdate(
-                    "sources.underfoot_ways.url",
-                    "file:///data/user/0/rocks.underfoot.underfootandroid/files/${selectedPackName.value}/ways.mbtiles"
-                ),
-                SceneUpdate(
-                    "sources.underfoot_elevation.url",
-                    "file:///data/user/0/rocks.underfoot.underfootandroid/files/${selectedPackName.value}/contours.mbtiles"
-                )
-            )
-        )
-    }
-
-    // Tangram overrides
-    override fun onSceneReady(sceneId: Int, sceneError: SceneError?) {
-        if (sceneError != null) {
-            Log.d(TAG, "Scene update errors ${sceneError.sceneUpdate} ${sceneError.error}")
-            return
-        }
-        val pos = LngLat(lng.value!!, lat.value!!);
-        panToLocation(pos, zoom.value!!, false)
     }
 }
