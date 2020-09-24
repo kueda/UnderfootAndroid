@@ -77,7 +77,7 @@ class RocksViewModel : ViewModel() {
     }
 
     lateinit var locationManager: LocationManager
-    var userLocation: Location? = null
+    val userLocation = MutableLiveData<Location>()
     val trackingUserLocation = MutableLiveData<Boolean>(false)
     val requestingLocationUpdates = MutableLiveData<Boolean>(false)
 
@@ -85,9 +85,9 @@ class RocksViewModel : ViewModel() {
         override fun onLocationChanged(location: Location?) {
             Log.d(TAG, "onLocationChanged, location: $location")
             location ?: return
-            val isBetter = MapHelpers.isBetterLocation(location, userLocation)
+            val isBetter = MapHelpers.isBetterLocation(location, userLocation.value)
             if (isBetter && location.accuracy < 100) {
-                userLocation = location
+                userLocation.value = location
 //                showCurrentLocation()
                 if (trackingUserLocation.value == true) {
                     cameraUpdate.value = CameraUpdateFactory.newLngLatZoom(

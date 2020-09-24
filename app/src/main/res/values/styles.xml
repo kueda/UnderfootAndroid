@@ -14,11 +14,23 @@
     </style>
 
     <style name="WhiteTextBlackShadow">
-      <item name="android:textColor">#FFFFFF</item>
-      <item name="android:shadowColor">#000</item>
-      <item name="android:shadowDx">1</item>
-      <item name="android:shadowDy">1</item>
-      <item name="android:shadowRadius">10</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:shadowColor">#000</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">10</item>
+    </style>
+
+    <style name="WhiteTextTransparentToolbar" parent="AppTheme.NoActionBar">
+        <!-- This sets the color of the title text -->
+        <item name="android:textColorPrimary">@color/white</item>
+        <!-- Applies drop shadow to the text -->
+        <item name="android:shadowColor">#000</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">10</item>
+        <!-- Sets the color of the drawer (hamburger) icon if you're using the default -->
+        <item name="android:textColorSecondary">@color/white</item>
     </style>
     
     <style name="ListControlImageButton">

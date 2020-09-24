@@ -19,6 +19,7 @@ class RocksMapResponder(
         private const val SPAN_COLOR_SCENE_FILE_PATH = "asset:///span-color.yml"
     }
     private lateinit var mapController: MapController
+    private lateinit var userLocationMarker: Marker
 
     init {
         viewModel.cameraUpdate.observe(viewLifecycleOwner, Observer {cameraUpdate ->
@@ -81,8 +82,29 @@ class RocksMapResponder(
         }
         // The scene needs to be customized based on the pack the user has chosen. Since that's a
         // part of state, the view model provides that
-        viewModel.sceneUpdatesForSelectedPack.observe(viewLifecycleOwner, Observer {updates ->
+        viewModel.sceneUpdatesForSelectedPack.observe(viewLifecycleOwner, { updates ->
             mapController.loadSceneFile(SCENE_FILE_PATH, updates)
+        })
+        userLocationMarker = mapController.addMarker()
+        userLocationMarker.isVisible = false
+        // TODO replace this with a more traditional pulsating orb... when yuo figure out how to
+        //  do animations
+        userLocationMarker.setStylingFromString("""
+            {
+                style: 'points',
+                color: [1, 0.25, 0.5, 0.5],
+                size: [10px, 10px],
+                order: 2000,
+                collide: false
+            }
+        """.trimIndent());
+        viewModel.userLocation.observe(viewLifecycleOwner, { loc ->
+            if (loc == null) {
+                userLocationMarker.isVisible = false
+            } else {
+                userLocationMarker.isVisible = true
+                userLocationMarker.setPoint(LngLat(loc.longitude, loc.latitude))
+            }
         })
     }
 

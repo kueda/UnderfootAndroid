@@ -4,10 +4,8 @@ import android.Manifest
 import android.content.Context
 import android.content.DialogInterface
 import android.content.pm.PackageManager
-import android.graphics.PointF
 import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -141,11 +139,9 @@ class RocksFragment : Fragment(), LifecycleObserver {
     fun onCreated() {
         activity?.lifecycle?.removeObserver(this)
         view?.findViewById<Toolbar>(R.id.toolbar)?.let{ toolbar ->
-            //        This isn't working for some reason
-//            val color = ContextCompat.getColor(requireContext(), R.color.transBlack)
-//            toolbar.navigationIcon = ContextCompat.getDrawable(requireContext(), R.drawable.menu_white_24dp)
-//            toolbar.navigationIcon?.setTint(color)
-            (activity as MainActivity).setToolbar(toolbar)
+            // Use a custom menu icon with a crude drop shadow. Not ideal.
+            val navIcon = ContextCompat.getDrawable(requireContext(), R.drawable.menu_white_shadow_24dp)
+            (activity as MainActivity).setToolbar(toolbar, navigationIcon = navIcon)
         }
     }
 
@@ -168,24 +164,4 @@ class RocksFragment : Fragment(), LifecycleObserver {
         super.onLowMemory()
         mapView?.onLowMemory()
     }
-
-//    companion object {
-//        /**
-//         * Use this factory method to create a new instance of
-//         * this fragment using the provided parameters.
-//         *
-//         * @param param1 Parameter 1.
-//         * @param param2 Parameter 2.
-//         * @return A new instance of fragment RocksFragment.
-//         */
-//        // TODO: Rename and change types and number of parameters
-//        @JvmStatic
-//        fun newInstance(param1: String, param2: String) =
-//            RocksFragment().apply {
-//                arguments = Bundle().apply {
-//                    putString(ARG_PARAM1, param1)
-//                    putString(ARG_PARAM2, param2)
-//                }
-//            }
-//    }
 }
