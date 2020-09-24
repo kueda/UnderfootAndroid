@@ -15,7 +15,9 @@ import rocks.underfoot.underfootandroid.maptuils.*
 import kotlin.math.roundToInt
 
 class RocksViewModel : ViewModel() {
-    private val TAG = "RocksViewModel"
+    companion object {
+        private const val TAG = "RocksViewModel"
+    }
 
     val selectedPackName = MutableLiveData<String>("")
     val sceneUpdatesForSelectedPack: LiveData<List<SceneUpdate>> = Transformations.map(selectedPackName) { packName ->
@@ -88,7 +90,6 @@ class RocksViewModel : ViewModel() {
                 userLocation = location
 //                showCurrentLocation()
                 if (trackingUserLocation.value == true) {
-//                    panToCurrentLocation()
                     cameraUpdate.value = CameraUpdateFactory.newLngLatZoom(
                         LngLat(location.longitude, location.latitude),
                         cameraPosition.value?.zoom ?: 10f

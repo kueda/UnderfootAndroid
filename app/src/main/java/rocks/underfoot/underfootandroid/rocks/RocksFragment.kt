@@ -24,41 +24,17 @@ import rocks.underfoot.underfootandroid.MainActivity
 import rocks.underfoot.underfootandroid.R
 import rocks.underfoot.underfootandroid.databinding.FragmentRocksBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [RocksFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class RocksFragment : Fragment(),
-//    MapController.SceneLoadListener,
-//    TouchInput.TapResponder,
-//    TouchInput.DoubleTapResponder,
-//    FeaturePickListener,
-//    TouchInput.RotateResponder,
-    MapView.MapReadyCallback,
-    LifecycleObserver
-{
-//    // TODO: Rename and change types of parameters
-//    private var param1: String? = null
-//    private var param2: String? = null
+class RocksFragment : Fragment(), LifecycleObserver {
 
     companion object {
         private const val TAG = "RocksFragment"
         private const val REQUEST_ACCESS_FINE_LOCATION_CODE = 1;
-        private const val SCENE_FILE_PATH = "asset:///usgs-state-color-scene.yml"
-        private const val UNIT_AGE_SCENE_FILE_PATH = "asset:///unit-age-scene.yml"
-        private const val SPAN_COLOR_SCENE_FILE_PATH = "asset:///span-color.yml"
     }
 
     private lateinit var viewModel: RocksViewModel
     private lateinit var binding: FragmentRocksBinding
     private lateinit var mapView: MapView
-    private lateinit var mapController: MapController
+    private lateinit var mapResponder: RocksMapResponder
 
     private val requestFineLocationPermissionLauncher =
         registerForActivityResult(
@@ -81,10 +57,6 @@ class RocksFragment : Fragment(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        arguments?.let {
-//            param1 = it.getString(ARG_PARAM1)
-//            param2 = it.getString(ARG_PARAM2)
-//        }
         viewModel = ViewModelProvider(this).get(RocksViewModel::class.java)
     }
 
@@ -102,8 +74,9 @@ class RocksFragment : Fragment(),
         binding.viewModel = viewModel
         // Without this, the binding will not update when the view model updates
         binding.lifecycleOwner = viewLifecycleOwner
+        mapResponder = RocksMapResponder(viewModel, viewLifecycleOwner)
         mapView = binding.root.findViewById<MapView>(R.id.map);
-        mapView?.getMapAsync(this);
+        mapView?.getMapAsync(mapResponder);
         viewModel.selectedPackName.observe(viewLifecycleOwner, Observer {
             if (it.isNullOrEmpty()) {
                 AlertDialog.Builder(requireActivity())
@@ -155,12 +128,6 @@ class RocksFragment : Fragment(),
                 }
             }
         })
-        viewModel.cameraUpdate.observe(viewLifecycleOwner, Observer {cameraUpdate ->
-            cameraUpdate?.let {
-                mapController.updateCameraPosition(cameraUpdate, 500)
-                viewModel.cameraUpdate.value = null
-            }
-        })
         return binding.root
     }
 
@@ -200,88 +167,6 @@ class RocksFragment : Fragment(),
     override fun onLowMemory() {
         super.onLowMemory()
         mapView?.onLowMemory()
-    }
-
-    override fun onMapReady(mc: MapController?) {
-        Log.d(TAG, "onMapReady")
-        mapController = mc!!
-//        viewModel.onMapReady(mapController)
-        mc.setMapChangeListener(object: MapChangeListener {
-            override fun onViewComplete() {}
-            override fun onRegionWillChange(animated: Boolean) {}
-            override fun onRegionIsChanging() {
-                // update the map metadata as you move the map
-                viewModel.cameraPosition.value = mc.cameraPosition
-            }
-            override fun onRegionDidChange(animated: Boolean) {
-                // update the map metadata when done moving, including on initial load
-                val p = mc.cameraPosition
-                viewModel.cameraPosition.value = p
-                val center = mc.lngLatToScreenPosition(p.position)
-                mc.pickFeature(center.x, center.y)
-            }
-        })
-        mc.setFeaturePickListener {feature -> feature?.let { viewModel.feature.value = feature } }
-        mc.touchInput?.let {ti ->
-            ti.setTapResponder(object: TouchInput.TapResponder {
-                override fun onSingleTapUp(x: Float, y: Float) = false
-                override fun onSingleTapConfirmed(x: Float, y: Float): Boolean {
-                    mc.screenPositionToLngLat(PointF(x, y))?.let { tapped ->
-                        viewModel.panToLocation(tapped, mc.cameraPosition.zoom, true)
-                    }
-                    return true
-                }
-            });
-            ti.setDoubleTapResponder { x, y ->
-                // Zoom on double tap
-                val newZoom = mc.cameraPosition.zoom + 1F
-                val tapped = mc.screenPositionToLngLat(PointF(x, y))
-                tapped?.let {
-                    viewModel.panToLocation(it, newZoom, manual = true)
-                }
-                true
-            }
-            ti.setShoveResponder(object: TouchInput.ShoveResponder {
-                // Disable perspective changes, though dang, how cool would it be to have a 3D DEM
-                override fun onShoveBegin() = false
-                override fun onShove(distance: Float) = true
-                override fun onShoveEnd() = false
-            })
-            ti.setRotateResponder(object: TouchInput.RotateResponder {
-                // Disable rotation
-                override fun onRotateBegin() = true
-                override fun onRotate(x: Float, y: Float, rotation: Float) = true
-                override fun onRotateEnd() = true
-            })
-            // Set the pan responder to an object that delegates most of its functionality to the
-            // default PanResponder, but stops tracking user location onPan
-            val defaultPanResponder = mapController.panResponder
-            ti.setPanResponder(object : TouchInput.PanResponder by defaultPanResponder {
-                override fun onPanEnd(): Boolean {
-                    // custom thing
-                    viewModel.trackingUserLocation.value = false
-                    return defaultPanResponder.onPanEnd()
-                }
-            })
-        }
-        mapController.setSceneLoadListener { _, sceneError ->
-            Log.d(TAG, "scene loaded")
-            if (sceneError != null) {
-                Log.d(TAG, "Scene update errors ${sceneError.sceneUpdate} ${sceneError.error}")
-            } else {
-                if (viewModel.cameraPosition.value == null ) {
-                    viewModel.requestLocationUpdates()
-                } else {
-                    viewModel.cameraUpdate.value = viewModel.cameraPosition.value?.let { cp ->
-                        CameraUpdateFactory.newCameraPosition(cp)
-                    }
-                }
-            }
-        }
-        viewModel.sceneUpdatesForSelectedPack.observe(viewLifecycleOwner, Observer {updates ->
-            Log.d(TAG, "sceneUpdatesForSelectedPack changed, loading scene")
-            mapController.loadSceneFile(SCENE_FILE_PATH, updates)
-        })
     }
 
 //    companion object {
