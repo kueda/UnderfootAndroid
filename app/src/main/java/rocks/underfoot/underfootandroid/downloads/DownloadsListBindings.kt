@@ -13,7 +13,8 @@ object DownloadsListBindings {
     val tag = "DownloadsListBindings"
 
     // The annotation value is the name of the attribute used in the layout, i.e.
-    // app:underfootPacks="@{theList}". I'm using the awkward underfootPacks to make to super clear that this is a custom attribute
+    // app:underfootPacks="@{theList}". I'm using the awkward underfootPacks to make to super clear
+    // that this is a custom attribute
     @BindingAdapter("bind:packs")
     @JvmStatic fun setUnderfootPacks(listView: ListView, items: List<Pack>?) {
         val newPacks = items ?: listOf<Pack>()

@@ -76,6 +76,15 @@ class RocksViewModel : ViewModel() {
         featurePropertyString("source", f.properties)
     }
 
+    // Captures the last intention of the user regarding the visibility of the feature detail view.
+    // Does not contain the current visibility state of the view, just the last time the user
+    // explicitly expressed an action to show or hide it
+    val lastRequestedDetailState = MutableLiveData<Boolean>(false)
+    fun showDetailPanel() {
+        lastRequestedDetailState.value = true
+    }
+
+
     lateinit var locationManager: LocationManager
     val userLocation = MutableLiveData<Location>()
     val trackingUserLocation = MutableLiveData<Boolean>(false)
