@@ -60,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="90dp"
-                android:backgroundTint="@color/transWhite"
+                android:backgroundTint="@color/white"
                 android:clickable="true"
                 android:src="@drawable/ic_my_location_black_24dp"
                 app:elevation="4dp"

@@ -17,6 +17,7 @@ import kotlin.math.roundToInt
 class RocksViewModel : ViewModel() {
     companion object {
         private const val TAG = "RocksViewModel"
+        private const val DEFAULT_ZOOM = 12f
     }
 
     val selectedPackName = MutableLiveData<String>("")
@@ -50,6 +51,9 @@ class RocksViewModel : ViewModel() {
 
     // Update to the camera, to be executed in an observer
     val cameraUpdate = MutableLiveData<CameraUpdate>()
+
+    // Where to start the camera
+    val initialCameraUpdate = MutableLiveData<CameraUpdate>()
 
     val feature = MutableLiveData<FeaturePickResult>()
     val featureTitle: LiveData<String> = Transformations.map(feature) { f ->
@@ -92,16 +96,14 @@ class RocksViewModel : ViewModel() {
 
     private val locationListener = object: LocationListener {
         override fun onLocationChanged(location: Location?) {
-            Log.d(TAG, "onLocationChanged, location: $location")
             location ?: return
             val isBetter = MapHelpers.isBetterLocation(location, userLocation.value)
             if (isBetter && location.accuracy < 100) {
                 userLocation.value = location
-//                showCurrentLocation()
                 if (trackingUserLocation.value == true) {
                     cameraUpdate.value = CameraUpdateFactory.newLngLatZoom(
                         LngLat(location.longitude, location.latitude),
-                        cameraPosition.value?.zoom ?: 10f
+                        cameraPosition.value?.zoom ?: DEFAULT_ZOOM
                     )
                 }
             }
@@ -142,6 +144,12 @@ class RocksViewModel : ViewModel() {
     fun requestLocationUpdates() {
         requestingLocationUpdates.value = true
         trackingUserLocation.value = true
+        userLocation.value?.let {location ->
+            cameraUpdate.value = CameraUpdateFactory.newLngLatZoom(
+                LngLat(location.longitude, location.latitude),
+                cameraPosition.value?.zoom ?: DEFAULT_ZOOM
+            )
+        }
     }
 
     private fun humanizeAge(ageArg: String?): String {

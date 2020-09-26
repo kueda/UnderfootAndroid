@@ -21,15 +21,6 @@ class RocksMapResponder(
     private lateinit var mapController: MapController
     private lateinit var userLocationMarker: Marker
 
-    init {
-        viewModel.cameraUpdate.observe(viewLifecycleOwner, Observer {cameraUpdate ->
-            cameraUpdate?.let {
-                mapController.updateCameraPosition(cameraUpdate, 500)
-                viewModel.cameraUpdate.value = null
-            }
-        })
-    }
-
     override fun onMapReady(mc: MapController?) {
         mapController = mc!!
         mapController.setMapChangeListener(this)
@@ -66,16 +57,29 @@ class RocksMapResponder(
             if (sceneError != null) {
                 Log.d(TAG, "Scene update errors ${sceneError.sceneUpdate} ${sceneError.error}")
             } else {
-                if (viewModel.cameraPosition.value == null ) {
-                    // If it's a brand new view model, start requesting updates so the map goes to
-                    // the user's current location
-                    // TODO make this zoom to the extent of the current pack and *show* the user's
-                    //  current location
-                    viewModel.requestLocationUpdates()
-                } else {
-                    // If there's an existing view model, pan/zoom to wherever it was last
-                    viewModel.cameraUpdate.value = viewModel.cameraPosition.value?.let { cp ->
-                        CameraUpdateFactory.newCameraPosition(cp)
+                when {
+                    viewModel.cameraPosition.value == null -> {
+                        if (
+                            // If no pack has been selected, we don't want to request GPS permission
+                            !viewModel.selectedPackName.value.isNullOrEmpty()
+                            && viewModel.initialCameraUpdate.value == null
+                        ) {
+                            // If it's a brand new view model, start requesting updates so the map goes to
+                            // the user's current location
+                            viewModel.requestLocationUpdates()
+                        } else {
+                            viewModel.initialCameraUpdate.value?.let {
+                                viewModel.cameraUpdate.value = it
+                                viewModel.initialCameraUpdate.value = null
+                            }
+                        }
+                    }
+                    else -> {
+                        // If there's an existing view model, pan/zoom to wherever it was last
+                        Log.d(TAG, "Setting initial camera from existing view model")
+                        viewModel.cameraUpdate.value = viewModel.cameraPosition.value?.let { cp ->
+                            CameraUpdateFactory.newCameraPosition(cp)
+                        }
                     }
                 }
             }
@@ -84,6 +88,12 @@ class RocksMapResponder(
         // part of state, the view model provides that
         viewModel.sceneUpdatesForSelectedPack.observe(viewLifecycleOwner, { updates ->
             mapController.loadSceneFile(SCENE_FILE_PATH, updates)
+        })
+        viewModel.cameraUpdate.observe(viewLifecycleOwner, { cameraUpdate ->
+            cameraUpdate?.let {
+                mapController.updateCameraPosition(it, 500)
+                viewModel.cameraUpdate.value = null
+            }
         })
         userLocationMarker = mapController.addMarker()
         userLocationMarker.isVisible = false
@@ -114,12 +124,15 @@ class RocksMapResponder(
     override fun onRegionIsChanging() {
         // update the map metadata as you move the map
         viewModel.cameraPosition.value = mapController.cameraPosition
+        pickFeatureAtPosition(mapController.cameraPosition)
     }
     override fun onRegionDidChange(animated: Boolean) {
         // update the map metadata when done moving, including on initial load
-        val p = mapController.cameraPosition
-        viewModel.cameraPosition.value = p
-        val center = mapController.lngLatToScreenPosition(p.position)
+        viewModel.cameraPosition.value = mapController.cameraPosition
+        pickFeatureAtPosition(mapController.cameraPosition)
+    }
+    private fun pickFeatureAtPosition(cameraPosition: CameraPosition) {
+        val center = mapController.lngLatToScreenPosition(cameraPosition.position)
         mapController.pickFeature(center.x, center.y)
     }
 

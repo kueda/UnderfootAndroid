@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.*
 import androidx.navigation.fragment.findNavController
@@ -27,6 +29,10 @@ class RocksFragment : Fragment(), LifecycleObserver {
     companion object {
         private const val TAG = "RocksFragment"
         private const val REQUEST_ACCESS_FINE_LOCATION_CODE = 1;
+        private const val MAP_PREFS = "map"
+        private const val MAP_PREFS_LAT = "lat"
+        private const val MAP_PREFS_LNG = "lng"
+        private const val MAP_PREFS_ZOOM = "zoom"
     }
 
     private lateinit var viewModel: RocksViewModel
@@ -88,9 +94,23 @@ class RocksFragment : Fragment(), LifecycleObserver {
         })
         val prefsName = getString(R.string.packsPrefName)
         val selectedPrefName = getString(R.string.selectedPackPrefName)
-        context?.apply { with(getSharedPreferences(prefsName, Context.MODE_PRIVATE)) {
-            viewModel.selectedPackName.value = getString(selectedPrefName, "")
-        } }
+        context?.apply {
+            with(getSharedPreferences(prefsName, Context.MODE_PRIVATE)) {
+                viewModel.selectedPackName.value = getString(selectedPrefName, "")
+            }
+            with(getSharedPreferences(MAP_PREFS, Context.MODE_PRIVATE)) {
+                val lat = getFloat(MAP_PREFS_LAT, 0f).toDouble()
+                val lng = getFloat(MAP_PREFS_LNG, 0f).toDouble()
+                val zoom = getFloat(MAP_PREFS_ZOOM, 0f)
+                if (lat != 0.0 && lng != 0.0 && zoom != 0f) {
+                    Log.d(TAG, "loaded last pos from prefs ($zoom/$lng/$lat), setting the cameraUpdate")
+                    viewModel.initialCameraUpdate.value = CameraUpdateFactory.newLngLatZoom(
+                        LngLat(lng, lat),
+                        zoom
+                    )
+                }
+            }
+        }
         viewModel.locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE)
                 as LocationManager
         viewModel.requestingLocationUpdates.observe(viewLifecycleOwner, Observer {requestingLocationUpdates ->
@@ -146,22 +166,35 @@ class RocksFragment : Fragment(), LifecycleObserver {
     }
 
     override fun onPause() {
+        Log.d(TAG, "onPause")
+        context?.apply { with(getSharedPreferences(MAP_PREFS, Context.MODE_PRIVATE)) {
+            viewModel.cameraPosition.value?.let {cameraPosition ->
+                Log.d(TAG, "cameraPosition exists")
+                edit {
+                    Log.d(TAG, "saving lat, lng, and zoom in prefs")
+                    putFloat(MAP_PREFS_LAT, cameraPosition.position.latitude.toFloat())
+                    putFloat(MAP_PREFS_LNG, cameraPosition.position.longitude.toFloat())
+                    putFloat(MAP_PREFS_ZOOM, cameraPosition.zoom)
+                }
+            }
+        } }
         super.onPause()
-        mapView?.onPause()
+        mapView.onPause()
     }
 
     override fun onResume() {
         super.onResume()
-        mapView?.onResume()
+        mapView.onResume()
     }
 
     override fun onDestroyView() {
+        Log.d(TAG, "onDestroyView")
+        mapView.onDestroy()
         super.onDestroyView()
-        mapView?.onDestroy()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        mapView?.onLowMemory()
+        mapView.onLowMemory()
     }
 }

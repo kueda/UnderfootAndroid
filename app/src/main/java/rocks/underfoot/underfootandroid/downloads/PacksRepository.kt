@@ -41,6 +41,7 @@ data class Pack(val metadata: PackMetadata) {
 @Serializable
 data class PackMetadata(
     val name: String,
+    val description: String? = null,
     val path: String
 )
 
