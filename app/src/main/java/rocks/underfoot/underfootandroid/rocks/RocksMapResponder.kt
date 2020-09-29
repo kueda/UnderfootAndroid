@@ -89,7 +89,7 @@ class RocksMapResponder(
             ) {
                 // If it's a brand new view model, start requesting updates so the map goes to
                 // the user's current location
-                viewModel.requestLocationUpdates()
+                viewModel.panToCurrentLocation()
             } else {
                 viewModel.initialCameraUpdate.value?.let {
                     viewModel.cameraUpdate.value = it
@@ -98,7 +98,6 @@ class RocksMapResponder(
             }
         } else {
             // If there's an existing view model, pan/zoom to wherever it was last
-            Log.d(TAG, "Setting initial camera from existing view model")
             viewModel.cameraUpdate.value = viewModel.cameraPosition.value?.let { cp ->
                 CameraUpdateFactory.newCameraPosition(cp)
             }

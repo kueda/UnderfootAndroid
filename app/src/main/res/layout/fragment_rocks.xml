@@ -65,7 +65,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:borderWidth="0dp"
                 android:tint="@{viewModel.trackingUserLocation ? @color/colorAccent : @color/black}"
-                android:onClick="@{() -> viewModel.requestLocationUpdates()}"
+                android:onClick="@{() -> viewModel.panToCurrentLocation()}"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
 

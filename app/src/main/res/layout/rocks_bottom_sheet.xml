@@ -16,10 +16,12 @@
         android:background="@color/transWhite"
         android:orientation="vertical"
         android:clickable="true"
+        android:elevation="4dp"
         app:behavior_peekHeight="70dp"
         android:onClick="@{() -> viewModel.showDetailPanel()}"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         underfoot:requestedDetailState="@{viewModel.lastRequestedDetailState}"
+        underfoot:onDetailChange="@{viewModel.onDetailChange}"
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -32,11 +34,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
+                android:singleLine="@{!viewModel.detailShown}"
                 android:gravity="top"
-                android:maxLines="1"
                 android:text="@{viewModel.featureTitle}"
-                android:textSize="18sp"
-                android:textStyle="bold"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:layout_editor_absoluteX="15dp"
                 tools:text="Claremont Shale" />

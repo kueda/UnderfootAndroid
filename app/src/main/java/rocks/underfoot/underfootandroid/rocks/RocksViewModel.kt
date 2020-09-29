@@ -5,7 +5,6 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -93,6 +92,13 @@ class RocksViewModel : ViewModel() {
     fun showDetailPanel() {
         lastRequestedDetailState.value = true
     }
+    val detailShown = MutableLiveData<Boolean>(false)
+    // Meant to work with a databinding attribute. Note that to get this to work I had to make this
+    // return a lambda and not just refer to this function itself, and the lambda has to take a
+    // view as the first arg
+    fun onDetailChange(): (view: Object, shown: Boolean) -> Unit  = { _, shown ->
+        run { detailShown.value = shown }
+    }
 
 
     lateinit var locationManager: LocationManager
@@ -107,10 +113,7 @@ class RocksViewModel : ViewModel() {
             if (isBetter && loc.accuracy < 100) {
                 userLocation.value = loc
                 if (trackingUserLocation.value == true) {
-                    cameraUpdate.value = CameraUpdateFactory.newLngLatZoom(
-                        LngLat(loc.longitude, loc.latitude),
-                        cameraPosition.value?.zoom ?: DEFAULT_ZOOM
-                    )
+                    panToLocation(LngLat(loc.longitude, loc.latitude), cameraPosition.value?.zoom)
                 }
             }
         }
@@ -121,7 +124,7 @@ class RocksViewModel : ViewModel() {
 
     fun panToLocation(lngLat: LngLat, zoom: Float?, manual: Boolean = false) {
         val z = if (manual) {
-            zoom ?: DEFAULT_ZOOM
+            max(zoom ?: DEFAULT_ZOOM, DEFAULT_ZOOM)
         } else {
             if (zoom == null) {
                 DEFAULT_ZOOM
@@ -133,6 +136,18 @@ class RocksViewModel : ViewModel() {
         cameraUpdate.value = CameraUpdateFactory.newLngLatZoom(lngLat, z)
         if (manual) {
             trackingUserLocation.value = false
+        }
+    }
+
+    fun panToCurrentLocation() {
+        trackingUserLocation.value = true
+        requestLocationUpdates()
+        userLocation.value?.let {location ->
+            panToLocation(
+                LngLat(location.longitude, location.latitude),
+                max(cameraPosition.value?.zoom ?: DEFAULT_ZOOM, DEFAULT_ZOOM),
+                true
+            )
         }
     }
 
@@ -150,18 +165,10 @@ class RocksViewModel : ViewModel() {
             10f,
             locationListener
         )
-
     }
 
-    fun requestLocationUpdates() {
+    private fun requestLocationUpdates() {
         requestingLocationUpdates.value = true
-        trackingUserLocation.value = true
-        userLocation.value?.let {location ->
-            cameraUpdate.value = CameraUpdateFactory.newLngLatZoom(
-                LngLat(location.longitude, location.latitude),
-                cameraPosition.value?.zoom ?: DEFAULT_ZOOM
-            )
-        }
     }
 
     private fun humanizeAge(ageArg: String?): String {
