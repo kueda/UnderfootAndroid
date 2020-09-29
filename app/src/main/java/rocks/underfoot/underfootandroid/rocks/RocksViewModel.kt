@@ -12,12 +12,15 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.mapzen.tangram.*
 import rocks.underfoot.underfootandroid.maptuils.*
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 class RocksViewModel : ViewModel() {
     companion object {
         private const val TAG = "RocksViewModel"
         private const val DEFAULT_ZOOM = 12f
+        private const val MAX_ZOOM = 14.9f
     }
 
     val selectedPackName = MutableLiveData<String>("")
@@ -37,6 +40,9 @@ class RocksViewModel : ViewModel() {
             )
         )
     }
+
+    val sceneFilePath = MutableLiveData<String>(RocksMapResponder.SCENE_FILE_PATH)
+
     // Current position of the map's camera
     val cameraPosition = MutableLiveData<CameraPosition>()
     val latString: LiveData<String> = Transformations.map(cameraPosition) { cp ->
@@ -96,13 +102,13 @@ class RocksViewModel : ViewModel() {
 
     private val locationListener = object: LocationListener {
         override fun onLocationChanged(location: Location?) {
-            location ?: return
-            val isBetter = MapHelpers.isBetterLocation(location, userLocation.value)
-            if (isBetter && location.accuracy < 100) {
-                userLocation.value = location
+            val loc: Location = location ?: return
+            val isBetter = MapHelpers.isBetterLocation(loc, userLocation.value)
+            if (isBetter && loc.accuracy < 100) {
+                userLocation.value = loc
                 if (trackingUserLocation.value == true) {
                     cameraUpdate.value = CameraUpdateFactory.newLngLatZoom(
-                        LngLat(location.longitude, location.latitude),
+                        LngLat(loc.longitude, loc.latitude),
                         cameraPosition.value?.zoom ?: DEFAULT_ZOOM
                     )
                 }
@@ -114,11 +120,17 @@ class RocksViewModel : ViewModel() {
     }
 
     fun panToLocation(lngLat: LngLat, zoom: Float?, manual: Boolean = false) {
-        cameraUpdate.value = if (zoom == null) {
-            CameraUpdateFactory.setPosition(lngLat)
+        val z = if (manual) {
+            zoom ?: DEFAULT_ZOOM
         } else {
-            CameraUpdateFactory.newLngLatZoom(lngLat, zoom)
+            if (zoom == null) {
+                DEFAULT_ZOOM
+            } else {
+                min(max(zoom, DEFAULT_ZOOM), MAX_ZOOM)
+            }
+
         }
+        cameraUpdate.value = CameraUpdateFactory.newLngLatZoom(lngLat, z)
         if (manual) {
             trackingUserLocation.value = false
         }

@@ -3,7 +3,6 @@ package rocks.underfoot.underfootandroid.rocks
 import android.graphics.PointF
 import android.util.Log
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import com.mapzen.tangram.*
 
 // Responds to map events to update the view model, and observes the view model to control the map.
@@ -11,12 +10,16 @@ import com.mapzen.tangram.*
 class RocksMapResponder(
     private val viewModel: RocksViewModel,
     private val viewLifecycleOwner: LifecycleOwner
-) : MapView.MapReadyCallback, MapChangeListener, TouchInput.TapResponder, TouchInput.DoubleTapResponder {
+) : MapView.MapReadyCallback,
+    MapChangeListener,
+    MapController.SceneLoadListener,
+    TouchInput.TapResponder,
+    TouchInput.DoubleTapResponder {
     companion object {
         private const val TAG = "RocksMapResponder"
-        private const val SCENE_FILE_PATH = "asset:///usgs-state-color-scene.yml"
-        private const val UNIT_AGE_SCENE_FILE_PATH = "asset:///unit-age-scene.yml"
-        private const val SPAN_COLOR_SCENE_FILE_PATH = "asset:///span-color.yml"
+        const val SCENE_FILE_PATH = "asset:///usgs-state-color-scene.yml"
+        const val UNIT_AGE_SCENE_FILE_PATH = "asset:///unit-age-scene.yml"
+        const val SPAN_COLOR_SCENE_FILE_PATH = "asset:///span-color.yml"
     }
     private lateinit var mapController: MapController
     private lateinit var userLocationMarker: Marker
@@ -27,7 +30,7 @@ class RocksMapResponder(
         mapController.setFeaturePickListener { feature ->
             feature?.let { viewModel.feature.value = feature }
         }
-        mc.touchInput?.let {ti ->
+        mapController.touchInput?.let {ti ->
             ti.setTapResponder(this);
             ti.setDoubleTapResponder(this)
             // Disable perspective changes, though dang, how cool would it be to have a 3D DEM
@@ -53,41 +56,11 @@ class RocksMapResponder(
                 }
             })
         }
-        mapController.setSceneLoadListener { _, sceneError ->
-            if (sceneError != null) {
-                Log.d(TAG, "Scene update errors ${sceneError.sceneUpdate} ${sceneError.error}")
-            } else {
-                when {
-                    viewModel.cameraPosition.value == null -> {
-                        if (
-                            // If no pack has been selected, we don't want to request GPS permission
-                            !viewModel.selectedPackName.value.isNullOrEmpty()
-                            && viewModel.initialCameraUpdate.value == null
-                        ) {
-                            // If it's a brand new view model, start requesting updates so the map goes to
-                            // the user's current location
-                            viewModel.requestLocationUpdates()
-                        } else {
-                            viewModel.initialCameraUpdate.value?.let {
-                                viewModel.cameraUpdate.value = it
-                                viewModel.initialCameraUpdate.value = null
-                            }
-                        }
-                    }
-                    else -> {
-                        // If there's an existing view model, pan/zoom to wherever it was last
-                        Log.d(TAG, "Setting initial camera from existing view model")
-                        viewModel.cameraUpdate.value = viewModel.cameraPosition.value?.let { cp ->
-                            CameraUpdateFactory.newCameraPosition(cp)
-                        }
-                    }
-                }
-            }
-        }
+        mapController.setSceneLoadListener(this)
         // The scene needs to be customized based on the pack the user has chosen. Since that's a
         // part of state, the view model provides that
         viewModel.sceneUpdatesForSelectedPack.observe(viewLifecycleOwner, { updates ->
-            mapController.loadSceneFile(SCENE_FILE_PATH, updates)
+            mapController.loadSceneFile(viewModel.sceneFilePath.value, updates)
         })
         viewModel.cameraUpdate.observe(viewLifecycleOwner, { cameraUpdate ->
             cameraUpdate?.let {
@@ -95,6 +68,43 @@ class RocksMapResponder(
                 viewModel.cameraUpdate.value = null
             }
         })
+        viewModel.sceneFilePath.observe(viewLifecycleOwner, {
+            mapController.loadSceneFile(
+                viewModel.sceneFilePath.value,
+                viewModel.sceneUpdatesForSelectedPack.value
+            )
+        })
+    }
+
+    override fun onSceneReady(sceneId: Int, sceneError: SceneError?) {
+        if (sceneError != null) {
+            Log.d(TAG, "Scene update errors ${sceneError.sceneUpdate} ${sceneError.error}")
+            return
+        }
+        if (viewModel.cameraPosition.value == null) {
+            if (
+                // If no pack has been selected, we don't want to request GPS permission
+                !viewModel.selectedPackName.value.isNullOrEmpty()
+                && viewModel.initialCameraUpdate.value == null
+            ) {
+                // If it's a brand new view model, start requesting updates so the map goes to
+                // the user's current location
+                viewModel.requestLocationUpdates()
+            } else {
+                viewModel.initialCameraUpdate.value?.let {
+                    viewModel.cameraUpdate.value = it
+                    viewModel.initialCameraUpdate.value = null
+                }
+            }
+        } else {
+            // If there's an existing view model, pan/zoom to wherever it was last
+            Log.d(TAG, "Setting initial camera from existing view model")
+            viewModel.cameraUpdate.value = viewModel.cameraPosition.value?.let { cp ->
+                CameraUpdateFactory.newCameraPosition(cp)
+            }
+        }
+        // Set up the current location marker. This is in onSceneReady b/c it will error if there's
+        // no scene
         userLocationMarker = mapController.addMarker()
         userLocationMarker.isVisible = false
         // TODO replace this with a more traditional pulsating orb... when yuo figure out how to
@@ -139,6 +149,7 @@ class RocksMapResponder(
     // TapResponder
     override fun onSingleTapUp(x: Float, y: Float) = false
     override fun onSingleTapConfirmed(x: Float, y: Float): Boolean {
+        Log.d(TAG, "onSingleTapConfirmed")
         mapController.screenPositionToLngLat(PointF(x, y))?.let { tapped ->
             viewModel.panToLocation(tapped, mapController.cameraPosition.zoom, true)
         }
@@ -150,6 +161,7 @@ class RocksMapResponder(
         // Zoom on double tap
         val newZoom = mapController.cameraPosition.zoom + 1F
         val tapped = mapController.screenPositionToLngLat(PointF(x, y))
+        Log.d(TAG, "onDoubleTap, tapped: $tapped")
         tapped?.let {
             viewModel.panToLocation(it, newZoom, manual = true)
         }

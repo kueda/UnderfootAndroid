@@ -7,24 +7,25 @@ import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.navigation.fragment.findNavController
-import com.mapzen.tangram.*
+import com.mapzen.tangram.CameraUpdateFactory
+import com.mapzen.tangram.LngLat
+import com.mapzen.tangram.MapView
 import rocks.underfoot.underfootandroid.MainActivity
 import rocks.underfoot.underfootandroid.R
 import rocks.underfoot.underfootandroid.databinding.FragmentRocksBinding
+import kotlin.math.min
 
-class RocksFragment : Fragment(), LifecycleObserver {
+class RocksFragment : Fragment(), LifecycleObserver, Toolbar.OnMenuItemClickListener {
 
     companion object {
         private const val TAG = "RocksFragment"
@@ -33,6 +34,7 @@ class RocksFragment : Fragment(), LifecycleObserver {
         private const val MAP_PREFS_LAT = "lat"
         private const val MAP_PREFS_LNG = "lng"
         private const val MAP_PREFS_ZOOM = "zoom"
+        private const val MAX_ZOOM = 14.9f
     }
 
     private lateinit var viewModel: RocksViewModel
@@ -70,10 +72,10 @@ class RocksFragment : Fragment(), LifecycleObserver {
     ): View? {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(
-                inflater,
-                R.layout.fragment_rocks,
-                container,
-                false
+            inflater,
+            R.layout.fragment_rocks,
+            container,
+            false
         )
         binding.viewModel = viewModel
         // Without this, the binding will not update when the view model updates
@@ -86,9 +88,11 @@ class RocksFragment : Fragment(), LifecycleObserver {
                 AlertDialog.Builder(requireActivity())
                     .setTitle(getString(R.string.map_no_data_title))
                     .setMessage(getString(R.string.map_no_data_description))
-                    .setPositiveButton(getString(R.string.choose_downloads), DialogInterface.OnClickListener { _, _ ->
-                        findNavController().navigate(RocksFragmentDirections.actionNavRocksToNavDownloads())
-                    })
+                    .setPositiveButton(
+                        getString(R.string.choose_downloads),
+                        DialogInterface.OnClickListener { _, _ ->
+                            findNavController().navigate(RocksFragmentDirections.actionNavRocksToNavDownloads())
+                        })
                     .create().show()
             }
         })
@@ -103,7 +107,10 @@ class RocksFragment : Fragment(), LifecycleObserver {
                 val lng = getFloat(MAP_PREFS_LNG, 0f).toDouble()
                 val zoom = getFloat(MAP_PREFS_ZOOM, 0f)
                 if (lat != 0.0 && lng != 0.0 && zoom != 0f) {
-                    Log.d(TAG, "loaded last pos from prefs ($zoom/$lng/$lat), setting the cameraUpdate")
+                    Log.d(
+                        TAG,
+                        "loaded last pos from prefs ($zoom/$lng/$lat), setting the cameraUpdate"
+                    )
                     viewModel.initialCameraUpdate.value = CameraUpdateFactory.newLngLatZoom(
                         LngLat(lng, lat),
                         zoom
@@ -113,39 +120,45 @@ class RocksFragment : Fragment(), LifecycleObserver {
         }
         viewModel.locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE)
                 as LocationManager
-        viewModel.requestingLocationUpdates.observe(viewLifecycleOwner, Observer {requestingLocationUpdates ->
-            if (requestingLocationUpdates) {
-                when {
-                    ContextCompat.checkSelfPermission(
-                        requireActivity(),
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED -> {
-                        // You can use the API that requires the permission.
-                        viewModel.startGettingLocation()
-                    }
-                    shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                        // In an educational UI, explain to the user why your app requires this
-                        // permission for a specific feature to behave as expected. In this UI,
-                        // include a "cancel" or "no thanks" button that allows the user to
-                        // continue using your app without granting the permission.
-                        AlertDialog.Builder(requireActivity())
-                            .setTitle("Permission Required")
-                            .setMessage("Underfoot needs your permission to retrieve your current location")
-                            .setPositiveButton("Grant Permission", DialogInterface.OnClickListener { _, _ ->
-                                requestFineLocationPermissionLauncher.launch(
-                                    Manifest.permission.ACCESS_FINE_LOCATION)
-                            })
-                            .create().show()
-                    }
-                    else -> {
-                        // You can directly ask for the permission.
-                        // The registered ActivityResultCallback gets the result of this request.
-                        requestFineLocationPermissionLauncher.launch(
-                            Manifest.permission.ACCESS_FINE_LOCATION)
+        viewModel.requestingLocationUpdates.observe(
+            viewLifecycleOwner,
+            Observer { requestingLocationUpdates ->
+                if (requestingLocationUpdates) {
+                    when {
+                        ContextCompat.checkSelfPermission(
+                            requireActivity(),
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        ) == PackageManager.PERMISSION_GRANTED -> {
+                            // You can use the API that requires the permission.
+                            viewModel.startGettingLocation()
+                        }
+                        shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                            // In an educational UI, explain to the user why your app requires this
+                            // permission for a specific feature to behave as expected. In this UI,
+                            // include a "cancel" or "no thanks" button that allows the user to
+                            // continue using your app without granting the permission.
+                            AlertDialog.Builder(requireActivity())
+                                .setTitle("Permission Required")
+                                .setMessage("Underfoot needs your permission to retrieve your current location")
+                                .setPositiveButton(
+                                    "Grant Permission",
+                                    DialogInterface.OnClickListener { _, _ ->
+                                        requestFineLocationPermissionLauncher.launch(
+                                            Manifest.permission.ACCESS_FINE_LOCATION
+                                        )
+                                    })
+                                .create().show()
+                        }
+                        else -> {
+                            // You can directly ask for the permission.
+                            // The registered ActivityResultCallback gets the result of this request.
+                            requestFineLocationPermissionLauncher.launch(
+                                Manifest.permission.ACCESS_FINE_LOCATION
+                            )
+                        }
                     }
                 }
-            }
-        })
+            })
         return binding.root
     }
 
@@ -158,23 +171,22 @@ class RocksFragment : Fragment(), LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreated() {
         activity?.lifecycle?.removeObserver(this)
-        view?.findViewById<Toolbar>(R.id.toolbar)?.let{ toolbar ->
-            // Use a custom menu icon with a crude drop shadow. Not ideal.
-            val navIcon = ContextCompat.getDrawable(requireContext(), R.drawable.menu_white_shadow_24dp)
-            (activity as MainActivity).setToolbar(toolbar, navigationIcon = navIcon)
+        view?.findViewById<Toolbar>(R.id.toolbar)?.let {
+            it.setOnMenuItemClickListener(this)
+            (activity as MainActivity).setToolbar(it)
         }
     }
 
     override fun onPause() {
         Log.d(TAG, "onPause")
         context?.apply { with(getSharedPreferences(MAP_PREFS, Context.MODE_PRIVATE)) {
-            viewModel.cameraPosition.value?.let {cameraPosition ->
+            viewModel.cameraPosition.value?.let { cameraPosition ->
                 Log.d(TAG, "cameraPosition exists")
                 edit {
                     Log.d(TAG, "saving lat, lng, and zoom in prefs")
                     putFloat(MAP_PREFS_LAT, cameraPosition.position.latitude.toFloat())
                     putFloat(MAP_PREFS_LNG, cameraPosition.position.longitude.toFloat())
-                    putFloat(MAP_PREFS_ZOOM, cameraPosition.zoom)
+                    putFloat(MAP_PREFS_ZOOM, min(cameraPosition.zoom, MAX_ZOOM))
                 }
             }
         } }
@@ -188,7 +200,6 @@ class RocksFragment : Fragment(), LifecycleObserver {
     }
 
     override fun onDestroyView() {
-        Log.d(TAG, "onDestroyView")
         mapView.onDestroy()
         super.onDestroyView()
     }
@@ -196,5 +207,15 @@ class RocksFragment : Fragment(), LifecycleObserver {
     override fun onLowMemory() {
         super.onLowMemory()
         mapView.onLowMemory()
+    }
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        viewModel.sceneFilePath.value = when (item?.itemId) {
+            R.id.map_activity_layer_menu_lithology -> RocksMapResponder.SCENE_FILE_PATH
+            R.id.map_activity_layer_menu_age -> RocksMapResponder.UNIT_AGE_SCENE_FILE_PATH
+            R.id.map_activity_layer_menu_span -> RocksMapResponder.SPAN_COLOR_SCENE_FILE_PATH
+            else -> return false
+        }
+        return true
     }
 }
