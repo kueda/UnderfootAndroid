@@ -6,10 +6,7 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.mapzen.tangram.*
 import rocks.underfoot.underfootandroid.maptuils.*
 import kotlin.math.max
@@ -106,15 +103,19 @@ class RocksViewModel : ViewModel() {
     val userLocation = MutableLiveData<Location>()
     val trackingUserLocation = MutableLiveData<Boolean>(false)
     val requestingLocationUpdates = MutableLiveData<Boolean>(false)
+    val waitingForUserLocation = MutableLiveData<Boolean>(false)
 
     private val locationListener = object: LocationListener {
         override fun onLocationChanged(location: Location?) {
             val loc: Location = location ?: return
             val isBetter = MapHelpers.isBetterLocation(loc, userLocation.value)
-            if (isBetter && loc.accuracy < 100) {
+            if (isBetter && loc.accuracy < 1000) {
                 userLocation.value = loc
                 if (trackingUserLocation.value == true) {
                     panToLocation(LngLat(loc.longitude, loc.latitude), cameraPosition.value?.zoom)
+                    if (loc.accuracy < 100) {
+                        waitingForUserLocation.value = false
+                    }
                 }
             }
         }
@@ -136,12 +137,12 @@ class RocksViewModel : ViewModel() {
         }
         cameraUpdate.value = CameraUpdateFactory.newLngLatZoom(lngLat, z)
         if (manual) {
-            trackingUserLocation.value = false
+            stopTrackingUserLocation()
         }
     }
 
     fun panToCurrentLocation() {
-        trackingUserLocation.value = true
+        startTrackingUserLocation()
         requestLocationUpdates()
         userLocation.value?.let {location ->
             panToLocation(
@@ -149,6 +150,16 @@ class RocksViewModel : ViewModel() {
                 max(cameraPosition.value?.zoom ?: DEFAULT_ZOOM, DEFAULT_ZOOM)
             )
         }
+    }
+
+    fun startTrackingUserLocation() {
+        trackingUserLocation.value = true
+        waitingForUserLocation.value = userLocation.value == null
+    }
+
+    fun stopTrackingUserLocation() {
+        trackingUserLocation.value = false
+        waitingForUserLocation.value = false
     }
 
     @SuppressLint("MissingPermission")

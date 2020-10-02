@@ -1,9 +1,11 @@
 package rocks.underfoot.underfootandroid.rocks
 
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.util.Log
 import android.view.View
 import androidx.databinding.BindingAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 object RocksBindings {
     // Slightly awkward way of binding the BottomSheet layout to the view model in a way that allows
@@ -41,5 +43,11 @@ object RocksBindings {
             }
             override fun onSlide(bottomSheet: View, slideOffset: Float) {}
         })
+    }
+
+    @BindingAdapter("animateWhen")
+    @JvmStatic fun animateWhen(view: View, animate: Boolean) {
+        val drawable = (view as FloatingActionButton).drawable as AnimatedVectorDrawable
+        if (animate) drawable.start() else drawable.stop()
     }
 }

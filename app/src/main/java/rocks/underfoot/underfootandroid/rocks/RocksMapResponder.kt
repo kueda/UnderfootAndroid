@@ -73,7 +73,6 @@ class RocksMapResponder(
             mapController.loadSceneFile(viewModel.sceneFilePath.value, updates)
         })
         viewModel.cameraUpdate.observe(viewLifecycleOwner, { cameraUpdate ->
-            Log.d(TAG, "observed cameraUpdate change to $cameraUpdate")
             cameraUpdate?.let {
                 mapController.updateCameraPosition(it, 500)
                 viewModel.cameraUpdate.value = null
@@ -135,10 +134,8 @@ class RocksMapResponder(
                 """.trimIndent())
             }
         }
-        Log.d(TAG, "userLocationMarker: $userLocationMarker")
         if (userLocationMarker == null) {
             userLocationMarker = mapController.addMarker()
-            Log.d(TAG, "added marker: $userLocationMarker")
             userLocationMarker?.apply {
                 isVisible = false
                 setStylingFromString("""
