@@ -1,7 +1,11 @@
 package rocks.underfoot.underfootandroid.rocks
 
+import android.graphics.Color
 import android.graphics.PointF
 import android.util.Log
+import androidx.core.graphics.blue
+import androidx.core.graphics.green
+import androidx.core.graphics.red
 import androidx.lifecycle.LifecycleOwner
 import com.mapzen.tangram.*
 
@@ -9,7 +13,8 @@ import com.mapzen.tangram.*
 // Might be appropriate to call it a MapPresenter?
 class RocksMapResponder(
     private val viewModel: RocksViewModel,
-    private val viewLifecycleOwner: LifecycleOwner
+    private val viewLifecycleOwner: LifecycleOwner,
+    private var colorAccent: Int = Color.CYAN
 ) : MapView.MapReadyCallback,
     MapChangeListener,
     MapController.SceneLoadListener,
@@ -22,7 +27,12 @@ class RocksMapResponder(
         const val SPAN_COLOR_SCENE_FILE_PATH = "asset:///span-color.yml"
     }
     private lateinit var mapController: MapController
-    private lateinit var userLocationMarker: Marker
+    private var userLocationMarker: Marker? = null
+    private var userLocationAccMarker: Marker? = null
+
+    fun onPause() {
+        mapController.removeAllMarkers()
+    }
 
     override fun onMapReady(mc: MapController?) {
         mapController = mc!!
@@ -63,6 +73,7 @@ class RocksMapResponder(
             mapController.loadSceneFile(viewModel.sceneFilePath.value, updates)
         })
         viewModel.cameraUpdate.observe(viewLifecycleOwner, { cameraUpdate ->
+            Log.d(TAG, "observed cameraUpdate change to $cameraUpdate")
             cameraUpdate?.let {
                 mapController.updateCameraPosition(it, 500)
                 viewModel.cameraUpdate.value = null
@@ -89,8 +100,10 @@ class RocksMapResponder(
             ) {
                 // If it's a brand new view model, start requesting updates so the map goes to
                 // the user's current location
+//                Log.d(TAG, "initial camera from current location")
                 viewModel.panToCurrentLocation()
             } else {
+//                Log.d(TAG, "initial camera from initialCameraUpdate")
                 viewModel.initialCameraUpdate.value?.let {
                     viewModel.cameraUpdate.value = it
                     viewModel.initialCameraUpdate.value = null
@@ -98,37 +111,81 @@ class RocksMapResponder(
             }
         } else {
             // If there's an existing view model, pan/zoom to wherever it was last
-            viewModel.cameraUpdate.value = viewModel.cameraPosition.value?.let { cp ->
-                CameraUpdateFactory.newCameraPosition(cp)
+//            Log.d(TAG, "initial camera from existing view model")
+            viewModel.cameraPosition.value?.let { cp ->
+//                CameraUpdateFactory.newCameraPosition(cp)
+                viewModel.panToLocation(cp.position, cp.zoom)
             }
         }
         // Set up the current location marker. This is in onSceneReady b/c it will error if there's
         // no scene
-        userLocationMarker = mapController.addMarker()
-        userLocationMarker.isVisible = false
-        // TODO replace this with a more traditional pulsating orb... when yuo figure out how to
-        //  do animations
-        userLocationMarker.setStylingFromString("""
-            {
-                style: 'points',
-                color: [1, 0.25, 0.5, 0.5],
-                size: [10px, 10px],
-                order: 2000,
-                collide: false
+        if (userLocationAccMarker == null) {
+            userLocationAccMarker = mapController.addMarker()
+            userLocationAccMarker?.apply {
+                isVisible = false
+                val initialMarkerSize = "100.0 / \$meters_per_pixel"
+                setStylingFromString("""
+                    {
+                        style: 'points',
+                        color: green,
+                        size: 'function() { return ($initialMarkerSize) + "px"; }',
+                        order: 1800,
+                        collide: false
+                    }
+                """.trimIndent())
             }
-        """.trimIndent());
+        }
+        Log.d(TAG, "userLocationMarker: $userLocationMarker")
+        if (userLocationMarker == null) {
+            userLocationMarker = mapController.addMarker()
+            Log.d(TAG, "added marker: $userLocationMarker")
+            userLocationMarker?.apply {
+                isVisible = false
+                setStylingFromString("""
+                    {
+                        style: 'points',
+                        color: 'rgb(${colorAccent.red}, ${colorAccent.green}, ${colorAccent.blue})',
+                        size: [10px, 10px],
+                        order: 2000,
+                        collide: false,
+                        outline: { color: white, width: 2px }
+                    }
+                """.trimIndent())
+            }
+        }
         viewModel.userLocation.observe(viewLifecycleOwner, { loc ->
             if (loc == null) {
-                userLocationMarker.isVisible = false
-            } else {
-                userLocationMarker.isVisible = true
-                userLocationMarker.setPoint(LngLat(loc.longitude, loc.latitude))
+                userLocationMarker?.isVisible = false
+                userLocationAccMarker?.isVisible = false
+                return@observe
+            }
+            userLocationMarker?.apply {
+                isVisible = true
+                setPoint(LngLat(loc.longitude, loc.latitude))
+            }
+            userLocationAccMarker?.apply {
+                isVisible = true
+                setPoint(LngLat(loc.longitude, loc.latitude))
+                val newMarkerSize = "${loc.accuracy} / \$meters_per_pixel"
+                setStylingFromString("""
+                    {
+                        style: 'points',
+                        color: 'rgba(${colorAccent.red}, ${colorAccent.green}, ${colorAccent.blue}, 0.5)',
+                        size: 'function() { return ($newMarkerSize) + "px"; }',
+                        order: 1800,
+                        collide: false
+                    }
+                """.trimIndent())
             }
         })
     }
 
     // MapChangeListener
-    override fun onViewComplete() {}
+    override fun onViewComplete() {
+        viewModel.cameraPosition.value = mapController.cameraPosition
+        Log.d(TAG, "onViewComplete, zoom: ${viewModel.cameraPosition.value?.zoom}")
+        pickFeatureAtPosition(mapController.cameraPosition)
+    }
     override fun onRegionWillChange(animated: Boolean) {}
     override fun onRegionIsChanging() {
         // update the map metadata as you move the map
@@ -140,6 +197,7 @@ class RocksMapResponder(
         viewModel.cameraPosition.value = mapController.cameraPosition
         pickFeatureAtPosition(mapController.cameraPosition)
     }
+
     private fun pickFeatureAtPosition(cameraPosition: CameraPosition) {
         val center = mapController.lngLatToScreenPosition(cameraPosition.position)
         mapController.pickFeature(center.x, center.y)
@@ -148,7 +206,6 @@ class RocksMapResponder(
     // TapResponder
     override fun onSingleTapUp(x: Float, y: Float) = false
     override fun onSingleTapConfirmed(x: Float, y: Float): Boolean {
-        Log.d(TAG, "onSingleTapConfirmed")
         mapController.screenPositionToLngLat(PointF(x, y))?.let { tapped ->
             viewModel.panToLocation(tapped, mapController.cameraPosition.zoom, true)
         }

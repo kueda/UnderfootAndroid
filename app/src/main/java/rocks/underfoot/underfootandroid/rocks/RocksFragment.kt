@@ -13,6 +13,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import androidx.core.graphics.blue
+import androidx.core.graphics.convertTo
+import androidx.core.graphics.green
+import androidx.core.graphics.red
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
@@ -23,6 +27,7 @@ import com.mapzen.tangram.MapView
 import rocks.underfoot.underfootandroid.MainActivity
 import rocks.underfoot.underfootandroid.R
 import rocks.underfoot.underfootandroid.databinding.FragmentRocksBinding
+import kotlin.math.max
 import kotlin.math.min
 
 class RocksFragment : Fragment(), LifecycleObserver, Toolbar.OnMenuItemClickListener {
@@ -80,9 +85,10 @@ class RocksFragment : Fragment(), LifecycleObserver, Toolbar.OnMenuItemClickList
         binding.viewModel = viewModel
         // Without this, the binding will not update when the view model updates
         binding.lifecycleOwner = viewLifecycleOwner
-        mapResponder = RocksMapResponder(viewModel, viewLifecycleOwner)
-        mapView = binding.root.findViewById<MapView>(R.id.map);
-        mapView?.getMapAsync(mapResponder);
+        mapResponder = RocksMapResponder(viewModel, viewLifecycleOwner,
+            resources.getColor(R.color.colorAccent, null))
+        mapView = binding.root.findViewById<MapView>(R.id.map)
+        mapView?.getMapAsync(mapResponder)
         viewModel.selectedPackName.observe(viewLifecycleOwner, Observer {
             if (it.isNullOrEmpty()) {
                 AlertDialog.Builder(requireActivity())
@@ -183,7 +189,7 @@ class RocksFragment : Fragment(), LifecycleObserver, Toolbar.OnMenuItemClickList
             viewModel.cameraPosition.value?.let { cameraPosition ->
                 Log.d(TAG, "cameraPosition exists")
                 edit {
-                    Log.d(TAG, "saving lat, lng, and zoom in prefs")
+                    Log.d(TAG, "saving lat: ${cameraPosition.position.latitude.toFloat()}, lng: ${cameraPosition.position.longitude.toFloat()}, and zoom: ${min(cameraPosition.zoom, MAX_ZOOM)} in prefs")
                     putFloat(MAP_PREFS_LAT, cameraPosition.position.latitude.toFloat())
                     putFloat(MAP_PREFS_LNG, cameraPosition.position.longitude.toFloat())
                     putFloat(MAP_PREFS_ZOOM, min(cameraPosition.zoom, MAX_ZOOM))
@@ -191,6 +197,7 @@ class RocksFragment : Fragment(), LifecycleObserver, Toolbar.OnMenuItemClickList
             }
         } }
         super.onPause()
+        mapResponder.onPause()
         mapView.onPause()
     }
 
@@ -200,6 +207,7 @@ class RocksFragment : Fragment(), LifecycleObserver, Toolbar.OnMenuItemClickList
     }
 
     override fun onDestroyView() {
+        Log.d(TAG, "onDestroyView")
         mapView.onDestroy()
         super.onDestroyView()
     }

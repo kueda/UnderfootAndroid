@@ -5,6 +5,7 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -145,8 +146,7 @@ class RocksViewModel : ViewModel() {
         userLocation.value?.let {location ->
             panToLocation(
                 LngLat(location.longitude, location.latitude),
-                max(cameraPosition.value?.zoom ?: DEFAULT_ZOOM, DEFAULT_ZOOM),
-                true
+                max(cameraPosition.value?.zoom ?: DEFAULT_ZOOM, DEFAULT_ZOOM)
             )
         }
     }
