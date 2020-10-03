@@ -208,6 +208,7 @@ class RocksFragment : Fragment(), LifecycleObserver, Toolbar.OnMenuItemClickList
 
     override fun onDestroyView() {
         Log.d(TAG, "onDestroyView")
+        mapResponder.onDestroyView()
         mapView.onDestroy()
         super.onDestroyView()
     }

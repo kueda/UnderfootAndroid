@@ -31,7 +31,12 @@ class RocksMapResponder(
     private var userLocationAccMarker: Marker? = null
 
     fun onPause() {
+    }
+
+    fun onDestroyView() {
         mapController.removeAllMarkers()
+        userLocationMarker = null
+        userLocationAccMarker = null
     }
 
     override fun onMapReady(mc: MapController?) {
