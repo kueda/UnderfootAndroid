@@ -1,9 +1,5 @@
 import: config.yaml
 
-scene:
-    background:
-        color: '#555'
-
 sources:
     normals:
         type: Raster
@@ -83,13 +79,13 @@ layers:
                 highway: [motorway, primary, trunk]
             draw:
                 lines:
-                    width: 2px
+                    width: "function() { return ($zoom >= 13 ? 2 : 1.2) * $meters_per_pixel; }"
         roads:
             filter:
                 highway: [secondary, tertiary]
             draw:
                 lines:
-                    width: 1.6px
+                    width: "function() { return ($zoom >= 13 ? 1.6 : 1.2) * $meters_per_pixel; }"
         trails:
             filter:
                 highway: [path, track]
@@ -97,7 +93,37 @@ layers:
                 lines:
                     style: dashed
                     outline:
-                        width: 0
+                        width: 0px
+    ways_labels:
+        filter: function() { return $zoom >= 13; }
+        data:
+            source: underfoot_ways
+            layer: underfoot_ways
+        draw:
+            text:
+                font:
+                    fill: black
+                    stroke:
+                        color: white
+                        width: 2
+        trails:
+            filter:
+                highway: [path, track]
+            draw:
+                text:
+                    priority: 1
+        highways:
+            filter:
+                highway: [motorway, primary, trunk]
+            draw:
+                text:
+                    priority: 2
+        roads:
+            filter:
+                highway: [secondary, tertiary]
+            draw:
+                text:
+                    priority: 3
     contours:
         data:
             source: underfoot_elevation
@@ -130,6 +156,7 @@ styles:
         join: round
     dashed:
         base: lines
+        blend: overlay
         dash: [1]
     geologic_units:
         base: polygons

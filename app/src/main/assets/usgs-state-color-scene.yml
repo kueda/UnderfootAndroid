@@ -272,7 +272,7 @@ layers:
                 filter: {lithology: "ignimbrite"}
                 draw: {geologic_units: {color: "rgb(255,229,195)"}}
             volcanic_breccia:
-                filter: {lithology: "volcanic breccia"}
+                filter: {lithology: ["volcanic breccia", "volcanoclastic breccia"]}
                 draw: {geologic_units: {color: "rgb(255,213,157)"}}
             lava_flow:
                 filter: {lithology: "lava flow"}
