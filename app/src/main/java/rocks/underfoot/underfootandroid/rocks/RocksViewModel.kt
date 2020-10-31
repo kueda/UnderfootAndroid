@@ -52,8 +52,16 @@ class RocksViewModel : ViewModel() {
         "%.1f".format(cp.zoom)
     }
 
-    // Update to the camera, to be executed in an observer
+    // Update to the camera, to be executed in an observer with no animation
     val cameraUpdate = MutableLiveData<CameraUpdate>()
+
+    // Update to the camera, to be executed in an observer with animation. Animation doesn't
+    // always trigger onRegionDidChange when the animation is done, which means you can get into
+    // situations where you think the region changed and you retrieve the current map center, but
+    // in reality it's still going to change some more before settling. To be sure that the region
+    // changes and onRegionDidChange fires when the change is complete, set cameraUpdate for an
+    // un-animated change, e.g. when initially setting the map position.
+    val animatedCameraUpdate = MutableLiveData<CameraUpdate>()
 
     // Where to start the camera
     val initialCameraUpdate = MutableLiveData<CameraUpdate>()
@@ -124,7 +132,7 @@ class RocksViewModel : ViewModel() {
         override fun onProviderDisabled(provider: String?) {}
     }
 
-    fun panToLocation(lngLat: LngLat, zoom: Float?, manual: Boolean = false) {
+    fun panToLocation(lngLat: LngLat, zoom: Float?, manual: Boolean = false, animated: Boolean = false) {
         val z = if (manual) {
             max(zoom ?: DEFAULT_ZOOM, DEFAULT_ZOOM)
         } else {
@@ -135,9 +143,14 @@ class RocksViewModel : ViewModel() {
             }
 
         }
-        cameraUpdate.value = CameraUpdateFactory.newLngLatZoom(lngLat, z)
-        if (manual) {
-            stopTrackingUserLocation()
+        val newCameraUpdate = CameraUpdateFactory.newLngLatZoom(lngLat, z)
+        if (manual || animated) {
+            animatedCameraUpdate.value = newCameraUpdate
+            if (manual) {
+                stopTrackingUserLocation()
+            }
+        } else {
+            cameraUpdate.value = newCameraUpdate
         }
     }
 
@@ -147,7 +160,8 @@ class RocksViewModel : ViewModel() {
         userLocation.value?.let {location ->
             panToLocation(
                 LngLat(location.longitude, location.latitude),
-                max(cameraPosition.value?.zoom ?: DEFAULT_ZOOM, DEFAULT_ZOOM)
+                max(cameraPosition.value?.zoom ?: DEFAULT_ZOOM, DEFAULT_ZOOM),
+                animated = true
             )
         }
     }

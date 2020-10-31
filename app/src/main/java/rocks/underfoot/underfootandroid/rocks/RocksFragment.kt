@@ -189,7 +189,6 @@ class RocksFragment : Fragment(), LifecycleObserver, Toolbar.OnMenuItemClickList
             viewModel.cameraPosition.value?.let { cameraPosition ->
                 Log.d(TAG, "cameraPosition exists")
                 edit {
-                    Log.d(TAG, "saving lat: ${cameraPosition.position.latitude.toFloat()}, lng: ${cameraPosition.position.longitude.toFloat()}, and zoom: ${min(cameraPosition.zoom, MAX_ZOOM)} in prefs")
                     putFloat(MAP_PREFS_LAT, cameraPosition.position.latitude.toFloat())
                     putFloat(MAP_PREFS_LNG, cameraPosition.position.longitude.toFloat())
                     putFloat(MAP_PREFS_ZOOM, min(cameraPosition.zoom, MAX_ZOOM))

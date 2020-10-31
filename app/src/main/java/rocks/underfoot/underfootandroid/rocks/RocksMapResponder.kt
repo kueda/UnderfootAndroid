@@ -79,6 +79,12 @@ class RocksMapResponder(
         })
         viewModel.cameraUpdate.observe(viewLifecycleOwner, { cameraUpdate ->
             cameraUpdate?.let {
+                mapController.updateCameraPosition(it)
+                viewModel.cameraUpdate.value = null
+            }
+        })
+        viewModel.animatedCameraUpdate.observe(viewLifecycleOwner, { cameraUpdate ->
+            cameraUpdate?.let {
                 mapController.updateCameraPosition(it, 500)
                 viewModel.cameraUpdate.value = null
             }
@@ -115,9 +121,7 @@ class RocksMapResponder(
             }
         } else {
             // If there's an existing view model, pan/zoom to wherever it was last
-//            Log.d(TAG, "initial camera from existing view model")
             viewModel.cameraPosition.value?.let { cp ->
-//                CameraUpdateFactory.newCameraPosition(cp)
                 viewModel.panToLocation(cp.position, cp.zoom)
             }
         }
@@ -185,7 +189,6 @@ class RocksMapResponder(
     // MapChangeListener
     override fun onViewComplete() {
         viewModel.cameraPosition.value = mapController.cameraPosition
-        Log.d(TAG, "onViewComplete, zoom: ${viewModel.cameraPosition.value?.zoom}")
         pickFeatureAtPosition(mapController.cameraPosition)
     }
     override fun onRegionWillChange(animated: Boolean) {}
