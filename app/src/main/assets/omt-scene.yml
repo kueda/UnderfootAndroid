@@ -101,6 +101,7 @@ layers:
             layer: underfoot_ways
         draw:
             text:
+                priority: 10
                 font:
                     fill: black
                     stroke:
@@ -118,12 +119,24 @@ layers:
             draw:
                 text:
                     priority: 2
-        roads:
+        secondary:
+            filter:
+                highway: [secondary]
+            draw:
+                text:
+                    priority: 3
+        tertiary:
             filter:
                 highway: [secondary, tertiary]
             draw:
                 text:
-                    priority: 3
+                    priority: 4
+        residential:
+            filter:
+                highway: [residential, service]
+            draw:
+                text:
+                    priority: 5
     contours:
         data:
             source: underfoot_elevation
