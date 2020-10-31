@@ -30,9 +30,6 @@ class RocksMapResponder(
     private var userLocationMarker: Marker? = null
     private var userLocationAccMarker: Marker? = null
 
-    fun onPause() {
-    }
-
     fun onDestroyView() {
         mapController.removeAllMarkers()
         userLocationMarker = null
@@ -102,6 +99,13 @@ class RocksMapResponder(
             Log.d(TAG, "Scene update errors ${sceneError.sceneUpdate} ${sceneError.error}")
             return
         }
+        // Kind of dumb, but the user location observer below attempts to make these visible.
+        // Changing the scene will remove them from the map anyway, but if the local references to
+        // them persist, the observer will refer to an object that doesn't really exist, so here
+        // I'm explicitly removing them.
+        mapController.removeAllMarkers()
+        userLocationAccMarker = null
+        userLocationMarker = null
         if (viewModel.cameraPosition.value == null) {
             if (
                 // If no pack has been selected, we don't want to request GPS permission

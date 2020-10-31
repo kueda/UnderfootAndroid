@@ -196,7 +196,6 @@ class RocksFragment : Fragment(), LifecycleObserver, Toolbar.OnMenuItemClickList
             }
         } }
         super.onPause()
-        mapResponder.onPause()
         mapView.onPause()
     }
 
