@@ -67,7 +67,7 @@ class PacksRepository(private val context: Context) {
 
 
     private val json = Json { ignoreUnknownKeys = true }
-    private val baseUrl = "https://underfoot.rocks"
+    private val baseUrl = "https://static.underfoot.rocks"
     private val downloadManager = (
             context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager)
     private val prefsName = context.getString(R.string.packsPrefName)
