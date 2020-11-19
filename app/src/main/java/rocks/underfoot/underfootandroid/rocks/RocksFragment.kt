@@ -102,6 +102,15 @@ class RocksFragment : Fragment(), LifecycleObserver, Toolbar.OnMenuItemClickList
                     .create().show()
             }
         })
+        viewModel.rocksMbtilesPath.observe(viewLifecycleOwner, Observer {
+            if (it.isNotBlank()) {
+                try {
+                    viewModel.repository = RockUnitsRepository(it)
+                } catch (e: android.database.sqlite.SQLiteCantOpenDatabaseException) {
+                    Log.d(TAG, "Failed to load $it")
+                }
+            }
+        })
         val prefsName = getString(R.string.packsPrefName)
         val selectedPrefName = getString(R.string.selectedPackPrefName)
         context?.apply {

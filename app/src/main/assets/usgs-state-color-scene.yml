@@ -3,7 +3,7 @@ import: omt-scene.yml
 
 layers:
     vectile:
-        units:
+        rock_units:
             artificial:
                 filter: {lithology: "artificial"}
                 draw: {geologic_units: {color: pink}}

@@ -179,9 +179,11 @@ class PacksRepository(private val context: Context) {
                 cursor.moveToFirst()
                 if (cursor.count <= 0) {
                     pack.downloading = false
+                    cursor.close()
                     break
                 }
-                when (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))) {
+                val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
+                when (status) {
                     DownloadManager.STATUS_SUCCESSFUL -> {
                         pack.downloading = false
                         // unzip contents and move to internal storage
@@ -211,6 +213,11 @@ class PacksRepository(private val context: Context) {
                             cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_REASON))
                         Log.d(logTag, "download failed: $error")
                     }
+                    // DownloadManager.STATUS_PENDING -> {
+                    //     val reason =
+                    //         cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_REASON))
+                    //     Log.d(logTag, "download pending: $reason")
+                    // }
                     else -> {
                         val downloadedBytes =
                             cursor.getInt(
@@ -235,6 +242,7 @@ class PacksRepository(private val context: Context) {
                         if (changed) _packsChangedAt.postValue(LocalDateTime.now())
                     }
                 }
+                cursor.close()
             }
         }
     }
@@ -266,12 +274,12 @@ class PacksRepository(private val context: Context) {
 
     fun selectPack(pack: Pack?) {
         pack?.let {
-            if (!pack.downloaded) return
-            if (_selectedPack.value?.name == pack.name) {
+            if (!it.downloaded) return
+            if (_selectedPack.value?.name == it.name) {
                 return
             }
+            _selectedPack.postValue(it)
         }
-        _selectedPack.postValue(pack)
         context.apply { with(getSharedPreferences(prefsName, Context.MODE_PRIVATE)) {
             edit { putString(selectedPrefName, pack?.name) }
         } }

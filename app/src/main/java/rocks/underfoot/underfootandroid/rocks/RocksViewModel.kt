@@ -20,6 +20,7 @@ class RocksViewModel : ViewModel() {
         private const val MAX_ZOOM = 14.9f
     }
 
+
     val selectedPackName = MutableLiveData<String>("")
     val sceneUpdatesForSelectedPack: LiveData<List<SceneUpdate>> = Transformations.map(selectedPackName) { packName ->
         listOf(
@@ -37,6 +38,11 @@ class RocksViewModel : ViewModel() {
             )
         )
     }
+    val rocksMbtilesPath = Transformations.map(selectedPackName) { packName ->
+        "/data/user/0/rocks.underfoot.underfootandroid/files/${packName}/rocks.mbtiles"
+    }
+
+    var repository: RockUnitsRepository? = null
 
     val sceneFilePath = MutableLiveData<String>(RocksMapResponder.SCENE_FILE_PATH)
 
@@ -67,28 +73,28 @@ class RocksViewModel : ViewModel() {
     val initialCameraUpdate = MutableLiveData<CameraUpdate>()
 
     val feature = MutableLiveData<FeaturePickResult>()
-    val featureTitle: LiveData<String> = Transformations.map(feature) { f ->
-        featurePropertyString("title", f.properties)
+    private val rockUnit: LiveData<RockUnit> = Transformations.map(feature) { f ->
+        val id = featurePropertyString("id", f.properties)
+        repository?.find(id)
+    }
+    val featureTitle: LiveData<String> = Transformations.map(rockUnit) {
+        it?.title
     }
     val featureLithology: LiveData<String> = Transformations.map(feature) { f ->
         featurePropertyString("lithology", f.properties, default = "Lithology: Unknown")
     }
-    val featureDescription: LiveData<String> = Transformations.map(feature) { f ->
-        featurePropertyString("description", f.properties)
-    }
-    val featureAge: LiveData<String> = Transformations.map(feature) { f ->
-        val estAge = humanizeAge(f.properties["est_age"]);
-        val span = featurePropertyString("span", f.properties)
-            .capitalize().replace(" To ", " to ")
+    val featureDescription: LiveData<String> = Transformations.map(rockUnit) { it?.description }
+    val featureAge: LiveData<String> = Transformations.map(rockUnit) {
+        val estAge = humanizeAge(it.estAge);
+        val span = it.span.capitalize().replace(" To ", " to ")
         "Age: $span ($estAge)"
     }
-    val featureEstAge: LiveData<String> = Transformations.map(feature) { f ->
-        val span = featurePropertyString("span", f.properties)
-            .capitalize().replace(" To ", " to ")
-        "$span (${humanizeAge(f.properties["max_age"])} - ${humanizeAge(f.properties["min_age"])})"
+    val featureEstAge: LiveData<String> = Transformations.map(rockUnit) {
+        val span = it.span.capitalize().replace(" To ", " to ")
+        "$span (${humanizeAge(it.maxAge)} - ${humanizeAge(it.minAge)})"
     }
-    val featureSource: LiveData<String> = Transformations.map(feature) { f ->
-        featurePropertyString("source", f.properties)
+    val featureSource: LiveData<String> = Transformations.map(rockUnit) {
+        it.source
     }
 
     // Captures the last intention of the user regarding the visibility of the feature detail view.
