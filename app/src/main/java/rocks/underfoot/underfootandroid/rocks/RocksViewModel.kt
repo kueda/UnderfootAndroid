@@ -5,7 +5,6 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.*
 import com.mapzen.tangram.*
 import rocks.underfoot.underfootandroid.maptuils.*
@@ -74,14 +73,22 @@ class RocksViewModel : ViewModel() {
 
     val feature = MutableLiveData<FeaturePickResult>()
     private val rockUnit: LiveData<RockUnit> = Transformations.map(feature) { f ->
-        val id = featurePropertyString("id", f.properties)
-        repository?.find(id)
+        if (f == null) {
+            RockUnit()
+        } else {
+            val id = featurePropertyString("id", f.properties)
+            repository?.find(id) ?: RockUnit()
+        }
     }
     val featureTitle: LiveData<String> = Transformations.map(rockUnit) {
         it?.title
     }
     val featureLithology: LiveData<String> = Transformations.map(feature) { f ->
-        featurePropertyString("lithology", f.properties, default = "Lithology: Unknown")
+        if (f == null) {
+            ""
+        } else {
+            featurePropertyString("lithology", f.properties, default = "Lithology: Unknown")
+        }
     }
     val featureDescription: LiveData<String> = Transformations.map(rockUnit) { it?.description }
     val featureAge: LiveData<String> = Transformations.map(rockUnit) {
@@ -95,6 +102,9 @@ class RocksViewModel : ViewModel() {
     }
     val featureSource: LiveData<String> = Transformations.map(rockUnit) {
         it.source
+    }
+    val featureCitation: LiveData<String> = Transformations.map(rockUnit) {
+        it.citation
     }
 
     // Captures the last intention of the user regarding the visibility of the feature detail view.

@@ -39,9 +39,7 @@ class RocksMapResponder(
     override fun onMapReady(mc: MapController?) {
         mapController = mc!!
         mapController.setMapChangeListener(this)
-        mapController.setFeaturePickListener { feature ->
-            feature?.let { viewModel.feature.value = feature }
-        }
+        mapController.setFeaturePickListener { feature -> viewModel.feature.value = feature }
         mapController.touchInput?.let {ti ->
             ti.setTapResponder(this);
             ti.setDoubleTapResponder(this)
