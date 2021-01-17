@@ -206,7 +206,7 @@ layers:
                 filter: {lithology: "limestone"}
                 draw: {geologic_units: {color: "rgb(67,175,249)"}}
             dolostone:
-                filter: {lithology: "dolostone"}
+                filter: {lithology: ["dolostone", "dolomite", "dolostone (dolomite)"]}
                 draw: {geologic_units: {color: "rgb(107,195,255)"}}
             mixed_carbonate/clastic_rock:
                 filter: {lithology: "mixed carbonate/clastic rock"}
@@ -341,7 +341,7 @@ layers:
                 filter: {lithology: "phonolite"}
                 draw: {geologic_units: {color: "rgb(95,57,31)"}}
             tephrite:
-                filter: {lithology: "tephrite"}
+                filter: {lithology: ["tephrite", "tephrite (basanite)"]}
                 draw: {geologic_units: {color: "rgb(133,79,43)"}}
             ultramafitite:
                 filter: {lithology: "ultramafitite"}
@@ -365,7 +365,7 @@ layers:
                 filter: {lithology: "pegmatite"}
                 draw: {geologic_units: {color: "rgb(255,239,243)"}}
             granitoid:
-                filter: {lithology: "granitoid"}
+                filter: {lithology: ["granitoid", "monzogranite"]}
                 draw: {geologic_units: {color: "rgb(221,41,114)"}}
             alkali-feldspar_granite:
                 filter: {lithology: "alkali-feldspar granite"}
@@ -491,7 +491,7 @@ layers:
                 filter: {lithology: "skarn"}
                 draw: {geologic_units: {color: "rgb(129,3,255)"}}
             calc-silicate_rock:
-                filter: {lithology: "calc-silicate rock"}
+                filter: {lithology: ["calc-silicate rock", "silica-carbonate"]}
                 draw: {geologic_units: {color: "rgb(70,0,140)"}}
             serpentinite:
                 filter: {lithology: "serpentinite"}
@@ -557,7 +557,7 @@ layers:
                 filter: {lithology: "mica schist"}
                 draw: {geologic_units: {color: "rgb(177,177,177)"}}
             pelitic_schist:
-                filter: {lithology: "pelitic schist"}
+                filter: {lithology: ["pelitic schist", "pelite"]}
                 draw: {geologic_units: {color: "rgb(202,202,220)"}}
             quartz-feldspar_schist:
                 filter: {lithology: "quartz-feldspar schist"}
@@ -572,7 +572,7 @@ layers:
                 filter: {lithology: "granofels"}
                 draw: {geologic_units: {color: "rgb(163,55,253)"}}
             gneiss:
-                filter: {lithology: "gneiss"}
+                filter: {lithology: ["gneiss", "plutonic rock (phaneritic)"]}
                 draw: {geologic_units: {color: "rgb(236,214,254)"}}
             felsic_gneiss:
                 filter: {lithology: "felsic gneiss"}
