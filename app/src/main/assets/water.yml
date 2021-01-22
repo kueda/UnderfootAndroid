@@ -1,0 +1,42 @@
+import: config.yaml
+
+sources:
+    water:
+        type: MVT
+        url: 'file:///data/user/0/rocks.underfoot.underfootandroid/files/water.mbtiles'
+
+cameras:
+    cam:
+        type: flat
+
+lights:
+    dir:
+        type: directional
+        direction: [.1, .5, -1]
+        diffuse: .7
+        ambient: .5
+
+layers:
+    waterways:
+        data:
+            source: water
+            layer: waterways
+        draw:
+            lines:
+                order: 1
+                color: [0,0,1]
+                width: 1px
+    watersheds:
+        data:
+            source: water
+            layer: watersheds
+        draw:
+            polygons:
+                order: 0
+                color: [0.5,0.5,0]
+        borders:
+            draw:
+                lines:
+                    order: 1
+                    color: white
+                    width: 2px

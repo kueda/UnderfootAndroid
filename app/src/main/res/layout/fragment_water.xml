@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:bind="http://schemas.android.com/apk/res-auto"
-    tools:context=".rocks.RocksFragment"
+    tools:context=".water.WaterFragment"
     >
     <data>
         <variable
             name="viewModel"
-            type="rocks.underfoot.underfootandroid.rocks.RocksViewModel" />
+            type="rocks.underfoot.underfootandroid.water.WaterViewModel" />
     </data>
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -24,16 +24,10 @@
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:menu="@menu/map_activity_layers_menu" />
+                android:layout_height="wrap_content" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <include layout="@layout/main_map" bind:viewModel="@{viewModel}" />
-
-        <!--
-            Note that it seems important for this to appear *after* the main content in the
-            coordinator layout for the drag interaction to work properly
-        -->
-        <include layout="@layout/rocks_bottom_sheet" bind:viewModel="@{viewModel}" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 </layout>

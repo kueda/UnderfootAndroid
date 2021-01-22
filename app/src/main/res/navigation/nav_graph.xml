@@ -15,6 +15,15 @@
             app:destination="@id/nav_downloads" />
     </fragment>
     <fragment
+        android:id="@+id/nav_water"
+        android:name="rocks.underfoot.underfootandroid.water.WaterFragment"
+        android:label="Water"
+        tools:layout="@layout/fragment_water" >
+        <action
+            android:id="@+id/action_nav_water_to_nav_downloads"
+            app:destination="@id/nav_downloads" />
+    </fragment>
+    <fragment
         android:id="@+id/nav_downloads"
         android:name="rocks.underfoot.underfootandroid.downloads.DownloadsFragment"
         android:label="Downloads"

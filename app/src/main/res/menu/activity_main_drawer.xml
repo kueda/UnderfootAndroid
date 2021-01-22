@@ -8,6 +8,10 @@
             android:title="Rocks" />
 
         <item
+            android:id="@+id/nav_water"
+            android:title="Water" />
+
+        <item
             android:id="@+id/nav_downloads"
             android:title="Downloads" />
     </group>
