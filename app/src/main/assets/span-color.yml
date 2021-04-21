@@ -1,5 +1,5 @@
 # Adapted from https://en.wikipedia.org/w/index.php?title=Template:Period_color&action=edit
-import: omt-scene.yml
+import: rocks.yml
 
 layers:
     vectile:

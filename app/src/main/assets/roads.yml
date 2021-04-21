@@ -1,0 +1,80 @@
+import: config.yaml
+
+sources:
+    ways:
+        type: MVT
+        url: 'file:///data/user/0/rocks.underfoot.underfootandroid/files/ways-20200509.mbtiles'
+
+layers:
+    ways:
+        data:
+            source: ways
+            layer: underfoot_ways
+        draw:
+            lines:
+                order: 101
+                color: [0.314, 0.314, 0.314, 1.00]
+                width: 1.2px
+        highways:
+            filter:
+                highway: [motorway, primary, trunk]
+            draw:
+                lines:
+                    width: "function() { return ($zoom >= 13 ? 2 : 1.2) * $meters_per_pixel; }"
+        roads:
+            filter:
+                highway: [secondary, tertiary]
+            draw:
+                lines:
+                    width: "function() { return ($zoom >= 13 ? 1.6 : 1.2) * $meters_per_pixel; }"
+        trails:
+            filter:
+                highway: [path, track]
+            draw:
+                lines:
+                    style: dashed-even
+                    outline:
+                        width: 0px
+        ways_labels:
+            filter: function() { return $zoom >= 13; }
+            data:
+                source: ways
+                layer: ways
+            draw:
+                text:
+                    priority: 10
+                    font:
+                        fill: black
+                        stroke:
+                            color: white
+                            width: 2
+            trails:
+                filter:
+                    highway: [path, track]
+                draw:
+                    text:
+                        priority: 1
+            highways:
+                filter:
+                    highway: [motorway, primary, trunk]
+                draw:
+                    text:
+                        priority: 2
+            secondary:
+                filter:
+                    highway: [secondary]
+                draw:
+                    text:
+                        priority: 3
+            tertiary:
+                filter:
+                    highway: [secondary, tertiary]
+                draw:
+                    text:
+                        priority: 4
+            residential:
+                filter:
+                    highway: [residential, service]
+                draw:
+                    text:
+                        priority: 5

@@ -1,5 +1,5 @@
 # Adapted from https://mrdata.usgs.gov/catalog/lithrgb.txt
-import: omt-scene.yml
+import: rocks.yml
 
 layers:
     vectile:

@@ -198,11 +198,10 @@ class PacksRepository(private val context: Context) {
                         packJsonFile.writeText(
                             json.encodeToJsonElement(pack.metadata).toString()
                         )
-//                        internalDir.walk().forEach {
-//                            Log.d(logTag, "local file: $it")
-//                        }
+                        internalDir.walk().forEach {
+                            Log.d(logTag, "local file: $it")
+                        }
                         if (selectedPack.value == null) {
-                            pack.downloaded = true
                             selectPack(pack)
                         }
                         checkPacksDownloaded()
@@ -213,11 +212,11 @@ class PacksRepository(private val context: Context) {
                             cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_REASON))
                         Log.d(logTag, "download failed: $error")
                     }
-                    // DownloadManager.STATUS_PENDING -> {
-                    //     val reason =
-                    //         cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_REASON))
-                    //     Log.d(logTag, "download pending: $reason")
-                    // }
+                    DownloadManager.STATUS_PENDING -> {
+                        val reason =
+                            cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_REASON))
+                        Log.d(logTag, "download pending: $reason")
+                    }
                     else -> {
                         val downloadedBytes =
                             cursor.getInt(
@@ -236,6 +235,7 @@ class PacksRepository(private val context: Context) {
                             changed = true
                         }
                         if (pack.downloadedBytes != downloadedBytes) {
+                            Log.d(logTag, "downloadedBytes: $downloadedBytes")
                             pack.downloadedBytes = downloadedBytes
                             changed = true
                         }
@@ -248,16 +248,24 @@ class PacksRepository(private val context: Context) {
     }
 
     private fun checkPacksDownloaded() {
-        if (packs.value.isNullOrEmpty()) return
+        if (packs.value.isNullOrEmpty()) {
+            Log.d(logTag, "checkPacksDownloaded, no pack to check")
+            return
+        }
         val dir = context.filesDir
         var changed = false
         for (pack in packs.value ?: listOf()) {
             val packPath = File(dir, pack.name)
             val downloadedWas = pack.downloaded
             pack.downloaded = packPath.exists()
-            changed = downloadedWas == pack.downloaded
+            if (pack.downloaded) {
+                pack.downloading = false
+            }
+            Log.d(logTag, "pack at $packPath downloaded? ${pack.downloaded}")
+            changed = !changed && downloadedWas != pack.downloaded
         }
         if (changed) {
+            Log.d(logTag, "packs changed")
             _packsChangedAt.postValue(LocalDateTime.now())
         }
     }

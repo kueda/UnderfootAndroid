@@ -1,4 +1,4 @@
-import: omt-scene.yml
+import: rocks.yml
 
 layers:
     vectile:

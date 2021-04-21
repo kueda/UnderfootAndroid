@@ -1,22 +1,97 @@
-import: config.yaml
+import: [config.yaml, topography.yml, roads.yml]
+
+global:
+    colors:
+        water: "#1F78B4"
+        artificial: "#FF7F00"
+        watershed: "#CFC4AF"
+        ways: "#B3AA98"
 
 sources:
     water:
         type: MVT
         url: 'file:///data/user/0/rocks.underfoot.underfootandroid/files/water.mbtiles'
-
-cameras:
-    cam:
-        type: flat
-
-lights:
-    dir:
-        type: directional
-        direction: [.1, .5, -1]
-        diffuse: .7
-        ambient: .5
+    elevation:
+        type: MVT
+        url: 'file:///data/user/0/rocks.underfoot.underfootandroid/files/contours.mbtiles'
+        # For whatever reason, zoom filtering in layer filters doesn't work, but this does
+        min_display_zoom: 14
+    normals:
+        type: Raster
+        url: https://tile.nextzen.org/tilezen/terrain/v1/256/normal/{z}/{x}/{y}.png
+        url_params:
+            api_key: global.nextzen_api_key
+        tile_size: 256
+        max_zoom: 14
 
 layers:
+    hillshade:
+        data:
+            source: normals
+        draw:
+            hillshade:
+                visible: true
+                order: function() { return feature.sort_rank || 1; }
+    watersheds:
+        data:
+            source: water
+            layer: watersheds
+        draw:
+            polygons:
+                order: 1
+                color: global.colors.watershed
+        borders:
+            draw:
+                lines:
+                    order: 3
+                    color: white
+                    width: 2px
+    contours:
+        hundred:
+            draw:
+                contours:
+                    order: 1
+        not_hundred:
+            draw:
+                contours:
+                    order: 1
+    ways:
+        draw:
+            lines:
+                order: 2
+#                color: [0.6, 0.6, 0.6]
+                color: global.colors.ways
+        ways_labels:
+            draw:
+                text:
+                    order: 2
+                    repeat_group: ways
+#                    priority: 3
+                    font:
+#                        fill: [0.6, 0.6, 0.6]
+                        fill: global.colors.ways
+                        size: 12px
+                        stroke:
+                            color: [0.9, 0.9, 0.9]
+                            width: 2
+    waterbodies:
+        data:
+            source: water
+            layer: waterbodies
+        draw:
+            polygons:
+                order: 3
+                color: global.colors.water
+            text:
+                order: 3
+                anchor: center
+                repeat_distance: 9999
+                font:
+                    transform: uppercase
+                    fill: global.colors.water
+                    stroke:
+                        color: white
+                        width: 2
     waterways:
         data:
             source: water
@@ -24,19 +99,83 @@ layers:
         draw:
             lines:
                 order: 1
-                color: [0,0,1]
-                width: 1px
-    watersheds:
-        data:
-            source: water
-            layer: watersheds
-        draw:
-            polygons:
-                order: 0
-                color: [0.5,0.5,0]
-        borders:
+                color: global.colors.water
+                width: 2px
+            text:
+                order: 3
+#                This causes labels not to appear
+#                offset: [0px, -2px]
+                repeat_distance: 0px
+                font:
+                    fill: global.colors.water
+                    stroke:
+                        color: white
+                        width: 2
+        artificial:
+            filter:
+                is_natural: 0
+                not: { surface: underground }
             draw:
                 lines:
-                    order: 1
+                    color: global.colors.artificial
+                text:
+                    repeat_group: artificial
+                    font:
+                        fill: global.colors.artificial
+        permanent:
+            filter:
+                permanence: [perennial]
+            draw:
+                lines:
+                    width: 2.6px
+                text:
+                    repeat_group: permanent
+        intermittent:
+            filter:
+                permanence: [intermittent]
+            draw:
+                lines:
+                    style: dashed-lines
+                text:
+                    repeat_group: artificial
+        ephemeral:
+            filter:
+                permanence: [ephemeral]
+            draw:
+                lines:
+                    style: dotted-lines
+                text:
+                    repeat_group: artificial
+        underground:
+            filter:
+                is_natural: 0
+                surface: underground
+            draw:
+                lines:
+                    order: 2
+                    width: 1px
                     color: white
-                    width: 2px
+                    outline:
+                        width: 1px
+                        color: global.colors.artificial
+                text:
+                    repeat_group: artificial
+                    font:
+                        fill: global.colors.artificial
+
+styles:
+    dashed-lines:
+        base: lines
+        blend: overlay
+        dash: [5, 1]
+    dotted-lines:
+        base: lines
+        blend: overlay
+        dash: [2, 2]
+    underground:
+        base: lines
+        width: 2px
+        color: white
+        outline:
+            width: 1px
+            color: global.colors.artificial

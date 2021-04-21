@@ -24,11 +24,11 @@ class RocksViewModel : MapViewModel() {
                 "file:///data/user/0/rocks.underfoot.underfootandroid/files/${packName}/rocks.mbtiles"
             ),
             SceneUpdate(
-                "sources.underfoot_ways.url",
+                "sources.ways.url",
                 "file:///data/user/0/rocks.underfoot.underfootandroid/files/${packName}/ways.mbtiles"
             ),
             SceneUpdate(
-                "sources.underfoot_elevation.url",
+                "sources.elevation.url",
                 "file:///data/user/0/rocks.underfoot.underfootandroid/files/${packName}/contours.mbtiles"
             )
         )

@@ -1,0 +1,57 @@
+import: [config.yaml, topography.yml, roads.yml]
+
+sources:
+    underfoot:
+        type: MVT
+        url: 'file:///data/user/0/rocks.underfoot.underfootandroid/files/rocks-20200509.mbtiles'
+
+cameras:
+    cam:
+        type: flat
+
+lights:
+    dir:
+        type: directional
+        direction: [.1, .5, -1]
+        diffuse: .7
+        ambient: .5
+
+layers:
+    vectile:
+        data:
+            source: underfoot
+            layer: rock_units
+        interactive:
+            draw: { geologic_units: { interactive: true } }
+        draw:
+            geologic_units:
+                order: 0
+                color:
+                    [0,0,0]
+                    # function() {
+                    #     return [
+                    #         ( feature.code || "zzz" ).charCodeAt(0) / 150,
+                    #         ( feature.code || "zzz" ).charCodeAt(1) / 150,
+                    #         ( feature.code || "zzz" ).charCodeAt(2) / 150,
+                    #         1.0
+                    #     ]
+                    # }
+        borders:
+            filter: function() { return $zoom >= 14; }
+            draw:
+                geologic_unit_borders:
+                    order: 1
+                    color: [0,0,0,0.1]
+                    width: 2px
+    ways:
+        draw:
+            lines:
+                order: 101
+styles:
+    geologic_units:
+        base: polygons
+        lighting: false
+    geologic_unit_borders:
+        base: lines
+        blend: overlay
+        lighting: false

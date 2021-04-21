@@ -68,7 +68,6 @@ public class MapActivity extends AppCompatActivity implements SceneLoadListener,
 
     private static final String TAG = "Underfoot::MapActivity";
 
-    // private static final String SCENE_FILE_PATH = "asset:///omt-scene.yml";
     private static final String SCENE_FILE_PATH = "asset:///usgs-state-color-scene.yml";
     private static final String UNIT_AGE_SCENE_FILE_PATH = "asset:///unit-age-scene.yml";
     private static final String SPAN_COLOR_SCENE_FILE_PATH = "asset:///span-color.yml";
