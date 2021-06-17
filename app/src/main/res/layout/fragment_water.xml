@@ -27,7 +27,30 @@
                 android:layout_height="wrap_content" />
         </com.google.android.material.appbar.AppBarLayout>
 
-        <include layout="@layout/main_map" bind:viewModel="@{viewModel}" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+            <include layout="@layout/main_map" bind:viewModel="@{viewModel}" />
+
+            <!-- far from ideal, but works for now... -->
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="160dp"
+                android:backgroundTint="@color/white"
+                android:clickable="true"
+                android:src="@drawable/ic_launcher_foreground"
+                app:elevation="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:borderWidth="0dp"
+                android:tint="@color/colorAccent"
+                android:elevation="1dp"
+                android:onClick="@{() -> viewModel.showDownStream()}" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </layout>

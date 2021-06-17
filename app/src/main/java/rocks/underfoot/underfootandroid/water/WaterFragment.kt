@@ -1,21 +1,28 @@
 package rocks.underfoot.underfootandroid.water
 
+import android.database.sqlite.SQLiteCantOpenDatabaseException
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.graphics.*
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.mapzen.tangram.MapView
+import com.mapzen.tangram.SceneUpdate
 import rocks.underfoot.underfootandroid.R
 import rocks.underfoot.underfootandroid.databinding.FragmentWaterBinding
 import rocks.underfoot.underfootandroid.maptuils.MapFragment
+import rocks.underfoot.underfootandroid.rocks.WaterRepository
 
 class WaterFragment : MapFragment() {
 
     companion object {
         fun newInstance() = WaterFragment()
+        const val TAG = "WaterFragmant"
     }
 
     private lateinit var binding: FragmentWaterBinding
@@ -45,6 +52,34 @@ class WaterFragment : MapFragment() {
         mapView = binding.root.findViewById<MapView>(R.id.map)
         mapView.getMapAsync(mapResponder)
         setupMap()
+        waterViewModel.mbtilesPath.observe(viewLifecycleOwner, Observer {
+            if (it.isNotBlank()) {
+                try {
+                    waterViewModel.repository = WaterRepository(it)
+                } catch (e: SQLiteCantOpenDatabaseException) {
+                    Log.d(TAG, "Failed to load $it")
+                }
+            }
+        })
+        val colorAccent = resources.getColor(R.color.colorAccent, null).toColorLong()
+        waterViewModel.highlightSegments.observe(viewLifecycleOwner, Observer {highlightIds ->
+            if (highlightIds.isNotEmpty()) {
+                waterViewModel.sceneUpdatesForSelectedPack.value?.let {updates ->
+                    Log.d(TAG, "trying to highlight $highlightIds")
+                    val jsArray = "[${highlightIds.joinToString(",") { "'$it'" }}]"
+                    mapResponder.mapController.loadSceneFile(viewModel.sceneFilePath.value,  updates + listOf(
+                        SceneUpdate(
+                            "layers.highlight_waterways.filter",
+                            "function() { return $jsArray.indexOf(feature.source_id) >= 0; }"
+                        ),
+                        SceneUpdate(
+                            "layers.highlight_waterways.draw.lines.color",
+                            "[${colorAccent.red}, ${colorAccent.green}, ${colorAccent.blue}]",
+                        ),
+                    ))
+                }
+            }
+        })
         return binding.root
     }
 

@@ -96,6 +96,8 @@ layers:
         data:
             source: water
             layer: waterways
+        interactive:
+            draw: { lines: { interactive: true } }
         draw:
             lines:
                 order: 1
@@ -162,6 +164,16 @@ layers:
                     repeat_group: artificial
                     font:
                         fill: global.colors.artificial
+    highlight_waterways:
+        data:
+            source: water
+            layer: waterways
+        filter: function() { return feature.source_id === ''; }
+        draw:
+            lines:
+                order: 3
+                width: 5px
+                color: "#FF0000"
 
 styles:
     dashed-lines:
