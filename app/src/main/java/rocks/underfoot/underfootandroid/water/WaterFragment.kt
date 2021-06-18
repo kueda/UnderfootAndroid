@@ -16,7 +16,6 @@ import com.mapzen.tangram.SceneUpdate
 import rocks.underfoot.underfootandroid.R
 import rocks.underfoot.underfootandroid.databinding.FragmentWaterBinding
 import rocks.underfoot.underfootandroid.maptuils.MapFragment
-import rocks.underfoot.underfootandroid.rocks.WaterRepository
 
 class WaterFragment : MapFragment() {
 

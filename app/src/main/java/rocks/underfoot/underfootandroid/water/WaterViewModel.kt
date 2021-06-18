@@ -7,7 +7,6 @@ import androidx.lifecycle.Transformations
 import com.mapzen.tangram.FeaturePickResult
 import com.mapzen.tangram.SceneUpdate
 import rocks.underfoot.underfootandroid.maptuils.MapViewModel
-import rocks.underfoot.underfootandroid.rocks.WaterRepository
 
 class WaterViewModel : MapViewModel() {
     companion object {

@@ -1,4 +1,4 @@
-package rocks.underfoot.underfootandroid.rocks
+package rocks.underfoot.underfootandroid.water
 
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log

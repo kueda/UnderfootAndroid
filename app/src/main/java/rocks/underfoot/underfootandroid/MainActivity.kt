@@ -1,5 +1,6 @@
 package rocks.underfoot.underfootandroid
 
+import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,6 +8,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.edit
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 
@@ -18,7 +20,25 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        // Set the graph start destination based on stored preference
+        // https://stackoverflow.com/a/53992737
         val navController = findNavController(R.id.nav_host_fragment)
+        val graph = navController.navInflater.inflate(R.navigation.nav_graph)
+        val prefsName = "underfoot"
+        val lastDestinationPrefName = getString(R.string.lastDestinationPrefName)
+        apply { with(getSharedPreferences(prefsName, Context.MODE_PRIVATE)) {
+            graph.startDestination = getInt(lastDestinationPrefName, R.id.nav_rocks)
+        } }
+        navController.graph = graph
+        // Store the nav destination on change
+        navController.addOnDestinationChangedListener { _, dest, _ ->
+            val apply = apply {
+                with(getSharedPreferences(prefsName, Context.MODE_PRIVATE)) {
+                    edit { putInt(lastDestinationPrefName, dest.id) }
+                }
+            }
+        }
+        // Set up the drawer menu
         findViewById<NavigationView>(R.id.nav_view)
             .setupWithNavController(navController)
     }
