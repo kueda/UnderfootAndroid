@@ -26,7 +26,6 @@ abstract class MapResponder(
     override fun onMapReady(mc: MapController?) {
         mapController = mc!!
         mapController.setMapChangeListener(this)
-//        mapController.setFeaturePickListener { feature -> viewModel.feature.value = feature }
         mapController.touchInput?.let {ti ->
             ti.setTapResponder(this);
             ti.setDoubleTapResponder(this)
@@ -100,7 +99,9 @@ abstract class MapResponder(
                 // If it's a brand new view model, start requesting updates so the map goes to
                 // the user's current location
 //                Log.d(TAG, "initial camera from current location")
-                viewModel.panToCurrentLocation()
+//                2021-05-18: I was doing this, but given how much the app shuts down this ends up
+//                happening most of the time, which is rarely what I want
+//                viewModel.panToCurrentLocation()
             } else {
 //                Log.d(TAG, "initial camera from initialCameraUpdate")
                 viewModel.initialCameraUpdate.value?.let {

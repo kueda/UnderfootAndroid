@@ -27,7 +27,11 @@ class MainActivity : AppCompatActivity() {
         val prefsName = "underfoot"
         val lastDestinationPrefName = getString(R.string.lastDestinationPrefName)
         apply { with(getSharedPreferences(prefsName, Context.MODE_PRIVATE)) {
-            graph.startDestination = getInt(lastDestinationPrefName, R.id.nav_rocks)
+            graph.startDestination = try {
+                getInt(lastDestinationPrefName, R.id.nav_rocks)
+            } catch (e:java.lang.ClassCastException) {
+                R.id.nav_rocks
+            }
         } }
         navController.graph = graph
         // Store the nav destination on change

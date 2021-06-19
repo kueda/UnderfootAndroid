@@ -40,12 +40,25 @@ layers:
             polygons:
                 order: 1
                 color: global.colors.watershed
+            text:
+                priority: 3
+                anchor: center
+                repeat_distance: 9999
+                transition:
+                    show:
+                        time: 0.5s
+                    hide:
+                        time: 0.5s
+                font:
+                    fill: [1, 1, 1, 0.8]
+                    size: [[8, 10pt], [14, 14t]]
+                    transform: uppercase
         borders:
             draw:
                 lines:
                     order: 3
                     color: white
-                    width: 2px
+                    width: [[8, 1px], [14, 3px]]
     contours:
         hundred:
             draw:
@@ -59,7 +72,6 @@ layers:
         draw:
             lines:
                 order: 2
-#                color: [0.6, 0.6, 0.6]
                 color: global.colors.ways
         ways_labels:
             draw:
@@ -74,6 +86,24 @@ layers:
                         stroke:
                             color: [0.9, 0.9, 0.9]
                             width: 2
+    waterbodies_overview:
+        data:
+            source: water
+            layer: waterbodies_overview
+        draw:
+            polygons:
+                order: 3
+                color: global.colors.water
+            text:
+                order: 3
+                anchor: center
+                repeat_distance: 9999
+                font:
+                    transform: uppercase
+                    fill: global.colors.water
+                    stroke:
+                        color: white
+                        width: 2
     waterbodies:
         data:
             source: water
@@ -92,6 +122,34 @@ layers:
                     stroke:
                         color: white
                         width: 2
+        wetlands:
+            filter:
+                type: "swamp/marsh"
+            draw:
+                polygons:
+                    # Not ideal, but at least it distinguishes them. I suspect what I need is a
+                    # texture
+                    style: wetlands
+                    color: rgba(31, 120, 180, 0.2)
+    waterways_overview:
+        data:
+            source: water
+            layer: waterways_overview
+        draw:
+            lines:
+                order: 1
+                color: global.colors.water
+                width: 2px
+            text:
+                order: 3
+                #                This causes labels not to appear
+                #                offset: [0px, -2px]
+                repeat_distance: 0px
+                font:
+                    fill: global.colors.water
+                    stroke:
+                        color: white
+                        width: 2
     waterways:
         data:
             source: water
@@ -102,9 +160,10 @@ layers:
             lines:
                 order: 1
                 color: global.colors.water
-                width: 2px
+                width: 1.5px
             text:
                 order: 3
+                priority: 1
 #                This causes labels not to appear
 #                offset: [0px, -2px]
                 repeat_distance: 0px
@@ -191,3 +250,6 @@ styles:
         outline:
             width: 1px
             color: global.colors.artificial
+    wetlands:
+        base: polygons
+        blend: overlay
