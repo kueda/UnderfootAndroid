@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:underfoot="http://underfoot.rocks">
+    <data>
+        <variable
+            name="viewModel"
+            type="rocks.underfoot.underfootandroid.water.WaterViewModel" />
+    </data>
+    <!-- android:clickable prevents touches from affecting lower views -->
+    <LinearLayout
+        android:id="@+id/detailPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transWhite"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:elevation="4dp"
+        app:behavior_peekHeight="70dp"
+        android:onClick="@{() -> viewModel.showDetailPanel()}"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        underfoot:requestedDetailState="@{viewModel.lastRequestedDetailState}"
+        underfoot:onDetailChange="@{viewModel.onDetailChange}"
+        >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp">
+
+            <TextView
+                android:id="@+id/slideUpTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="@{!viewModel.detailShown}"
+                android:gravity="top"
+                android:text="@{viewModel.featureTitle}"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="15dp"
+                tools:text="Sausal Creek" />
+
+            <TextView
+                android:id="@+id/slideUpLithology"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{viewModel.watershedName}"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/slideUpTitle"
+                tools:text="San Francisco Bay Estuary" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ScrollView
+            android:id="@+id/slideUpScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="15dp"
+                    android:paddingTop="15dp"
+                    android:paddingRight="15dp"
+                    android:text="Source"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                />
+
+                <TextView
+                    android:id="@+id/source"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:padding="15dp"
+                    android:autoLink="web"
+                    android:text="@{viewModel.featureCitation}"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                    tools:text="Graymer, R.W. (2000). Geologic Map and Map Database of the Oakland Metropolitan Area."
+                    />
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</layout>

@@ -7,6 +7,7 @@
     tools:context=".water.WaterFragment"
     >
     <data>
+        <import type="android.view.View"/>
         <variable
             name="viewModel"
             type="rocks.underfoot.underfootandroid.water.WaterViewModel" />
@@ -27,9 +28,14 @@
                 android:layout_height="wrap_content" />
         </com.google.android.material.appbar.AppBarLayout>
 
+        <!--
+            Note that animateLayoutChanges is making the downstream FAB fade in and out when you
+            go over streams. I think that only works in Android 11
+        -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
             >
             <include layout="@layout/main_map" bind:viewModel="@{viewModel}" />
 
@@ -41,16 +47,22 @@
                 android:layout_marginBottom="160dp"
                 android:backgroundTint="@color/white"
                 android:clickable="true"
-                android:src="@drawable/ic_launcher_foreground"
+                android:src="@drawable/ic_outline_trending_down_24"
                 app:elevation="4dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:borderWidth="0dp"
                 android:tint="@color/colorAccent"
                 android:elevation="1dp"
-                android:onClick="@{() -> viewModel.showDownStream()}" />
+                android:visibility="@{viewModel.featureIsWaterway ? View.VISIBLE : View.GONE}"
+                android:onClick="@{() -> viewModel.showDownStream()}"
+                android:contentDescription="@string/view_downstream_waterways" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
+        <!--
+                    Note that it seems important for this to appear *after* the main content in the
+                    coordinator layout for the drag interaction to work properly
+                -->
+        <include layout="@layout/water_bottom_sheet" bind:viewModel="@{viewModel}" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </layout>

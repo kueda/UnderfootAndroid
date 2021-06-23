@@ -30,11 +30,34 @@ class WaterViewModel : MapViewModel() {
     }
     override val sceneFilePath = MutableLiveData<String>(WaterMapResponder.SCENE_FILE_PATH)
     val feature = MutableLiveData<FeaturePickResult>()
+    val featureIsWaterway = Transformations.map(feature) {
+        it?.let {
+            // Brittle, but there's no way to detect the source of the feature except via properties
+            it.properties["type"] in arrayOf(
+                "stream",
+                "siphon",
+                "aqueduct",
+                "canal/ditch",
+                "artificial",
+                "connector"
+            )
+        } ?: false
+    }
     var repository: WaterRepository? = null
     val mbtilesPath = Transformations.map(selectedPackName) { packName ->
         "/data/user/0/rocks.underfoot.underfootandroid/files/${packName}/water.mbtiles"
     }
     val highlightSegments = MutableLiveData<List<String>>()
+
+    val featureTitle: LiveData<String> = Transformations.map(feature) {
+        it?.let {
+            val name = it.properties["name"] ?: "Unknown"
+            val type = it.properties["type"] ?: "Watershed"
+            "$name ($type)"
+        } ?: "Unknown"
+    }
+    val watershedName = MutableLiveData<String>()
+    val featureCitation: String = "foo"
 
     fun showDownStream() {
         Log.d(TAG, "tapped downstream")

@@ -25,6 +25,13 @@ class WaterMapResponder(
             // TODO when the viewmodel has a feature, add a FAB that highlights downstream segments
             // and zooms to their bounding box
             Log.d(TAG, "feature: ${feature?.properties}")
+            if (feature == null) {
+                viewModel.watershedName.value = null
+            } else {
+                if (!feature.properties.contains("type")) {
+                    viewModel.watershedName.value = feature.properties["name"]
+                }
+            }
         }
     }
 

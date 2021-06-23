@@ -6,4 +6,5 @@
     <string name="map_no_data_description">Underfoot is an offline-first mapping application, so you need to download map data so it will be available online.</string>
     <string name="choose_downloads">Choose Downloads</string>
     <string name="lastDestinationPrefName">lastDestination</string>
+    <string name="view_downstream_waterways">View downstream waterways</string>
 </resources>
