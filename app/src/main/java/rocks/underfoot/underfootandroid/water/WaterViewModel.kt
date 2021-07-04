@@ -56,12 +56,30 @@ class WaterViewModel : MapViewModel() {
             "$name ($type)"
         } ?: "Unknown"
     }
-    val watershedName = MutableLiveData<String>()
-    val featureCitation: String = "foo"
+    val watershedFeature = MutableLiveData<FeaturePickResult>()
+    val watershedName = Transformations.map(watershedFeature) {
+        it?.let {
+            it.properties["name"]
+        } ?: "Unknown"
+    }
+    val featureCitation: LiveData<String> = Transformations.map(feature) { f ->
+        repository?.let {
+            val source = f?.let { f.properties["source"] }
+            if (!source.isNullOrBlank()) {
+                it.citationForSource(source)
+            } else null
+        } ?: "Unknown"
+    }
+    val watershedCitation: LiveData<String> = Transformations.map(watershedFeature) { f ->
+        repository?.let {
+            val source = f?.let { f.properties["source"] }
+            if (!source.isNullOrBlank()) {
+                it.citationForSource(source)
+            } else null
+        } ?: "Unknown"
+    }
 
     fun showDownStream() {
-        Log.d(TAG, "tapped downstream")
-        // TODO fetch segments to highlight from WaterRepository
         if (repository !== null && feature.value !== null) {
             feature.value?.let {f ->
                 repository?.let {r ->

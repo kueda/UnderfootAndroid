@@ -73,18 +73,50 @@
                     android:paddingLeft="15dp"
                     android:paddingTop="15dp"
                     android:paddingRight="15dp"
-                    android:text="Source"
+                    android:text="Sources"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
                 />
 
                 <TextView
-                    android:id="@+id/source"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="15dp"
+                    android:paddingTop="15dp"
+                    android:paddingRight="15dp"
+                    android:text="Feature"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                />
+
+                <TextView
+                    android:id="@+id/featureCitation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="left"
                     android:padding="15dp"
                     android:autoLink="web"
                     android:text="@{viewModel.featureCitation}"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                    tools:text="Graymer, R.W. (2000). Geologic Map and Map Database of the Oakland Metropolitan Area."
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="15dp"
+                    android:paddingTop="15dp"
+                    android:paddingRight="15dp"
+                    android:text="Watershed"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                />
+
+                <TextView
+                    android:id="@+id/watershedCitation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:padding="15dp"
+                    android:autoLink="web"
+                    android:text="@{viewModel.watershedCitation}"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                     tools:text="Graymer, R.W. (2000). Geologic Map and Map Database of the Oakland Metropolitan Area."
                     />

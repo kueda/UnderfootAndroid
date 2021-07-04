@@ -152,4 +152,17 @@ abstract class MapViewModel : ViewModel() {
     private fun requestLocationUpdates() {
         requestingLocationUpdates.value = true
     }
+
+    // Fetches a property string from a FeaturePickResult or returns "Unknown" if not available
+    fun featurePropertyString(
+        propName: String,
+        properties: Map<String, String>,
+        default: String = "Unknown"
+    ): String {
+        if (properties.isEmpty()) return default
+        properties[propName]?.let {
+            if (it.isNotEmpty()) return it
+        }
+        return default
+    }
 }

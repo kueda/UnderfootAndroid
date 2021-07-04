@@ -1,7 +1,6 @@
 package rocks.underfoot.underfootandroid.water
 
 import android.graphics.Color
-import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import com.mapzen.tangram.CameraPosition
 import com.mapzen.tangram.MapController
@@ -22,14 +21,11 @@ class WaterMapResponder(
         mapController.setPickRadius(10.0F)
         mapController.setFeaturePickListener { feature ->
             viewModel.feature.value = feature
-            // TODO when the viewmodel has a feature, add a FAB that highlights downstream segments
-            // and zooms to their bounding box
-            Log.d(TAG, "feature: ${feature?.properties}")
             if (feature == null) {
-                viewModel.watershedName.value = null
+                viewModel.watershedFeature.value = null
             } else {
                 if (!feature.properties.contains("type")) {
-                    viewModel.watershedName.value = feature.properties["name"]
+                    viewModel.watershedFeature.value = feature;
                 }
             }
         }

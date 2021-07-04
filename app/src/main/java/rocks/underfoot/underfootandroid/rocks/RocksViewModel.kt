@@ -88,16 +88,4 @@ class RocksViewModel : MapViewModel() {
             else -> "%,d years".format(ageNum.roundToInt())
         }
     }
-
-    private fun featurePropertyString(
-        propName: String,
-        properties: Map<String, String>,
-        default: String = "Unknown"
-    ): String {
-        if (properties.isEmpty()) return default
-        properties[propName]?.let {
-            if (it.isNotEmpty()) return it
-        }
-        return default
-    }
 }

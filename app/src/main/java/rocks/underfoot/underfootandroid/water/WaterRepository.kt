@@ -44,4 +44,26 @@ class WaterRepository(mbtilesPath: String) {
         }
         return downstreamSourceIds.toList()
     }
+
+    fun citationForSource(source: String): String {
+        val res = try {
+            db.rawQuery("""
+                SELECT
+                    citation
+                FROM citations
+                WHERE source = '${source}'
+            """, null)
+        } catch (e: android.database.sqlite.SQLiteException) {
+            Log.e(TAG, "Failed to find a citation for ${source}: $e")
+            return ""
+        }
+        res.moveToFirst()
+        val citation = try {
+            res.getString(res.getColumnIndex("citation"))
+        } catch (e: android.database.CursorIndexOutOfBoundsException) {
+            "Unknown"
+        }
+        res.close()
+        return citation
+    }
 }
