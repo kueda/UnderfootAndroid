@@ -8,6 +8,7 @@
     >
     <data>
         <import type="android.view.View"/>
+        <import type="rocks.underfoot.underfootandroid.R" />
         <variable
             name="viewModel"
             type="rocks.underfoot.underfootandroid.water.WaterViewModel" />
@@ -52,10 +53,10 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:borderWidth="0dp"
-                android:tint="@color/colorAccent"
+                android:tint="@{viewModel.highlightVisible ? @color/colorAccent : @color/black}"
                 android:elevation="1dp"
-                android:visibility="@{viewModel.featureIsWaterway ? View.VISIBLE : View.GONE}"
-                android:onClick="@{() -> viewModel.showDownStream()}"
+                android:visibility="@{viewModel.highlightVisible || viewModel.featureIsWaterway ? View.VISIBLE : View.GONE}"
+                android:onClick="@{() -> viewModel.toggleDownstream()}"
                 android:contentDescription="@string/view_downstream_waterways" />
         </androidx.constraintlayout.widget.ConstraintLayout>
         <!--

@@ -3,7 +3,7 @@ import: [config.yaml, topography.yml, roads.yml]
 global:
     colors:
         water: "#1F78B4"
-        artificial: "#FF7F00"
+        manmade: "#FF7F00"
         watershed: "#CFC4AF"
         ways: "#B3AA98"
 
@@ -188,17 +188,22 @@ layers:
                     stroke:
                         color: white
                         width: 2
-        artificial:
+        manmade:
             filter:
                 is_natural: 0
-                not: { surface: underground }
+                none:
+                    - { surface: underground }
+                    # "artificial" in NHD means that the data describes a path water might take
+                    # through a larger waterbody, like a wide river, marhs, or reservoir, so here
+                    # I'm treating it like a "natural" waterway
+                    - { type: artificial }
             draw:
                 lines:
-                    color: global.colors.artificial
+                    color: global.colors.manmade
                 text:
-                    repeat_group: artificial
+                    repeat_group: manmade
                     font:
-                        fill: global.colors.artificial
+                        fill: global.colors.manmade
         permanent:
             filter:
                 permanence: [perennial]
@@ -214,7 +219,7 @@ layers:
                 lines:
                     style: dashed-lines
                 text:
-                    repeat_group: artificial
+                    repeat_group: manmade
         ephemeral:
             filter:
                 permanence: [ephemeral]
@@ -222,7 +227,7 @@ layers:
                 lines:
                     style: dotted-lines
                 text:
-                    repeat_group: artificial
+                    repeat_group: manmade
         underground:
             filter:
                 is_natural: 0
@@ -234,11 +239,11 @@ layers:
                     color: white
                     outline:
                         width: 1px
-                        color: global.colors.artificial
+                        color: global.colors.manmade
                 text:
-                    repeat_group: artificial
+                    repeat_group: manmade
                     font:
-                        fill: global.colors.artificial
+                        fill: global.colors.manmade
     highlight_waterways:
         data:
             source: water
@@ -268,7 +273,7 @@ styles:
         color: white
         outline:
             width: 1px
-            color: global.colors.artificial
+            color: global.colors.manmade
     wetlands:
         base: polygons
         blend: overlay

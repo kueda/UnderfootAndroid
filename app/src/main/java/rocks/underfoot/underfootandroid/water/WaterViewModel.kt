@@ -48,19 +48,24 @@ class WaterViewModel : MapViewModel() {
         "/data/user/0/rocks.underfoot.underfootandroid/files/${packName}/water.mbtiles"
     }
     val highlightSegments = MutableLiveData<List<String>>()
+    val highlightVisible = Transformations.map(highlightSegments) { it.isNotEmpty() }
 
     val featureTitle: LiveData<String> = Transformations.map(feature) {
         it?.let {
             val name = it.properties["name"] ?: "Unknown"
             val type = it.properties["type"] ?: "Watershed"
-            "$name ($type)"
+            if (type == "artificial") {
+                name
+            } else {
+                "$name ($type)"
+            }
         } ?: "Unknown"
     }
     val watershedFeature = MutableLiveData<FeaturePickResult>()
     val watershedName = Transformations.map(watershedFeature) {
         it?.let {
-            it.properties["name"]
-        } ?: "Unknown"
+            "${it.properties["name"]} Watershed"
+        } ?: "Unknown Watershed"
     }
     val featureCitation: LiveData<String> = Transformations.map(feature) { f ->
         repository?.let {
@@ -79,15 +84,19 @@ class WaterViewModel : MapViewModel() {
         } ?: "Unknown"
     }
 
-    fun showDownStream() {
+    fun toggleDownstream() {
         if (repository !== null && feature.value !== null) {
             feature.value?.let {f ->
                 repository?.let {r ->
                     val downstreamIds = r.downstream(f.properties["source_id"])
                     Log.d(TAG, "downstreamIds: $downstreamIds")
                     highlightSegments.value = downstreamIds
+                    return
                 }
             }
+        }
+        if (!highlightSegments.value.isNullOrEmpty()) {
+            highlightSegments.value = listOf()
         }
     }
 }

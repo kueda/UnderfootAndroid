@@ -62,21 +62,29 @@ class WaterFragment : MapFragment() {
         })
         val colorAccent = resources.getColor(R.color.colorAccent, null).toColorLong()
         waterViewModel.highlightSegments.observe(viewLifecycleOwner, Observer {highlightIds ->
-            if (highlightIds.isNotEmpty()) {
-                waterViewModel.sceneUpdatesForSelectedPack.value?.let {updates ->
-                    Log.d(TAG, "trying to highlight $highlightIds")
-                    val jsArray = "[${highlightIds.joinToString(",") { "'$it'" }}]"
-                    mapResponder.mapController.loadSceneFile(viewModel.sceneFilePath.value,  updates + listOf(
-                        SceneUpdate(
-                            "layers.highlight_waterways.filter",
-                            "function() { return $jsArray.indexOf(feature.source_id) >= 0; }"
-                        ),
-                        SceneUpdate(
-                            "layers.highlight_waterways.draw.lines.color",
-                            "[${colorAccent.red}, ${colorAccent.green}, ${colorAccent.blue}]",
-                        ),
-                    ))
-                }
+            val newUpdates = if (highlightIds.isEmpty()) {
+                listOf(SceneUpdate(
+                    "layers.highlight_waterways.filter",
+                    "function() { return false }"
+                ))
+            } else {
+                val jsArray = "[${highlightIds.joinToString(",") { "'$it'" }}]"
+                listOf(
+                    SceneUpdate(
+                        "layers.highlight_waterways.filter",
+                        "function() { return $jsArray.indexOf(feature.source_id) >= 0; }"
+                    ),
+                    SceneUpdate(
+                        "layers.highlight_waterways.draw.lines.color",
+                        "[${colorAccent.red}, ${colorAccent.green}, ${colorAccent.blue}]",
+                    ),
+                )
+            }
+            waterViewModel.sceneUpdatesForSelectedPack.value?.let {updates ->
+                mapResponder.mapController.loadSceneFile(
+                    viewModel.sceneFilePath.value,
+                    updates + newUpdates
+                )
             }
         })
         return binding.root
