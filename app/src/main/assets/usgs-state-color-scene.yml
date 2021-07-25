@@ -509,7 +509,7 @@ layers:
                 filter: {lithology: "quartzite"}
                 draw: {geologic_units: {color: "rgb(159,255,159)"}}
             metaconglomerate:
-                filter: {lithology: "metaconglomerate"}
+                filter: {lithology: ["metaconglomerate", "meta-conglomerate"]}
                 draw: {geologic_units: {color: "rgb(233,255,233)"}}
             marble:
                 filter: {lithology: "marble"}
@@ -521,7 +521,7 @@ layers:
                 filter: {lithology: "felsic metavolcanic rock"}
                 draw: {geologic_units: {color: "rgb(255,141,255)"}}
             metarhyolite:
-                filter: {lithology: "metarhyolite"}
+                filter: {lithology: ["metarhyolite", "meta-rhyolite"]}
                 draw: {geologic_units: {color: "rgb(255,167,255)"}}
             keratophyre:
                 filter: {lithology: "keratophyre"}
@@ -533,7 +533,7 @@ layers:
                 filter: {lithology: "mafic metavolcanic rock"}
                 draw: {geologic_units: {color: "rgb(185,59,104)"}}
             metabasalt:
-                filter: {lithology: "metabasalt"}
+                filter: {lithology: ["metabasalt", "meta-basalt"]}
                 draw: {geologic_units: {color: "rgb(135,43,76)"}}
             spilite:
                 filter: {lithology: "spilite"}

@@ -143,7 +143,7 @@ layers:
             lines:
                 order: 1
                 color: global.colors.water
-                width: 2px
+                width: function() { return $zoom / 10 * $meters_per_pixel; }
             text:
                 order: 3
                 #                This causes labels not to appear
@@ -176,7 +176,7 @@ layers:
             lines:
                 order: 1
                 color: global.colors.water
-                width: 1.5px
+                width: function() { return $zoom / 10 * $meters_per_pixel; }
             text:
                 order: 3
                 priority: 1
@@ -209,7 +209,7 @@ layers:
                 permanence: [perennial]
             draw:
                 lines:
-                    width: 2.6px
+                width: function() { return $zoom / 10 * $meters_per_pixel; }
                 text:
                     repeat_group: permanent
         intermittent:
@@ -235,10 +235,10 @@ layers:
             draw:
                 lines:
                     order: 2
-                    width: 1px
+                    width: function() { return $zoom / 10 * $meters_per_pixel; }
                     color: white
                     outline:
-                        width: 1px
+                        width: function() { return $zoom / 10 * $meters_per_pixel; }
                         color: global.colors.manmade
                 text:
                     repeat_group: manmade
@@ -269,10 +269,10 @@ styles:
         dash: [2, 2]
     underground:
         base: lines
-        width: 2px
+        width: function() { return $zoom / 5 * $meters_per_pixel; }
         color: white
         outline:
-            width: 1px
+            width: function() { return $zoom / 10 * $meters_per_pixel; }
             color: global.colors.manmade
     wetlands:
         base: polygons
