@@ -323,7 +323,7 @@ layers:
                 filter: {lithology: "trachybasalt"}
                 draw: {geologic_units: {color: "rgb(236,213,198)"}}
             basalt:
-                filter: {lithology: "basalt"}
+                filter: {lithology: ["basalt", "icelandite", "mugearite", "picrite"]}
                 draw: {geologic_units: {color: "rgb(221,179,151)"}}
             tholeiite:
                 filter: {lithology: "tholeiite"}
@@ -640,7 +640,7 @@ layers:
                 filter: {lithology: "alaskite"}
                 draw: {geologic_units: {color: "rgb(255,209,220)"}}
             basanite:
-                filter: {lithology: "basanite"}
+                filter: {lithology: ["ankaramite", "basanite", "benmoreite"]}
                 draw: {geologic_units: {color: "rgb(133,79,43)"}}
             dolomite:
                 filter: {lithology: "dolomite"}
