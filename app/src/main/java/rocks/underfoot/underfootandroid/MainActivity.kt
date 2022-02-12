@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -27,11 +28,13 @@ class MainActivity : AppCompatActivity() {
         val prefsName = "underfoot"
         val lastDestinationPrefName = getString(R.string.lastDestinationPrefName)
         apply { with(getSharedPreferences(prefsName, Context.MODE_PRIVATE)) {
-            graph.startDestination = try {
-                getInt(lastDestinationPrefName, R.id.nav_rocks)
-            } catch (e:java.lang.ClassCastException) {
-                R.id.nav_rocks
-            }
+            graph.setStartDestination(
+                try {
+                    getInt(lastDestinationPrefName, R.id.nav_rocks)
+                } catch (e:java.lang.ClassCastException) {
+                    R.id.nav_rocks
+                }
+            )
         } }
         navController.graph = graph
         // Store the nav destination on change

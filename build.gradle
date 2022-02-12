@@ -2,19 +2,19 @@
 
 buildscript {
     ext {
-        kotlin_version = "1.4.0"
-        tangram_version = "0.13.0"
+        kotlin_version = "1.5.30"
+        tangram_version = "0.17.1"
         support_version = "26.0.2"
-        nav_version = "2.3.0"
+        nav_version = "2.4.1"
         fuel_version = "2.2.0"
         gson_version = "2.8.6"
     }
     repositories {
-        jcenter()
+        mavenCentral()
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.1'
+        classpath 'com.android.tools.build:gradle:7.1.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
@@ -26,7 +26,7 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
+        mavenCentral()
         google()
     }
 }

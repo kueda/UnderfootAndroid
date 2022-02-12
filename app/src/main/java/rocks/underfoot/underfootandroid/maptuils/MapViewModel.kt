@@ -71,8 +71,7 @@ abstract class MapViewModel : ViewModel() {
     val waitingForUserLocation = MutableLiveData<Boolean>(false)
 
     private val locationListener = object: LocationListener {
-        override fun onLocationChanged(location: Location?) {
-            val loc: Location = location ?: return
+        override fun onLocationChanged(loc: Location) {
             val isBetter = MapHelpers.isBetterLocation(loc, userLocation.value)
             if (isBetter && loc.accuracy < 1000) {
                 userLocation.value = loc
@@ -84,9 +83,6 @@ abstract class MapViewModel : ViewModel() {
                 }
             }
         }
-        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
-        override fun onProviderEnabled(provider: String?) {}
-        override fun onProviderDisabled(provider: String?) {}
     }
 
     fun panToLocation(lngLat: LngLat, zoom: Float?, manual: Boolean = false, animated: Boolean = false) {
