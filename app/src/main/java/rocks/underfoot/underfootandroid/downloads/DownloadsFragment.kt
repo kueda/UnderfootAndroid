@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.*
 import rocks.underfoot.underfootandroid.MainActivity
@@ -46,7 +45,7 @@ class DownloadsFragment : Fragment(), LifecycleObserver {
             (binding.downloadsList.adapter as PacksAdapter).notifyDataSetChanged()
         })
         // When the selected pack changes, we also need to refresh the list
-        viewModel.selectedPackName.observe(viewLifecycleOwner, Observer {
+        viewModel.selectedPackId.observe(viewLifecycleOwner, Observer {
             (binding.downloadsList.adapter as PacksAdapter).notifyDataSetChanged()
         })
         viewModel.packs.observe(viewLifecycleOwner, Observer {

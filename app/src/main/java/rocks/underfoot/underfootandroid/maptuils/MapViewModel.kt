@@ -19,7 +19,7 @@ abstract class MapViewModel : ViewModel() {
         const val MAX_ZOOM = 14.9f
     }
 
-    val selectedPackName = MutableLiveData<String>("")
+    val selectedPackId = MutableLiveData<String>("")
     abstract val sceneUpdatesForSelectedPack: LiveData<List<SceneUpdate>>
     abstract val sceneFilePath: MutableLiveData<String>
     // Current position of the map's camera

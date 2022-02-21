@@ -1,5 +1,6 @@
 package rocks.underfoot.underfootandroid.water
 
+import android.annotation.SuppressLint
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 
@@ -45,6 +46,7 @@ class WaterRepository(mbtilesPath: String) {
         return downstreamSourceIds.toList()
     }
 
+    @SuppressLint("Range")
     fun citationForSource(source: String): String {
         val res = try {
             db.rawQuery("""

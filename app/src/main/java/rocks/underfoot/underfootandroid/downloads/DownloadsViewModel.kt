@@ -10,10 +10,10 @@ import kotlinx.coroutines.launch
 class DownloadsViewModel(application: Application): AndroidViewModel(application) {
     private val repository = PacksRepository(application)
     val packs: LiveData<List<Pack>> = Transformations.map(repository.packs) { packs ->
-        packs.sortedBy { p -> p.name }
+        packs.sortedBy { p -> p.id }
     }
     private val selectedPack = repository.selectedPack
-    val selectedPackName: LiveData<String> = Transformations.map(selectedPack) { pack -> pack?.name ?: "" }
+    val selectedPackId: LiveData<String> = Transformations.map(selectedPack) { pack -> pack?.id ?: "" }
     val packsChangedAt = repository.packsChangedAt
     val online = repository.online
 

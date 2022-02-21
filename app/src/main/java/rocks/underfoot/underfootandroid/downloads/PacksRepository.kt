@@ -27,9 +27,8 @@ import java.net.URL
 import java.time.LocalDateTime
 
 data class Pack(val metadata: PackMetadata) {
-    val name: String
-        get() = metadata.name
-
+    val id: String
+        get() = metadata.id
     var downloaded = false
     var downloading = false
     var maxBytes = 0
@@ -40,8 +39,11 @@ data class Pack(val metadata: PackMetadata) {
 
 @Serializable
 data class PackMetadata(
+    val id: String,
     val name: String,
     val description: String? = null,
+    val admin1: String,
+    val admin2: String? = null,
     val path: String
 )
 
@@ -128,8 +130,8 @@ class PacksRepository(private val context: Context) {
 
     private fun fetchSelectedPack() {
         context.apply { with(getSharedPreferences(prefsName, Context.MODE_PRIVATE)) {
-            val selectedPackName = getString(selectedPrefName, "")
-            val foundPack = packs.value?.find { p -> p.name == selectedPackName }
+            val selectedPackId = getString(selectedPrefName, "")
+            val foundPack = packs.value?.find { p -> p.id == selectedPackId }
             foundPack?.let {
                 selectPack(it)
             }
@@ -146,7 +148,7 @@ class PacksRepository(private val context: Context) {
                 val jsonString = URL("${baseUrl}/manifest.json").readText()
                 val manifest = json.decodeFromString<Manifest>(jsonString)
                 val newPacks = manifest.packs.map {newPackMetadata ->
-                    val existing = packs.value?.find { p -> p.name == newPackMetadata.name }
+                    val existing = packs.value?.find { p -> p.id == newPackMetadata.id }
                     Log.d(logTag, "existing: $existing")
                     existing ?: Pack(metadata = newPackMetadata)
                 }
@@ -165,7 +167,7 @@ class PacksRepository(private val context: Context) {
             val url = listOf(baseUrl, pack.metadata.path).joinToString("/")
             val uri = Uri.parse(url)
             val request = DownloadManager.Request(uri)
-            val fname = "${pack.name}.zip"
+            val fname = "${pack.id}.zip"
             val dirname = "underfoot"
             // TODO this should really use the path attribute of the pack and recursively make any subdirectories
             request.setDestinationInExternalFilesDir(context, dirname, fname)
@@ -176,14 +178,21 @@ class PacksRepository(private val context: Context) {
             q.setFilterById(pack.downloadID)
             while (pack.downloading) {
                 val cursor = downloadManager.query(q)
+                val statusColumnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                val reasonColumnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_REASON)
+                val bytesDownloadedColumnIndex = cursor.getColumnIndex(
+                    DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR
+                )
+                val totalSizeColumnIndex = cursor.getColumnIndex(
+                    DownloadManager.COLUMN_TOTAL_SIZE_BYTES
+                )
                 cursor.moveToFirst()
                 if (cursor.count <= 0) {
                     pack.downloading = false
                     cursor.close()
                     break
                 }
-                val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
-                when (status) {
+                when (cursor.getInt(statusColumnIndex)) {
                     DownloadManager.STATUS_SUCCESSFUL -> {
                         pack.downloading = false
                         // unzip contents and move to internal storage
@@ -194,7 +203,7 @@ class PacksRepository(private val context: Context) {
                         // Delete downloaded zip
                         extPath.delete()
                         // Write pack JSON to internal storage
-                        val packJsonFile = File(internalDir, "${pack.name}.json")
+                        val packJsonFile = File(internalDir, "${pack.id}.json")
                         packJsonFile.writeText(
                             json.encodeToJsonElement(pack.metadata).toString()
                         )
@@ -208,27 +217,17 @@ class PacksRepository(private val context: Context) {
                     }
                     DownloadManager.STATUS_FAILED -> {
                         pack.downloading = false
-                        val error =
-                            cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_REASON))
+                        val error = cursor.getString(reasonColumnIndex)
                         Log.d(logTag, "download failed: $error")
                     }
                     DownloadManager.STATUS_PENDING -> {
-                        val reason =
-                            cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_REASON))
+                        val reason = cursor.getString(reasonColumnIndex)
                         Log.d(logTag, "download pending: $reason")
                     }
                     else -> {
                         val downloadedBytes =
-                            cursor.getInt(
-                                cursor.getColumnIndex(
-                                    DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR
-                                )
-                            )
-                        val totalBytes = cursor.getInt(
-                            cursor.getColumnIndex(
-                                DownloadManager.COLUMN_TOTAL_SIZE_BYTES
-                            )
-                        )
+                            cursor.getInt(bytesDownloadedColumnIndex)
+                        val totalBytes = cursor.getInt(totalSizeColumnIndex)
                         var changed = false
                         if (pack.maxBytes != totalBytes) {
                             pack.maxBytes = totalBytes
@@ -255,7 +254,7 @@ class PacksRepository(private val context: Context) {
         val dir = context.filesDir
         var changed = false
         for (pack in packs.value ?: listOf()) {
-            val packPath = File(dir, pack.name)
+            val packPath = File(dir, pack.id)
             val downloadedWas = pack.downloaded
             pack.downloaded = packPath.exists()
             if (pack.downloaded) {
@@ -283,20 +282,20 @@ class PacksRepository(private val context: Context) {
     fun selectPack(pack: Pack?) {
         pack?.let {
             if (!it.downloaded) return
-            if (_selectedPack.value?.name == it.name) {
+            if (_selectedPack.value?.id == it.id) {
                 return
             }
             _selectedPack.postValue(it)
         }
         context.apply { with(getSharedPreferences(prefsName, Context.MODE_PRIVATE)) {
-            edit { putString(selectedPrefName, pack?.name) }
+            edit { putString(selectedPrefName, pack?.id) }
         } }
     }
 
     suspend fun deletePack(pack: Pack) {
         withContext(Dispatchers.IO) {
             val dir = context.filesDir
-            val packDir = File(dir, pack.name)
+            val packDir = File(dir, pack.id)
             var deleted = false
             // Delete the dir
             if (packDir.exists()) {
@@ -304,7 +303,7 @@ class PacksRepository(private val context: Context) {
                 deleted = true
             }
             // Delete the JSON file
-            val packJsonFile = File(dir, "${pack.name}.json")
+            val packJsonFile = File(dir, "${pack.id}.json")
             if (packJsonFile.exists()) {
                 packJsonFile.delete()
                 deleted = true

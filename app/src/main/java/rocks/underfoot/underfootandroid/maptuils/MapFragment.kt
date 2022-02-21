@@ -61,7 +61,7 @@ open abstract class MapFragment : Fragment(), LifecycleObserver, Toolbar.OnMenuI
         }
 
     fun setupMap() {
-        viewModel.selectedPackName.observe(viewLifecycleOwner, Observer {
+        viewModel.selectedPackId.observe(viewLifecycleOwner, Observer {
             if (it.isNullOrEmpty()) {
                 AlertDialog.Builder(requireActivity())
                     .setTitle(getString(R.string.map_no_data_title))
@@ -78,8 +78,8 @@ open abstract class MapFragment : Fragment(), LifecycleObserver, Toolbar.OnMenuI
         val selectedPrefName = getString(R.string.selectedPackPrefName)
         context?.apply {
             with(getSharedPreferences(prefsName, Context.MODE_PRIVATE)) {
-                viewModel.selectedPackName.value = getString(selectedPrefName, "")
-                Log.d(this::class.simpleName, "viewModel.selectedPackName.value: ${viewModel.selectedPackName.value}")
+                viewModel.selectedPackId.value = getString(selectedPrefName, "")
+                Log.d(this::class.simpleName, "viewModel.selectedPackName.value: ${viewModel.selectedPackId.value}")
             }
             with(getSharedPreferences(MapFragment.MAP_PREFS, Context.MODE_PRIVATE)) {
                 val lat = getFloat(MapFragment.MAP_PREFS_LAT, 0f).toDouble()

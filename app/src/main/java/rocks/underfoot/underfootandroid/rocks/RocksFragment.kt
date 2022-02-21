@@ -20,7 +20,7 @@ class RocksFragment : MapFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(RocksViewModel::class.java)
+        viewModel = ViewModelProvider(this)[RocksViewModel::class.java]
     }
 
     override fun onCreateView(

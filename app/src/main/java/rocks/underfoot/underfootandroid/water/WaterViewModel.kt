@@ -12,7 +12,7 @@ class WaterViewModel : MapViewModel() {
     companion object {
         private const val TAG = "WaterViewModel"
     }
-    override val sceneUpdatesForSelectedPack: LiveData<List<SceneUpdate>> = Transformations.map(selectedPackName) { packName ->
+    override val sceneUpdatesForSelectedPack: LiveData<List<SceneUpdate>> = Transformations.map(selectedPackId) { packName ->
         listOf(
             SceneUpdate(
                 "sources.water.url",
@@ -44,7 +44,7 @@ class WaterViewModel : MapViewModel() {
         } ?: false
     }
     var repository: WaterRepository? = null
-    val mbtilesPath = Transformations.map(selectedPackName) { packName ->
+    val mbtilesPath = Transformations.map(selectedPackId) { packName ->
         "/data/user/0/rocks.underfoot.underfootandroid/files/${packName}/water.mbtiles"
     }
     val highlightSegments = MutableLiveData<List<String>>()

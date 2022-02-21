@@ -22,8 +22,7 @@ class PacksAdapter(
     override fun getItemId(position: Int) = position.toLong()
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val binding: DownloadListItemBinding
-        binding = if (convertView == null) {
+        val binding = if (convertView == null) {
             // If we have to make a new view, get an inflater from the parent and make a new view
             // with pack_list_item.xml using its generated binding class
             val inflater = LayoutInflater.from(parent.context)

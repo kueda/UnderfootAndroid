@@ -93,7 +93,7 @@ abstract class MapResponder(
         if (viewModel.cameraPosition.value == null) {
             if (
                 // If no pack has been selected, we don't want to request GPS permission
-                !viewModel.selectedPackName.value.isNullOrEmpty()
+                !viewModel.selectedPackId.value.isNullOrEmpty()
                 && viewModel.initialCameraUpdate.value == null
             ) {
                 // If it's a brand new view model, start requesting updates so the map goes to

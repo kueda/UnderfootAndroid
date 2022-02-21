@@ -1,15 +1,8 @@
 package rocks.underfoot.underfootandroid.rocks
 
-import android.annotation.SuppressLint
-import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
-import android.os.Bundle
 import androidx.lifecycle.*
 import com.mapzen.tangram.*
 import rocks.underfoot.underfootandroid.maptuils.*
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 class RocksViewModel : MapViewModel() {
@@ -17,7 +10,7 @@ class RocksViewModel : MapViewModel() {
         private const val TAG = "RocksViewModel"
     }
 
-    override val sceneUpdatesForSelectedPack: LiveData<List<SceneUpdate>> = Transformations.map(selectedPackName) { packName ->
+    override val sceneUpdatesForSelectedPack: LiveData<List<SceneUpdate>> = Transformations.map(selectedPackId) { packName ->
         listOf(
             SceneUpdate(
                 "sources.underfoot.url",
@@ -33,7 +26,7 @@ class RocksViewModel : MapViewModel() {
             )
         )
     }
-    val rocksMbtilesPath = Transformations.map(selectedPackName) { packName ->
+    val rocksMbtilesPath = Transformations.map(selectedPackId) { packName ->
         "/data/user/0/rocks.underfoot.underfootandroid/files/${packName}/rocks.mbtiles"
     }
 
