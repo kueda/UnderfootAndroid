@@ -61,7 +61,17 @@
                     android:text="@{pack.metadata.description}"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                     app:layout_constraintTop_toBottomOf="@id/pack_name"
-                    tools:text="Oakland, CA, USA. Mostly for testing some place small." />
+                    tools:text="Oakland, CA, USA. Mostly for testing some place small."
+                    android:visibility="@{pack.downloading ? View.GONE : View.VISIBLE}"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{pack.downloadStatus()}"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                    app:layout_constraintTop_toBottomOf="@id/pack_name"
+                    android:visibility="@{pack.downloading ? View.VISIBLE : View.GONE}"
+                    />
             </androidx.constraintlayout.widget.ConstraintLayout>
             <LinearLayout
                 android:id="@+id/action"

@@ -25,6 +25,15 @@ import java.io.FilenameFilter
 import java.io.IOException
 import java.net.URL
 import java.time.LocalDateTime
+import kotlin.math.round
+
+//https://stackoverflow.com/a/68822715
+fun bytesToHumanReadableSize(bytes: Double) = when {
+    bytes >= 1 shl 30 -> "%.1f GB".format(bytes / (1 shl 30))
+    bytes >= 1 shl 20 -> "%.1f MB".format(bytes / (1 shl 20))
+    bytes >= 1 shl 10 -> "%.0f kB".format(bytes / (1 shl 10))
+    else -> "$bytes bytes"
+}
 
 data class Pack(val metadata: PackMetadata) {
     val id: String
@@ -35,6 +44,13 @@ data class Pack(val metadata: PackMetadata) {
     var downloadedBytes = 0
     var downloadID = -1L
     var updatable = false
+
+    fun downloadStatus(): String {
+        val percent = round(downloadedBytes.toDouble() / maxBytes * 100)
+        val downloadedSize = bytesToHumanReadableSize(downloadedBytes.toDouble());
+        val totalSize = bytesToHumanReadableSize(maxBytes.toDouble());
+        return "$downloadedSize / $totalSize ($percent%)"
+    }
 }
 
 @Serializable
@@ -260,8 +276,9 @@ class PacksRepository(private val context: Context) {
             if (pack.downloaded) {
                 pack.downloading = false
             }
-            Log.d(logTag, "pack at $packPath downloaded? ${pack.downloaded}")
-            changed = !changed && downloadedWas != pack.downloaded
+            Log.d(logTag, "pack at $packPath downloaded? ${pack.downloaded} (downloadedWas: ${downloadedWas})")
+            changed = downloadedWas != pack.downloaded
+            if (changed) break
         }
         if (changed) {
             Log.d(logTag, "packs changed")
