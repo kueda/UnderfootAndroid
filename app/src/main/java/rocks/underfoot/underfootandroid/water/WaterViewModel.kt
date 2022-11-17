@@ -25,6 +25,10 @@ class WaterViewModel : MapViewModel() {
             SceneUpdate(
                 "sources.elevation.url",
                 "file:///data/user/0/rocks.underfoot.underfootandroid/files/${packName}/contours.mbtiles"
+            ),
+            SceneUpdate(
+                "sources.context.url",
+                "file:///data/user/0/rocks.underfoot.underfootandroid/files/${packName}/context.mbtiles"
             )
         )
     }

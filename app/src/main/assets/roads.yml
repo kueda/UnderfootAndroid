@@ -15,6 +15,7 @@ layers:
                 order: 101
                 color: [0.314, 0.314, 0.314, 1.00]
                 width: 1.2px
+                collide: false
         highways:
             filter:
                 highway: [motorway, primary, trunk]
@@ -78,3 +79,4 @@ layers:
                 draw:
                     text:
                         priority: 5
+

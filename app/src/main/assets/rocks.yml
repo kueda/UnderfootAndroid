@@ -1,4 +1,8 @@
-import: [config.yaml, topography.yml, roads.yml]
+import:
+    - config.yaml
+    - topography.yml
+    - context.yml
+    - roads.yml
 
 sources:
     underfoot:
@@ -43,10 +47,7 @@ layers:
                     order: 1
                     color: [0,0,0,0.1]
                     width: 2px
-    ways:
-        draw:
-            lines:
-                order: 101
+
 styles:
     geologic_units:
         base: polygons

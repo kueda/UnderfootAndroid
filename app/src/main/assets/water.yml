@@ -1,8 +1,11 @@
-import: [config.yaml, topography.yml, roads.yml]
+import:
+    - config.yaml
+    - topography.yml
+    - context.yml
+    - roads.yml
 
 global:
     colors:
-        water: "#1F78B4"
         manmade: "#FF7F00"
         watershed: "#CFC4AF"
         ways: "#B3AA98"

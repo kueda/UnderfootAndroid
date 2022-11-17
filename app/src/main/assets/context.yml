@@ -1,0 +1,135 @@
+import: config.yaml
+
+sources:
+    context:
+        type: MVT
+        url: 'file:///data/user/0/rocks.underfoot.underfootandroid/files/context.mbtiles'
+
+layers:
+    context_nodes:
+        data:
+            source: context
+            layer: underfoot_natural_nodes
+        named_peaks:
+            filter: |
+                function() {
+                    return $zoom >= 10
+                        && feature.natural === "peak"
+                        && feature.name
+                        && feature.name.length > 0;
+                }
+            draw:
+                text:
+                    priority: 1
+                    order: 101
+                    collide: false
+                    text_source: function() { return "▲"; }
+                    font:
+                        fill: [0.314, 0.314, 0.314, 1.00]
+                        size: 12px
+        unnamed_elevations:
+            filter: |
+                function() {
+                    return $zoom >= 14 && !feature.name && feature.elevation_m;
+                }
+            draw:
+                text:
+                    text_source: function() { return feature.elevation_m + "m"; }
+                    font:
+                        fill: [0.5, 0.5, 0.5, 0.5]
+                        size: 10px
+        springs:
+            filter: |
+                function() {
+                    return $zoom >= 14 && feature.natural === 'spring';
+                }
+            draw:
+                text:
+                    priority: 1
+                    order: 101
+                    collide: false
+                    text_source: function() { return "⌇"; }
+                    font:
+                        fill: global.colors.water
+                        size: 12px
+                        weight: bold
+                        stroke:
+                            width: 2px
+                            color: white
+    node_labels:
+        data:
+            source: context
+            layer: underfoot_natural_nodes
+        icon_node_labels:
+            filter: |
+                function() {
+                    return ["peak", "spring"].indexOf(feature.natural) >= 0
+                        && feature.name
+                        && feature.name.length > 0;
+                }
+            draw:
+                context_node_label:
+                    offset: [0px, 20px]
+                    text_source: |
+                        function() {
+                            var parts = [];
+                            if (feature.name) parts.push(feature.name);
+                            if (feature.elevation_m) parts.push(Math.round(feature.elevation_m) + "m");
+                            return parts.join("\n");
+                        }
+                    font:
+                        fill: [0.314, 0.314, 0.314, 1.00]
+                        size: 10px
+                        stroke:
+                            width: 2px
+                            color: white
+        iconless_node_labels:
+            filter: |
+                function() {
+                    return ["saddle"].indexOf(feature.natural) >= 0
+                        && feature.name
+                        && feature.name.length > 0;
+                }
+            draw:
+                context_node_label:
+                    text_source: |
+                        function() {
+                            var parts = [];
+                            if (feature.name) parts.push(feature.name);
+                            if (feature.elevation_m) parts.push(Math.round(feature.elevation_m) + "m");
+                            return parts.join("\n");
+                        }
+                    font:
+                        fill: [0.314, 0.314, 0.314, 1.00]
+                        size: 10px
+                        stroke:
+                            width: 2px
+                            color: white
+    mountain_ranges:
+        data:
+            source: context
+            layer: underfoot_natural_ways
+        draw:
+            context_way_label:
+                text_source: |
+                    function() {
+                        return feature.name.split( '' ).join( '  ' );
+                    }
+                priority: 20
+                font:
+                    fill: white
+                    size: 20px
+                    transform: uppercase
+styles:
+    context_way:
+        base: lines
+        blend: overlay
+        blend_order: 2
+    context_way_label:
+        base: text
+        blend: overlay
+        blend_order: 2
+    context_node_label:
+        base: text
+        blend: overlay
+        blend_order: 2
