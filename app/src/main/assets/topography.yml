@@ -27,14 +27,21 @@ layers:
             source: elevation
             layer: contours
         hundred:
-            filter:
-                function() {
-                return feature.elevation % 100 == 0;
-                }
+            filter: "function() { return feature.elevation % 100 == 0; }"
             draw:
+                contour_labels:
+                    order: 101
+                    text_source: "function() { return feature.elevation + 'm'; }"
+                    font:
+                        fill: [0.9, 0.9, 0.9]
+                        size: 9px
+                        stroke:
+                            width: 2px
+                            color: [0.5, 0.5, 0.5]
                 contours:
                     order: 100
-                    color: [0.5, 0.5, 0.5, 0.5]
+#                    color: [0.5, 0.5, 0.5, 0.5]
+                    color: [0.5, 0.5, 0.5]
                     width: 1.5px
         not_hundred:
             filter:
@@ -49,9 +56,12 @@ layers:
 styles:
     contours:
         base: lines
-        blend: overlay
         lighting: false
         join: round
+        blend_order: 2
+    contour_labels:
+        base: text
+        blend_order: 1
     hillshade:
         base: polygons
         lighting: false

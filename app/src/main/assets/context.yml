@@ -20,7 +20,15 @@ layers:
                 }
             draw:
                 text:
-                    priority: 1
+                    priority: |
+                        function() {
+                            var heightOfEverest = 8850;
+                            var peakMultiplier = feature.natural == "peak" ? 1.1 : 0.5; 
+                            return Math.max(
+                                0,
+                                heightOfEverest - Math.round(feature.elevation_m * peakMultiplier)
+                            );
+                        }
                     order: 101
                     collide: false
                     text_source: function() { return "▲"; }
@@ -70,6 +78,16 @@ layers:
             draw:
                 context_node_label:
                     offset: [0px, 20px]
+                    # Trying to make higher points have higher priority (i.e. a lower value)
+                    priority: |
+                        function() {
+                            var heightOfEverest = 8850;
+                            var peakMultiplier = feature.natural == "peak" ? 1.1 : 0.5; 
+                            return Math.max(
+                                0,
+                                heightOfEverest - Math.round(feature.elevation_m * peakMultiplier)
+                            );
+                        }
                     text_source: |
                         function() {
                             var parts = [];
