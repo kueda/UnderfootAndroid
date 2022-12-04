@@ -15,11 +15,14 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v3
 
-      - name: Build signed APK
+      - name: Assemble
+        run: ./gradlew assemble
+
+      - name: Sign
         uses: r0adkll/sign-android-release@v1
         id: sign
         with:
-          releaseDirectory: ./
+          releaseDirectory: ./app/build/outputs/apk/release/
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
