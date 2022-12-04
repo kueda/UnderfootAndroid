@@ -15,8 +15,6 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v3
 
-      - uses: gradle/gradle-build-action@v2
-
       - name: Assemble
         run: ./gradlew assemble
 
