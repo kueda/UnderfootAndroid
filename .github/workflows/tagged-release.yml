@@ -9,6 +9,7 @@ on:
 
 jobs:
   create-tagged-release:
+    name: Create release for tag
     runs-on: "ubuntu-latest"
 
     steps:
@@ -35,4 +36,4 @@ jobs:
           automatic_release_tag: "latest"
           prerelease: false
           files: |
-            ${{ steps.sign.signedReleaseFile }}
+            ${{ steps.sign.outputs.signedReleaseFile }}
