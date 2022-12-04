@@ -24,8 +24,16 @@ android {
         versionCode 1
         versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        setProperty("archivesBaseName", "Underfoot-$versionName")
     }
+
+    // Make sure all outputs include the name and the version name
+    // https://www.tanelikorri.com/tutorial/android/set-apk-filename-in-gradle/
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "Underfoot-${defaultConfig.versionName}.apk"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -36,6 +44,7 @@ android {
     buildFeatures {
         dataBinding true
     }
+
     namespace 'rocks.underfoot.underfootandroid'
 }
 
