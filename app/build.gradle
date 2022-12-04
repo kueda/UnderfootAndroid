@@ -24,6 +24,7 @@ android {
         versionCode 1
         versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        setProperty("archivesBaseName", "Underfoot-$versionName")
     }
 
     // Make sure all outputs include the name and the version name
