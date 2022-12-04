@@ -1,4 +1,4 @@
-import: config.yaml
+import: config.yml
 
 sources:
     normals:

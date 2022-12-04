@@ -1,4 +1,4 @@
-import: config.yaml
+import: common.yml
 
 sources:
     ways:

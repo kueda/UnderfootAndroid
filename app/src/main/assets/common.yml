@@ -1,0 +1,23 @@
+import:
+    - config.yml
+
+global:
+    colors:
+        water: "#1F78B4"
+
+cameras:
+    cam:
+        type: flat
+
+lights:
+    dir:
+        type: directional
+        direction: [.1, .5, -1]
+        diffuse: .7
+        ambient: .5
+
+styles:
+    dashed-even:
+        base: lines
+        blend: overlay
+        dash: [1]

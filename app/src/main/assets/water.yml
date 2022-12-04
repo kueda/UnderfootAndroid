@@ -1,5 +1,5 @@
 import:
-    - config.yaml
+    - common.yml
     - topography.yml
     - context.yml
     - roads.yml

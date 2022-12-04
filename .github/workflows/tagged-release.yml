@@ -1,5 +1,5 @@
 ---
-name: "tagged-release"
+name: Release Tag
 
 on:
   workflow_dispatch:
@@ -9,17 +9,26 @@ on:
 
 jobs:
   create-tagged-release:
+    name: Create release for tag
     runs-on: "ubuntu-latest"
 
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
 
-      - name: Build signed APK
+      - name: Write config
+        run: |
+          echo "global: { nextzen_api_key: ${{ secrets.NEXTZEN_API_KEY }} }" \
+            > app/src/main/assets/config.yml
+
+      - name: Assemble
+        run: ./gradlew assembleRelease
+
+      - name: Sign
         uses: r0adkll/sign-android-release@v1
         id: sign
         with:
-          releaseDirectory: app/build/outputs/apk/release
+          releaseDirectory: ./app/build/outputs/apk/release/
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
@@ -31,4 +40,4 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
           files: |
-            ${{ steps.sign.signedReleaseFile }}
+            ${{ steps.sign.outputs.signedReleaseFile }}
