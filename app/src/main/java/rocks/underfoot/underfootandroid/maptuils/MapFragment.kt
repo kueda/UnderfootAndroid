@@ -17,13 +17,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.Observer
 import androidx.lifecycle.OnLifecycleEvent
-import androidx.navigation.fragment.findNavController
 import com.mapzen.tangram.CameraUpdateFactory
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapView
 import rocks.underfoot.underfootandroid.MainActivity
 import rocks.underfoot.underfootandroid.R
-import rocks.underfoot.underfootandroid.rocks.RocksFragmentDirections
 import androidx.core.content.edit
 import kotlin.math.min
 
@@ -60,6 +58,10 @@ open abstract class MapFragment : Fragment(), LifecycleObserver, Toolbar.OnMenuI
             }
         }
 
+    abstract fun navigateToDownloads()
+
+    abstract fun getToolbarID(): Int
+
     fun setupMap() {
         viewModel.selectedPackId.observe(viewLifecycleOwner, Observer {
             if (it.isNullOrEmpty()) {
@@ -69,7 +71,7 @@ open abstract class MapFragment : Fragment(), LifecycleObserver, Toolbar.OnMenuI
                     .setPositiveButton(
                         getString(R.string.choose_downloads),
                         DialogInterface.OnClickListener { _, _ ->
-                            findNavController().navigate(RocksFragmentDirections.actionNavRocksToNavDownloads())
+                            navigateToDownloads()
                         })
                     .create().show()
             }
@@ -149,17 +151,15 @@ open abstract class MapFragment : Fragment(), LifecycleObserver, Toolbar.OnMenuI
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreated() {
         activity?.lifecycle?.removeObserver(this)
-        view?.findViewById<Toolbar>(R.id.toolbar)?.let {
+        view?.findViewById<Toolbar>(getToolbarID())?.let {
             it.setOnMenuItemClickListener(this)
             (activity as MainActivity).setToolbar(it)
         }
     }
 
     override fun onPause() {
-        Log.d(this::class.simpleName, "onPause")
         context?.apply { with(getSharedPreferences(MAP_PREFS, Context.MODE_PRIVATE)) {
             viewModel.cameraPosition.value?.let { cameraPosition ->
-                Log.d(this::class.simpleName, "cameraPosition exists")
                 edit {
                     putFloat(MAP_PREFS_LAT, cameraPosition.position.latitude.toFloat())
                     putFloat(MAP_PREFS_LNG, cameraPosition.position.longitude.toFloat())

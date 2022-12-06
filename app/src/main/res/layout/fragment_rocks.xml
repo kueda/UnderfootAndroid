@@ -22,7 +22,7 @@
             android:background="@color/transWhite"
             >
             <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
+                android:id="@+id/rocks_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:menu="@menu/map_activity_layers_menu" />

@@ -66,7 +66,7 @@ class DownloadsFragment : Fragment(), LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreated() {
         activity?.lifecycle?.removeObserver(this)
-        view?.findViewById<Toolbar>(R.id.toolbar)?.let{ toolbar ->
+        view?.findViewById<Toolbar>(R.id.downloads_toolbar)?.let{ toolbar ->
             // Use a custom menu icon with a crude drop shadow. Not ideal.
             (activity as MainActivity).setToolbar(toolbar)
         }

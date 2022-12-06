@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Set the toolbar so each fragment can define (and style) its own. Loosely based on
-    // https://stackoverflow.com/a/35677316. Note that I'm not sure what the  memory implications
+    // https://stackoverflow.com/a/35677316. Note that I'm not sure what the memory implications
     // of constantly adding new toolbars on the drawer layout. I'm assuming they get destroyed
     // along with their fragments
     fun setToolbar(toolbar: Toolbar, navigationIcon: Drawable? = null) {

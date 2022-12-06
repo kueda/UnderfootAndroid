@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.*
+import androidx.navigation.fragment.findNavController
 import com.mapzen.tangram.MapView
 import rocks.underfoot.underfootandroid.R
 import rocks.underfoot.underfootandroid.databinding.FragmentRocksBinding
@@ -17,6 +18,15 @@ class RocksFragment : MapFragment() {
     }
 
     private lateinit var binding: FragmentRocksBinding
+
+    override fun navigateToDownloads() {
+        Log.d(TAG, "navigateToDownloads")
+        findNavController().navigate(RocksFragmentDirections.actionNavRocksToNavDownloads())
+    }
+
+    override fun getToolbarID(): Int {
+        return R.id.rocks_toolbar
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

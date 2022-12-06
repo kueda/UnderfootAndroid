@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.core.graphics.*
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.mapzen.tangram.MapView
 import com.mapzen.tangram.SceneUpdate
 import rocks.underfoot.underfootandroid.R
@@ -25,6 +26,14 @@ class WaterFragment : MapFragment() {
     }
 
     private lateinit var binding: FragmentWaterBinding
+
+    override fun navigateToDownloads() {
+        findNavController().navigate(WaterFragmentDirections.actionNavWaterToNavDownloads())
+    }
+
+    override fun getToolbarID(): Int {
+        return R.id.water_toolbar
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
