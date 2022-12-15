@@ -5,14 +5,21 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_rocks"
+            android:icon="@drawable/ic_rock"
             android:title="Rock" />
 
         <item
             android:id="@+id/nav_water"
+            android:icon="@drawable/ic_water"
             android:title="Water" />
 
         <item
             android:id="@+id/nav_downloads"
+            android:icon="@drawable/ic_download"
             android:title="Downloads" />
+        <item
+            android:id="@+id/id_menu_setting"
+            android:icon="@drawable/ic_setting"
+            android:title="Setting" />
     </group>
 </menu>

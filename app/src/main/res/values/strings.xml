@@ -7,4 +7,13 @@
     <string name="choose_downloads">Choose Downloads</string>
     <string name="lastDestinationPrefName">lastDestination</string>
     <string name="view_downstream_waterways">View downstream waterways</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="advance_settings">Advance</string>
+    <string name="nav_open">open drawer</string>
+    <string name="nav_close">close drawer</string>
+<!--    place web address here if any-->
+    <string name="web_address">https://</string>
+
 </resources>

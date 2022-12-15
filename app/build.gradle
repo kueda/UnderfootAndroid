@@ -78,6 +78,7 @@ dependencies {
 
     // Mapping
     implementation "com.mapzen.tangram:tangram:$tangram_version"
+    implementation 'androidx.preference:preference:1.1.+'
 
     // Slide-up panel. Can probably remove that when I remove the old activity
     repositories {
