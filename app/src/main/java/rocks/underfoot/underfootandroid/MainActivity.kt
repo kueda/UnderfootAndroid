@@ -1,21 +1,17 @@
 package rocks.underfoot.underfootandroid
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.edit
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import rocks.underfoot.underfootandroid.downloads.DownloadsFragment
 import rocks.underfoot.underfootandroid.rocks.RocksFragment
@@ -35,26 +31,30 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         initializers()
+
         drawerMenuItem()
+
         drawerManager()
+
         replaceFragment(RocksFragment())
     }
 
     private fun initializers() {
         navigationView = findViewById(R.id.nav_view)
         navController = findNavController(R.id.nav_host_fragment)
-
     }
 
-    private fun drawerMenuItem(){
+    private fun drawerMenuItem() {
+//        this drawer menu item help to easily manage the drawer menu item
         navigationView.setNavigationItemSelectedListener { menuItem ->
-            when(menuItem.itemId){
-                R.id.nav_rocks->{
+            when (menuItem.itemId) {
+                R.id.nav_rocks -> {
                     replaceFragment(RocksFragment())
                     true
                 }
-                R.id.nav_water ->{
+                R.id.nav_water -> {
                     replaceFragment(WaterFragment())
                     true
                 }
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
                     replaceFragment(DownloadsFragment())
                     true
                 }
-                R.id.id_menu_setting ->{
+                R.id.id_menu_setting -> {
                     startActivity(Intent(applicationContext, SettingsActivity::class.java))
                     true
                 }
@@ -72,11 +72,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun setToolbar(toolbar: Toolbar, navigationIcon: Drawable? = null) {
-        val appBarConfiguration = AppBarConfiguration(setOf(
-            R.id.nav_rocks,
-            R.id.nav_water,
-            R.id.nav_downloads
-        ), drawerLayout)
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.nav_rocks,
+                R.id.nav_water,
+                R.id.nav_downloads
+            ), drawerLayout
+        )
         toolbar.setupWithNavController(navController, appBarConfiguration)
         navigationIcon?.let {
             toolbar.navigationIcon = it
@@ -100,11 +102,13 @@ class MainActivity : AppCompatActivity() {
         actionBarDrawerToggle.syncState()
     }
 
-    private fun navigateToFragment(fragment:Fragment){
+    private fun navigateToFragment(fragment: Fragment) {
+//        this navigate to another fragment while adding previous fragment to backstack
         supportFragmentManager.beginTransaction().add(R.id.nav_host_fragment, fragment).commit()
     }
 
-    private fun replaceFragment(fragment: Fragment){
+    private fun replaceFragment(fragment: Fragment) {
+//        this replace the current fragment with a new fragment while destroying the previous fragment
         supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, fragment).commit()
     }
 }
