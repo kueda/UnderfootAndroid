@@ -1,5 +1,6 @@
 package rocks.underfoot.underfootandroid.water
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,7 +9,7 @@ import com.mapzen.tangram.FeaturePickResult
 import com.mapzen.tangram.SceneUpdate
 import rocks.underfoot.underfootandroid.maptuils.MapViewModel
 
-class WaterViewModel : MapViewModel() {
+class WaterViewModel(application: Application) : MapViewModel(application) {
     companion object {
         private const val TAG = "WaterViewModel"
     }

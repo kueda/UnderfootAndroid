@@ -23,7 +23,7 @@ class DownloadsFragment : Fragment(), LifecycleObserver {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(DownloadsViewModel::class.java)
+        viewModel = ViewModelProvider(this)[DownloadsViewModel::class.java]
     }
 
     override fun onCreateView(

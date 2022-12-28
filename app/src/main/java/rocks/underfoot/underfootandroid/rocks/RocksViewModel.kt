@@ -1,11 +1,13 @@
 package rocks.underfoot.underfootandroid.rocks
 
+import android.app.Application
 import androidx.lifecycle.*
 import com.mapzen.tangram.*
+import rocks.underfoot.underfootandroid.downloads.PacksRepository
 import rocks.underfoot.underfootandroid.maptuils.*
 import kotlin.math.roundToInt
 
-class RocksViewModel : MapViewModel() {
+class RocksViewModel(application: Application) : MapViewModel(application) {
     companion object {
         private const val TAG = "RocksViewModel"
     }

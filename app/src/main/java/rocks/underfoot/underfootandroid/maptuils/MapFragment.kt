@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -17,12 +16,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.Observer
 import androidx.lifecycle.OnLifecycleEvent
-import com.mapzen.tangram.CameraUpdateFactory
-import com.mapzen.tangram.LngLat
-import com.mapzen.tangram.MapView
 import rocks.underfoot.underfootandroid.MainActivity
 import rocks.underfoot.underfootandroid.R
 import androidx.core.content.edit
+import com.mapzen.tangram.*
 import kotlin.math.min
 
 open abstract class MapFragment : Fragment(), LifecycleObserver, Toolbar.OnMenuItemClickListener {
@@ -63,39 +60,40 @@ open abstract class MapFragment : Fragment(), LifecycleObserver, Toolbar.OnMenuI
     abstract fun getToolbarID(): Int
 
     fun setupMap() {
-        viewModel.selectedPackId.observe(viewLifecycleOwner, Observer {
-            if (it.isNullOrEmpty()) {
-                AlertDialog.Builder(requireActivity())
-                    .setTitle(getString(R.string.map_no_data_title))
-                    .setMessage(getString(R.string.map_no_data_description))
-                    .setPositiveButton(
-                        getString(R.string.choose_downloads),
-                        DialogInterface.OnClickListener { _, _ ->
-                            navigateToDownloads()
-                        })
-                    .create().show()
-            }
-        })
+        if (!viewModel.selectedPackId.hasActiveObservers()) {
+            viewModel.selectedPackId.observe(viewLifecycleOwner, Observer {
+                if (it.isNullOrEmpty()) {
+                    AlertDialog.Builder(requireActivity())
+                        .setTitle(getString(R.string.map_no_data_title))
+                        .setMessage(getString(R.string.map_no_data_description))
+                        .setPositiveButton(
+                            getString(R.string.choose_downloads),
+                            DialogInterface.OnClickListener { _, _ ->
+                                navigateToDownloads()
+                            })
+                        .create().show()
+                } else {
+                    viewModel.packsRepository.setSelectedPackFromPreference()
+                }
+            })
+        }
         val prefsName = getString(R.string.packsPrefName)
         val selectedPrefName = getString(R.string.selectedPackPrefName)
         context?.apply {
             with(getSharedPreferences(prefsName, Context.MODE_PRIVATE)) {
                 viewModel.selectedPackId.value = getString(selectedPrefName, "")
-                Log.d(this::class.simpleName, "viewModel.selectedPackName.value: ${viewModel.selectedPackId.value}")
             }
+            // Set initial camera position from last viewed position
             with(getSharedPreferences(MapFragment.MAP_PREFS, Context.MODE_PRIVATE)) {
                 val lat = getFloat(MapFragment.MAP_PREFS_LAT, 0f).toDouble()
                 val lng = getFloat(MapFragment.MAP_PREFS_LNG, 0f).toDouble()
-                val zoom = getFloat(MapFragment.MAP_PREFS_ZOOM, 0f)
-                if (lat != 0.0 && lng != 0.0 && zoom != 0f) {
-                    Log.d(
-                        this::class.simpleName,
-                        "loaded last pos from prefs ($zoom/$lng/$lat), setting the cameraUpdate"
-                    )
-                    viewModel.initialCameraUpdate.value = CameraUpdateFactory.newLngLatZoom(
-                        LngLat(lng, lat),
-                        zoom
-                    )
+                val zoom = getFloat(MapFragment.MAP_PREFS_ZOOM, 0f).toDouble()
+                if (
+                    lat != 0.0
+                    && lng != 0.0
+                    && zoom != 0.0
+                ) {
+                    viewModel.lastPositionFromPrefs.postValue(LngLatZoom(lng, lat, zoom))
                 }
             }
         }

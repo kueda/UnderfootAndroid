@@ -55,27 +55,25 @@ abstract class MapResponder(
         mapController.setSceneLoadListener(this)
         // The scene needs to be customized based on the pack the user has chosen. Since that's a
         // part of state, the view model provides that
-        viewModel.sceneUpdatesForSelectedPack.observe(viewLifecycleOwner, { updates ->
+        viewModel.sceneUpdatesForSelectedPack.observe(viewLifecycleOwner) { updates ->
             mapController.loadSceneFile(viewModel.sceneFilePath.value, updates)
-        })
-        viewModel.cameraUpdate.observe(viewLifecycleOwner, { cameraUpdate ->
+        }
+        viewModel.cameraUpdate.observe(viewLifecycleOwner) { cameraUpdate ->
             cameraUpdate?.let {
                 mapController.updateCameraPosition(it)
-                viewModel.cameraUpdate.value = null
             }
-        })
-        viewModel.animatedCameraUpdate.observe(viewLifecycleOwner, { cameraUpdate ->
+        }
+        viewModel.animatedCameraUpdate.observe(viewLifecycleOwner) { cameraUpdate ->
             cameraUpdate?.let {
                 mapController.updateCameraPosition(it, 500)
-                viewModel.cameraUpdate.value = null
             }
-        })
-        viewModel.sceneFilePath.observe(viewLifecycleOwner, {
+        }
+        viewModel.sceneFilePath.observe(viewLifecycleOwner) {
             mapController.loadSceneFile(
                 viewModel.sceneFilePath.value,
                 viewModel.sceneUpdatesForSelectedPack.value
             )
-        })
+        }
     }
 
     override fun onSceneReady(sceneId: Int, sceneError: SceneError?) {
@@ -83,7 +81,7 @@ abstract class MapResponder(
             Log.d(this::class.simpleName, "Scene update errors ${sceneError.sceneUpdate} ${sceneError.error}")
             return
         }
-        // Kind of dumb, but the user location observer below attempts to make these visible.
+        // Not great, but the user location observer below attempts to make these visible.
         // Changing the scene will remove them from the map anyway, but if the local references to
         // them persist, the observer will refer to an object that doesn't really exist, so here
         // I'm explicitly removing them.
@@ -91,29 +89,22 @@ abstract class MapResponder(
         userLocationAccMarker = null
         userLocationMarker = null
         if (viewModel.cameraPosition.value == null) {
-            if (
-                // If no pack has been selected, we don't want to request GPS permission
-                !viewModel.selectedPackId.value.isNullOrEmpty()
-                && viewModel.initialCameraUpdate.value == null
-            ) {
-                // If it's a brand new view model, start requesting updates so the map goes to
-                // the user's current location
-//                Log.d(TAG, "initial camera from current location")
-//                2021-05-18: I was doing this, but given how much the app shuts down this ends up
-//                happening most of the time, which is rarely what I want
-//                viewModel.panToCurrentLocation()
-            } else {
-//                Log.d(TAG, "initial camera from initialCameraUpdate")
-                viewModel.initialCameraUpdate.value?.let {
-                    viewModel.cameraUpdate.value = it
-                    viewModel.initialCameraUpdate.value = null
+            if (viewModel.lastPositionFromPrefs.value != null) {
+                val lastPos = viewModel.lastPositionFromPrefs.value as LngLatZoom
+                if (viewModel.lngLatInPack(lastPos.lng, lastPos.lat)) {
+                    viewModel.cameraUpdate.postValue(
+                        CameraUpdateFactory.newLngLatZoom(
+                            LngLat(lastPos.lng, lastPos.lat),
+                            lastPos.zoom.toFloat()
+                        )
+                    )
+                } else {
+                    viewModel.zoomToPackOrLastPosition()
                 }
             }
         } else {
-            // If there's an existing view model, pan/zoom to wherever it was last
-            viewModel.cameraPosition.value?.let { cp ->
-                viewModel.panToLocation(cp.position, cp.zoom)
-            }
+            // If the viewModel exists, zoom to the pack or the last position
+            viewModel.zoomToPackOrLastPosition()
         }
         // Set up the current location marker. This is in onSceneReady b/c it will error if there's
         // no scene
@@ -149,7 +140,7 @@ abstract class MapResponder(
                 """.trimIndent())
             }
         }
-        viewModel.userLocation.observe(viewLifecycleOwner, { loc ->
+        viewModel.userLocation.observe(viewLifecycleOwner) { loc ->
             if (loc == null) {
                 userLocationMarker?.isVisible = false
                 userLocationAccMarker?.isVisible = false
@@ -163,7 +154,8 @@ abstract class MapResponder(
                 isVisible = true
                 setPoint(LngLat(loc.longitude, loc.latitude))
                 val newMarkerSize = "${loc.accuracy} / \$meters_per_pixel"
-                setStylingFromString("""
+                setStylingFromString(
+                    """
                     {
                         style: 'points',
                         color: 'rgba(${colorAccent.red}, ${colorAccent.green}, ${colorAccent.blue}, 0.5)',
@@ -171,9 +163,10 @@ abstract class MapResponder(
                         order: 1800,
                         collide: false
                     }
-                """.trimIndent())
+                """.trimIndent()
+                )
             }
-        })
+        }
     }
 
     // MapChangeListener
@@ -204,7 +197,6 @@ abstract class MapResponder(
         // Zoom on double tap
         val newZoom = mapController.cameraPosition.zoom + 1F
         val tapped = mapController.screenPositionToLngLat(PointF(x, y))
-        Log.d(this::class.simpleName, "onDoubleTap, tapped: $tapped")
         tapped?.let {
             viewModel.panToLocation(it, newZoom, manual = true)
         }

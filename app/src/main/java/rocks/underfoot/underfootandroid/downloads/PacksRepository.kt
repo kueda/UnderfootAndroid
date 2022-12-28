@@ -54,13 +54,22 @@ data class Pack(val metadata: PackMetadata) {
 }
 
 @Serializable
+data class PackBbox(
+    val top: Double,
+    val bottom: Double,
+    val left: Double,
+    val right: Double
+)
+
+@Serializable
 data class PackMetadata(
     val id: String,
     val name: String,
     val description: String? = null,
     val admin1: String,
     val admin2: String? = null,
-    val path: String
+    val path: String,
+    val bbox: PackBbox? = null
 )
 
 @Serializable
@@ -92,7 +101,7 @@ class PacksRepository(private val context: Context) {
     private val selectedPrefName = context.getString(R.string.selectedPackPrefName)
 
     private val packsObserver = Observer<List<Pack>> {
-        fetchSelectedPack()
+        setSelectedPackFromPreference()
     }
 
     suspend fun load() {
@@ -144,7 +153,7 @@ class PacksRepository(private val context: Context) {
         }
     }
 
-    private fun fetchSelectedPack() {
+    fun setSelectedPackFromPreference() {
         context.apply { with(getSharedPreferences(prefsName, Context.MODE_PRIVATE)) {
             val selectedPackId = getString(selectedPrefName, "")
             val foundPack = packs.value?.find { p -> p.id == selectedPackId }

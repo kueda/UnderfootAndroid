@@ -1,22 +1,37 @@
 package rocks.underfoot.underfootandroid.maptuils
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.os.Bundle
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import android.util.Log
+import androidx.lifecycle.*
 import com.mapzen.tangram.*
+import kotlinx.coroutines.launch
+import rocks.underfoot.underfootandroid.downloads.Pack
+import rocks.underfoot.underfootandroid.downloads.PacksRepository
 import kotlin.math.max
 import kotlin.math.min
 
-abstract class MapViewModel : ViewModel() {
+data class LngLatZoom(
+    val lng: Double,
+    val lat: Double,
+    val zoom: Double
+);
+
+abstract class MapViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
         const val DEFAULT_ZOOM = 12f
         const val MAX_ZOOM = 14.9f
+    }
+
+    var packsRepository: PacksRepository = PacksRepository(application)
+
+    init {
+        viewModelScope.launch {
+            packsRepository.load()
+        }
     }
 
     val selectedPackId = MutableLiveData<String>("")
@@ -24,6 +39,8 @@ abstract class MapViewModel : ViewModel() {
     abstract val sceneFilePath: MutableLiveData<String>
     // Current position of the map's camera
     val cameraPosition = MutableLiveData<CameraPosition>()
+    // Last known camera position from preferences (i.e. before shutdown)
+    val lastPositionFromPrefs = MutableLiveData<LngLatZoom>()
     val latString: LiveData<String> = Transformations.map(cameraPosition) { cp ->
         "%.2f".format(cp.latitude)
     }
@@ -160,5 +177,36 @@ abstract class MapViewModel : ViewModel() {
             if (it.isNotEmpty()) return it
         }
         return default
+    }
+
+    fun lngLatInPack(lng: Double, lat: Double): Boolean {
+        val pack = packsRepository.selectedPack.value as Pack ?: return false
+        val bbox = pack.metadata.bbox ?: return false
+        return lat < bbox.bottom
+            || lat > bbox.top
+            || lng < bbox.left
+            || lng > bbox.right;
+    }
+
+    fun zoomToPackOrLastPosition() {
+        val pack = packsRepository.selectedPack.value as Pack
+        val packBbox = pack.metadata.bbox ?: return
+        val cameraUpdate = CameraUpdateFactory.newLngLatBounds(
+            LngLat(packBbox.left, packBbox.bottom),
+            LngLat(packBbox.right, packBbox.top),
+            EdgePadding(10, 10, 10, 10)
+        )
+        val pos = cameraPosition.value
+        // If not existing position, the map is new and we need to set the initial
+        // position
+        if (pos == null) {
+            this.cameraUpdate.postValue(cameraUpdate)
+            // Otherwise we need to check if the current position is inside the current
+            // pack's bounding box
+        } else if (lngLatInPack(pos.longitude, pos.latitude)) {
+            this.cameraUpdate.postValue(cameraUpdate)
+        } else {
+            panToLocation(pos.position, pos.zoom)
+        }
     }
 }
