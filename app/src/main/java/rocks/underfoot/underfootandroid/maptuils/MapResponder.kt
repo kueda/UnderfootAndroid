@@ -78,7 +78,7 @@ abstract class MapResponder(
 
     override fun onSceneReady(sceneId: Int, sceneError: SceneError?) {
         if (sceneError != null) {
-            Log.d(this::class.simpleName, "Scene update errors ${sceneError.sceneUpdate} ${sceneError.error}")
+            Log.e(this::class.simpleName, "Scene update errors ${sceneError.sceneUpdate} ${sceneError.error}")
             return
         }
         // Not great, but the user location observer below attempts to make these visible.

@@ -182,16 +182,16 @@ abstract class MapViewModel(application: Application) : AndroidViewModel(applica
     fun lngLatInPack(lng: Double, lat: Double): Boolean {
         val pack = packsRepository.selectedPack.value as Pack ?: return false
         val bbox = pack.metadata.bbox ?: return false
-        return lat < bbox.bottom
-            || lat > bbox.top
-            || lng < bbox.left
-            || lng > bbox.right;
+        return lat >= bbox.bottom
+                && lat <= bbox.top
+                && lng >= bbox.left
+                && lng <= bbox.right;
     }
 
     fun zoomToPackOrLastPosition() {
         val pack = packsRepository.selectedPack.value as Pack
         val packBbox = pack.metadata.bbox ?: return
-        val cameraUpdate = CameraUpdateFactory.newLngLatBounds(
+        val packCameraUpdate = CameraUpdateFactory.newLngLatBounds(
             LngLat(packBbox.left, packBbox.bottom),
             LngLat(packBbox.right, packBbox.top),
             EdgePadding(10, 10, 10, 10)
@@ -200,11 +200,11 @@ abstract class MapViewModel(application: Application) : AndroidViewModel(applica
         // If not existing position, the map is new and we need to set the initial
         // position
         if (pos == null) {
-            this.cameraUpdate.postValue(cameraUpdate)
+            this.cameraUpdate.postValue(packCameraUpdate)
             // Otherwise we need to check if the current position is inside the current
             // pack's bounding box
-        } else if (lngLatInPack(pos.longitude, pos.latitude)) {
-            this.cameraUpdate.postValue(cameraUpdate)
+        } else if (!lngLatInPack(pos.longitude, pos.latitude)) {
+            this.cameraUpdate.postValue(packCameraUpdate)
         } else {
             panToLocation(pos.position, pos.zoom)
         }
