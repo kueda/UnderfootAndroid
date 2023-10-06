@@ -128,7 +128,7 @@ layers:
                 filter: {lithology: ["clay or mud", "clay"]}
                 draw: {geologic_units: {color: "rgb(255,219,103)"}}
             sedimentary_rock:
-                filter: {lithology: "sedimentary rock"}
+                filter: {lithology: ["sedimentary rock", "diatomite"]}
                 draw: {geologic_units: {color: "rgb(146,220,183)"}}
             clastic_rock:
                 filter: {lithology: "clastic rock"}
@@ -572,7 +572,7 @@ layers:
                 filter: {lithology: "granofels"}
                 draw: {geologic_units: {color: "rgb(163,55,253)"}}
             gneiss:
-                filter: {lithology: ["gneiss", "plutonic rock (phaneritic)"]}
+                filter: {lithology: ["gneiss", "phanerite", "plutonic rock (phaneritic)"]}
                 draw: {geologic_units: {color: "rgb(236,214,254)"}}
             felsic_gneiss:
                 filter: {lithology: "felsic gneiss"}

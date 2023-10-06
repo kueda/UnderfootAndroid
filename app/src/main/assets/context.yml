@@ -6,7 +6,64 @@ sources:
         url: 'file:///data/user/0/rocks.underfoot.underfootandroid/files/context.mbtiles'
 
 layers:
-    context_nodes:
+    place_labels:
+        data:
+            source: context
+            layer: underfoot_place_nodes
+        draw:
+            context_node_label:
+                priority: |
+                    function() {
+                        var popOfTokyo = 391000000;
+                        var placeMultiplier = 2;
+                        return Math.max(
+                            0,
+                            popOfTokyo - Math.round(feature.population * placeMultiplier)
+                        );
+                    }
+        cities:
+            filter:
+                place: city
+                $zoom:
+                    max: 12
+            draw:
+                context_node_label:
+                    collide: true
+                    font:
+                        fill: [0.314, 0.314, 0.314, 1.00]
+                        size: 14px
+                        stroke:
+                            color: white
+                            width: 2px
+        towns:
+            filter:
+                place: town
+                $zoom:
+                    max: 14
+            draw:
+                context_node_label:
+                    collide: true
+                    font:
+                        fill: [0.314, 0.314, 0.314, 1.00]
+                        size: 13px
+                        stroke:
+                            color: white
+                            width: 2px
+        villages:
+            filter:
+                place: [village, hamlet]
+                $zoom:
+                    max: 16
+            draw:
+                context_node_label:
+                    collide: true
+                    font:
+                        fill: [0.314, 0.314, 0.314, 1.00]
+                        size: 12px
+                        stroke:
+                            color: white
+                            width: 2px
+    natural_nodes:
         data:
             source: context
             layer: underfoot_natural_nodes
@@ -64,7 +121,7 @@ layers:
                         stroke:
                             width: 2px
                             color: white
-    node_labels:
+    natural_node_labels:
         data:
             source: context
             layer: underfoot_natural_nodes
