@@ -191,13 +191,38 @@ layers:
             filter:
                 is_natural: 0
                 none:
-                    - { surface: underground }
-                    # "artificial" in NHD means that the data describes a path water might take
-                    # through a larger waterbody, like a wide river, marhs, or reservoir, so here
-                    # I'm treating it like a "natural" waterway
-                    - { type: artificial }
+                    # See the "underground" layer below
+                    - surface: underground
+                    # "artificial" in NHD means that the data describes a path
+                    #  water might take through a larger waterbody, like a
+                    #  wide river, marsh, or reservoir, i.e. the artificer
+                    #  was the map maker, not people making manmade
+                    #  waterways, so here I'm treating it like a "natural"
+                    #  waterway
+                    - type: "canal/ditch"
+                    - is_imaginary: 1
             draw:
-                lines:
+                solid-lines:
+                    order: 1
+                    width: function() { return $zoom / 8 * $meters_per_pixel; }
+                    color: global.colors.manmade
+                text:
+                    repeat_group: manmade
+                    font:
+                        fill: global.colors.manmade
+        manmade_canal_ditch:
+            filter:
+                is_natural: 0
+                type: "canal/ditch"
+                none:
+                    # See the "underground" layer below
+                    - { surface: underground }
+                $zoom:
+                    min: 11
+            draw:
+                solid-lines:
+                    order: 1
+                    width: function() { return $zoom / 15 * $meters_per_pixel; }
                     color: global.colors.manmade
                 text:
                     repeat_group: manmade
@@ -207,6 +232,9 @@ layers:
             filter:
                 permanence: [perennial]
                 surface: surface
+                # You can't use is_natural: 1 because "artificial" ways match that
+                none:
+                    - type: "canal/ditch"
             draw:
                 solid-lines:
                     order: 1
