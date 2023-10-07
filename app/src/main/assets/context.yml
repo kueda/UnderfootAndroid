@@ -18,14 +18,14 @@ layers:
                         var placeMultiplier = 2;
                         return Math.max(
                             0,
-                            popOfTokyo - Math.round(feature.population * placeMultiplier)
+                            Math.log(popOfTokyo) - Math.log(feature.population ||10)
                         );
                     }
         cities:
             filter:
                 place: city
                 $zoom:
-                    max: 12
+                    max: 11
             draw:
                 context_node_label:
                     collide: true
@@ -39,7 +39,7 @@ layers:
             filter:
                 place: town
                 $zoom:
-                    max: 14
+                    max: 12
             draw:
                 context_node_label:
                     collide: true
@@ -53,7 +53,8 @@ layers:
             filter:
                 place: [village, hamlet]
                 $zoom:
-                    max: 16
+                    min: 10
+                    max: 13
             draw:
                 context_node_label:
                     collide: true

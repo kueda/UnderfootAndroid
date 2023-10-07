@@ -176,10 +176,6 @@ layers:
             source: water
             layer: waterways
         draw:
-            lines:
-                order: 1
-                color: global.colors.water
-                width: function() { return $zoom / 10 * $meters_per_pixel; }
             text:
                 order: 3
                 priority: 1
@@ -210,25 +206,36 @@ layers:
         permanent:
             filter:
                 permanence: [perennial]
+                surface: surface
             draw:
-                lines:
-                width: function() { return $zoom / 10 * $meters_per_pixel; }
+                solid-lines:
+                    order: 1
+                    color: global.colors.water
+                    width: function() { return $zoom / 8 * $meters_per_pixel; }
                 text:
                     repeat_group: permanent
         intermittent:
             filter:
                 permanence: [intermittent]
+                $zoom:
+                    min: 11
             draw:
-                lines:
-                    style: dashed-lines
+                dashed-lines:
+                    order: 1
+                    color: global.colors.water
+                    width: function() { return $zoom / 15 * $meters_per_pixel; }
                 text:
                     repeat_group: manmade
         ephemeral:
             filter:
                 permanence: [ephemeral]
+                $zoom:
+                    min: 11
             draw:
-                lines:
-                    style: dotted-lines
+                dotted-lines:
+                    order: 1
+                    color: global.colors.water
+                    width: function() { return $zoom / 15 * $meters_per_pixel; }
                 text:
                     repeat_group: manmade
         underground:
@@ -260,6 +267,9 @@ layers:
 
 styles:
     invisible-lines:
+        base: lines
+        blend: overlay
+    solid-lines:
         base: lines
         blend: overlay
     dashed-lines:
