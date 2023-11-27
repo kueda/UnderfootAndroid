@@ -38,7 +38,7 @@ jobs:
         run: |
           cp \
             ${{ steps.sign.outputs.signedReleaseFile }} \
-            $(dirname steps.sign.outputs.signedReleaseFile)/Underfoot.apk
+            $(dirname ${{ steps.sign.outputs.signedReleaseFile }})/Underfoot.apk
 
       - name: Create Release
         uses: "marvinpinto/action-automatic-releases@latest"
@@ -47,4 +47,4 @@ jobs:
           prerelease: false
           files: |
             ${{ steps.sign.outputs.signedReleaseFile }}
-            $(dirname steps.sign.outputs.signedReleaseFile)/Underfoot.apk
+            $(dirname ${{ steps.sign.outputs.signedReleaseFile }})/Underfoot.apk
