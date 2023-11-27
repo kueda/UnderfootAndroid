@@ -39,10 +39,12 @@ class MainActivity : AppCompatActivity() {
         navController.graph = graph
         // Store the nav destination on change
         navController.addOnDestinationChangedListener { _, dest, _ ->
-            val apply = apply {
-                with(getSharedPreferences(prefsName, Context.MODE_PRIVATE)) {
-                    edit { putInt(lastDestinationPrefName, dest.id) }
-                }
+            // Not sure why, but doing this way instead of using apply fixes a bug in which you
+            // can't navigate back to rocks after being prompted to choose a pack and then
+            // download it
+            val sharedPrefs = this.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+            sharedPrefs.edit {
+                putInt(lastDestinationPrefName, dest.id)
             }
         }
         // Set up the drawer menu
