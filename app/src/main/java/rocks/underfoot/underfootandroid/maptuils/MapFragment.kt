@@ -66,11 +66,7 @@ open abstract class MapFragment : Fragment(), LifecycleObserver, Toolbar.OnMenuI
                     AlertDialog.Builder(requireActivity())
                         .setTitle(getString(R.string.map_no_data_title))
                         .setMessage(getString(R.string.map_no_data_description))
-                        .setPositiveButton(
-                            getString(R.string.choose_downloads),
-                            DialogInterface.OnClickListener { _, _ ->
-                                navigateToDownloads()
-                            })
+                        .setPositiveButton(getString(R.string.choose_downloads)) { _dialog, _which -> navigateToDownloads() }
                         .create().show()
                 } else {
                     viewModel.packsRepository.setSelectedPackFromPreference()

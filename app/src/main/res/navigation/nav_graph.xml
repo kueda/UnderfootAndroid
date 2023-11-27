@@ -9,7 +9,7 @@
         android:id="@+id/nav_rocks"
         android:name="rocks.underfoot.underfootandroid.rocks.RocksFragment"
         android:label="Rock"
-        tools:layout="@layout/fragment_rocks" >
+        tools:layout="@layout/fragment_rocks">
         <action
             android:id="@+id/action_nav_rocks_to_nav_downloads"
             app:destination="@id/nav_downloads" />

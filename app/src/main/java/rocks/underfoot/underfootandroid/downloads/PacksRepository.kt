@@ -174,7 +174,6 @@ class PacksRepository(private val context: Context) {
                 val manifest = json.decodeFromString<Manifest>(jsonString)
                 val newPacks = manifest.packs.map {newPackMetadata ->
                     val existing = packs.value?.find { p -> p.id == newPackMetadata.id }
-                    Log.d(logTag, "existing: $existing")
                     existing ?: Pack(metadata = newPackMetadata)
                 }
                 packs.postValue(newPacks)

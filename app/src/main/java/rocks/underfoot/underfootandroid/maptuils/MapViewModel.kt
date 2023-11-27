@@ -180,6 +180,7 @@ abstract class MapViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun lngLatInPack(lng: Double, lat: Double): Boolean {
+        if (packsRepository.selectedPack.value == null) return false
         val pack = packsRepository.selectedPack.value as Pack ?: return false
         val bbox = pack.metadata.bbox ?: return false
         return lat >= bbox.bottom
@@ -189,6 +190,7 @@ abstract class MapViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun zoomToPackOrLastPosition() {
+        if (packsRepository.selectedPack.value == null) return
         val pack = packsRepository.selectedPack.value as Pack
         val packBbox = pack.metadata.bbox ?: return
         val packCameraUpdate = CameraUpdateFactory.newLngLatBounds(

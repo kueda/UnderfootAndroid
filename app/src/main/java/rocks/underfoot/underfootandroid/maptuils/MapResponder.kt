@@ -101,6 +101,8 @@ abstract class MapResponder(
                 } else {
                     viewModel.zoomToPackOrLastPosition()
                 }
+            } else {
+                viewModel.zoomToPackOrLastPosition()
             }
         } else {
             // If the viewModel exists, zoom to the pack or the last position
